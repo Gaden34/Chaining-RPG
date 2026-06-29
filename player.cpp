@@ -108,22 +108,15 @@ Skill* Player::getSkillByIndex(int index) {
 }
 
 void Player::unlockLevelSkills() {
-	// Only unlock skills for Combatant discipline
-	if (discipline != DisciplineID::Combatant) return;
+    // Convert your DisciplineID enum to a string matching the JSON keys
+    std::string disciplineStr = getDisciplineString(discipline); 
 
-	// Level 2: Double Strike
-	if (level == 2 && skills.size() == 0) {
-		auto doubleStrike = std::make_unique<Skill>(
-			"Double Strike",
-			"Strike the enemy twice in quick succession",
-			5, // mp cost
-			2.0f, // cooldown
-			SkillType::Attack,
-			15 // base damage
-		);
-		doubleStrike->initializeChaining(1.5f, 25.0f); // 1.5s chain window, 25% damage per chain
-		learnSkill(std::move(doubleStrike));
-	}
+    // Fetch whatever skills are waiting for this exact milestone
+    auto newSkills = SkillDatabase::getSkillsForLevel(disciplineStr, level);
 
-	// Add more level-based skills here as needed
+    for (auto& skill : newSkills) {
+        if (!hasSkill(skill->getName())) {
+            learnSkill(std::move(skill));
+        }
+    }
 }

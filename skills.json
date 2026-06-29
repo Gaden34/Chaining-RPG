@@ -1,0 +1,14 @@
+{
+  "Combatant": {
+    "2": {
+      "name": "Double Strike",
+      "description": "Strike the enemy twice in quick succession",
+      "mp_cost": 5,
+      "cooldown": 2.0,
+      "type": "Attack",
+      "base_damage": 15,
+      "chain_window": 1.5,
+      "chain_damage_pct": 25.0
+    }
+  }
+}
