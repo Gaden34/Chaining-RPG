@@ -48,6 +48,9 @@
     <ClCompile Include="discipline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="skill.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="character.h">
@@ -86,5 +89,11 @@
     <ClInclude Include="disciplines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="skill.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".github\copilot-instructions.md" />
   </ItemGroup>
 </Project>

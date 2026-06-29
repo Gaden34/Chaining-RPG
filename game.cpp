@@ -5,7 +5,9 @@
 
 
 
-Game::Game() : player(levelSystem), combat(player, messageLog, levelSystem), window(sf::VideoMode({ 800, 600 }), "Nameless RPG"), rng(std::random_device{}()) {
+Game::Game() : combat(party, messageLog, levelSystem), window(sf::VideoMode({ 800, 600 }), "Nameless RPG"), rng(std::random_device{}()) {
+	party.emplace_back(levelSystem, "spiky");
+	party.emplace_back(levelSystem, "bluey");
 	window.setFramerateLimit(60);
 
 	startCharacterCreation();
@@ -35,7 +37,7 @@ void Game::draw() {
 void Game::drawCharacterCreation() {
 	map.setTexture("characterCreation");
 	map.draw(window);
-	player.draw(window);
+	party[0].draw(window);
 	messageLog.draw(window);
 
 	
@@ -44,7 +46,7 @@ void Game::drawCharacterCreation() {
 void Game::drawExploring() {
 	map.setTexture("dirtgrassmap");
 	map.draw(window);
-	player.draw(window);
+	party[0].draw(window);
 	messageLog.draw(window);
 
 	
@@ -60,7 +62,7 @@ void Game::update(float dt) {
 		break;
 
 	case GameState::Exploring:
-		player.update(dt);
+		party[0].update(dt);
 		checkForEncounter(dt);
 		break;
 
@@ -79,7 +81,7 @@ void Game::updateCharacterCreation(float dt) {
 	switch (creationStep) {
 
 	case CreationStep::Name:
-		messageLog.setCurrentMessage("Please enter your name: " + player.getName(), sf::Color::Black);
+		messageLog.setCurrentMessage("Please enter your name: " + party[0].getName(), sf::Color::Black);
 		break;
 
 	case CreationStep::Class:
@@ -92,14 +94,14 @@ void Game::startCharacterCreation() {
 	currentState = GameState::CharacterCreation;
 	creationStep = CreationStep::Name;
 
-	player.setPosition(400.f, 300.f);
+	party[0].setPosition(400.f, 300.f);
 }
 
 
 void Game::startClassSelection() {
 	creationStep = CreationStep::Class;
 
-	messageLog.addMessage("Hello, " + player.getName() + ". Please choose a discipline: ", sf::Color::Black);
+	messageLog.addMessage("Hello, " + party[0].getName() + ". Please choose a discipline: ", sf::Color::Black);
 
 	messageLog.addMessage("-- 1. Mage -- 2. Thief -- 3. Combatant --", sf::Color::Black);
 }
@@ -109,20 +111,20 @@ void Game::handleClassSelection(sf::Event event) {
 		switch (event.key.code) {
 
 		case sf::Keyboard::Num1:
-			player.setDiscipline(DisciplineID::Mage);
-			std::cout << player.getDiscipline().getName() << std::endl;
+			party[0].setDiscipline(DisciplineID::Mage);
+			std::cout << party[0].getDiscipline().getName() << std::endl;
 			startExploring();
 			break;
 
 		case sf::Keyboard::Num2:
-			player.setDiscipline(DisciplineID::Thief);
-			std::cout << player.getDiscipline().getName() << std::endl;
+			party[0].setDiscipline(DisciplineID::Thief);
+			std::cout << party[0].getDiscipline().getName() << std::endl;
 			startExploring();
 			break;
 
 		case sf::Keyboard::Num3:
-			player.setDiscipline(DisciplineID::Combatant);
-			std::cout << player.getDiscipline().getName() << std::endl;
+			party[0].setDiscipline(DisciplineID::Combatant);
+			std::cout << party[0].getDiscipline().getName() << std::endl;
 			startExploring();
 			break;
 		}
@@ -153,10 +155,10 @@ void Game::handleTextInput(sf::Event event) {
 	
 	if (creationStep == CreationStep::Name) {
 		if (event.text.unicode == 8) {// backspace
-			player.removeLastCharacter();
+			party[0].removeLastCharacter();
 		}
 		else if (event.text.unicode < 128) {
-			player.addCharacter(static_cast<char>(event.text.unicode));
+			party[0].addCharacter(static_cast<char>(event.text.unicode));
 		}
 	}
 
@@ -180,14 +182,14 @@ void Game::handleCreationInput(sf::Event event) {
 void Game::startExploring() {
 	currentState = GameState::Exploring;
 
-	player.setPosition(100.f, 100.f);
+	party[0].setPosition(100.f, 100.f);
 }
 
 void Game::checkForEncounter(float dt) {
 	std::uniform_int_distribution<int> rollEncounter(1, 100);
-	if (player.getIsMoving()) encounterTimer += dt;
+	if (party[0].getIsMoving()) encounterTimer += dt;
 
-	if (encounterTimer >= 3.0f && player.getIsMoving()) {
+	if (encounterTimer >= 3.0f && party[0].getIsMoving()) {
 		if (rollEncounter(rng) == 1) {
 			combat.start(knight);
 			messageLog.addMessage("You've encountered a knight!", sf::Color::White);

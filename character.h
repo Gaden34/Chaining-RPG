@@ -20,7 +20,12 @@ protected:
 	bool alive = true;
 
 public:
+	Character() = default;
 	virtual ~Character() = default;
+	Character(const Character&) = delete;
+	Character& operator=(const Character&) = delete;
+	Character(Character&&);
+	Character& operator=(Character&&);
 	virtual void update(float dt) = 0;
 	virtual void draw(sf::RenderWindow& window) = 0;
 	virtual void move(float dt) = 0;
@@ -30,6 +35,7 @@ public:
 	int getHp() const;
 	void setHp(int x);
 	int getMp() const;
+	void setMp(int x);
 	int getMaxHp() const;
 	int getMaxMp() const;
 	int getAttack() const;

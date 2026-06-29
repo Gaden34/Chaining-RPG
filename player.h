@@ -18,7 +18,10 @@ private:
 	std::vector<std::unique_ptr<Skill>> skills;
 
 public:
-	Player(LevelSystem& l);
+	Player(LevelSystem& l, std::string textureName);
+	Player(const Player&) = delete;
+	Player& operator=(const Player&) = delete;
+	Player(Player&&) = default;
 	void update(float dt) override;
 	void draw(sf::RenderWindow& window) override;
 	void move(float dt) override;

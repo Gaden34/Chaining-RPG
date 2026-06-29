@@ -1,5 +1,37 @@
 #include "character.h"
 
+Character::Character(Character&& other)
+	: texture(std::move(other.texture)),
+	  name(std::move(other.name)),
+	  hp(other.hp),
+	  mp(other.mp),
+	  maxHp(other.maxHp),
+	  maxMp(other.maxMp),
+	  attack(other.attack),
+	  magAttack(other.magAttack),
+	  moveSpeed(other.moveSpeed),
+	  alive(other.alive) {
+	sprite.setTexture(texture);
+	sprite.setPosition(other.sprite.getPosition());
+}
+
+Character& Character::operator=(Character&& other) {
+	if (this != &other) {
+		texture = std::move(other.texture);
+		name = std::move(other.name);
+		hp = other.hp;
+		mp = other.mp;
+		maxHp = other.maxHp;
+		maxMp = other.maxMp;
+		attack = other.attack;
+		magAttack = other.magAttack;
+		moveSpeed = other.moveSpeed;
+		alive = other.alive;
+		sprite.setTexture(texture);
+		sprite.setPosition(other.sprite.getPosition());
+	}
+	return *this;
+}
 
 std::string Character::getName() const {
 	return name;
@@ -19,6 +51,12 @@ void Character::setHp(int x) {
 
 int Character::getMp() const {
 	return mp;
+}
+
+void Character::setMp(int x) {
+	mp = x;
+	if (mp < 0) mp = 0;
+	if (mp > maxMp) mp = maxMp;
 }
 
 int Character::getMaxHp() const {

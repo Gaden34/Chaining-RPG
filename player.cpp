@@ -1,11 +1,13 @@
 #include "player.h"
 
-Player::Player(LevelSystem& l) : levelSystem(l) {
-	texture.loadFromFile("assets/spiky.png");
+Player::Player(LevelSystem& l, std::string textureName) : levelSystem(l) {
+	texture.loadFromFile("assets/" + textureName + ".png");
 	sprite.setTexture(texture);
 	moveSpeed = 120.f;
 	maxHp = 42;
 	hp = maxHp;
+	maxMp = 30;
+	mp = maxMp;
 	attack = 25;
 }
 
@@ -114,7 +116,7 @@ void Player::unlockLevelSkills() {
 		auto doubleStrike = std::make_unique<Skill>(
 			"Double Strike",
 			"Strike the enemy twice in quick succession",
-			20, // mp cost
+			5, // mp cost
 			2.0f, // cooldown
 			SkillType::Attack,
 			15 // base damage

@@ -36,5 +36,8 @@ public:
 	void onHit();
 	float getDamage() const;
 	bool canChainIntoNextSkill() const;
+	const std::string& getName() const { return name; }
+	int getMpCost() const { return mpCost; }
+	SkillType getType() const { return type; }
 };
 

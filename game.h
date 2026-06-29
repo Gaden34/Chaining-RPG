@@ -24,11 +24,11 @@ enum class GameState {
 
 class Game {
 private:
-	Player player;
+	LevelSystem levelSystem;
+	std::vector<Player> party;
 	Combat combat;
 	Map map;
 	MessageLog messageLog;
-	LevelSystem levelSystem;
 	sf::RenderWindow window;
 	sf::Clock clock;
 	GameState currentState = GameState::CharacterCreation;
@@ -38,6 +38,8 @@ private:
 
 public: 
 	Game();
+	Game(const Game&) = delete;
+	Game& operator=(const Game&) = delete;
 	void draw();
 	void drawCharacterCreation();
 	void drawExploring();
