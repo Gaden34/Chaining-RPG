@@ -109,7 +109,7 @@ Skill* Player::getSkillByIndex(int index) {
 
 void Player::unlockLevelSkills() {
     // Convert your DisciplineID enum to a string matching the JSON keys
-    std::string disciplineStr = getDisciplineString(discipline); 
+    std::string disciplineStr = getDiscipline().getName(); 
 
     // Fetch whatever skills are waiting for this exact milestone
     auto newSkills = SkillDatabase::getSkillsForLevel(disciplineStr, level);
