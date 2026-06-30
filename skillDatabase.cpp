@@ -38,6 +38,8 @@ std::vector<std::unique_ptr<Skill>> SkillDatabase::getSkillsForLevel(const std::
     // Check if we have any data for this combination
     if (m_database.count(discipline) && m_database[discipline].count(level)) {
         for (const auto& skillJson : m_database[discipline][level]) {
+            std::string typeStr = skillJson.value("skill_type", "Attack");
+            SkillType skillType = Skill::getSkillTypeFromString(typeStr);
             
             // Extract values safely using .value(key, default_fallback)
             auto skill = std::make_unique<Skill>(
@@ -45,7 +47,7 @@ std::vector<std::unique_ptr<Skill>> SkillDatabase::getSkillsForLevel(const std::
                 skillJson.value("description", ""),
                 skillJson.value("mp_cost", 0),
                 skillJson.value("cooldown", 0.0f),
-                SkillType::Attack, // You can write a helper function to map string to enum
+                skillType, 
                 skillJson.value("base_damage", 0),
                 skillJson.value("hits", std::vector<int>{})
               );
