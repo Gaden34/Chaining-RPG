@@ -46,8 +46,9 @@ std::vector<std::unique_ptr<Skill>> SkillDatabase::getSkillsForLevel(const std::
                 skillJson.value("mp_cost", 0),
                 skillJson.value("cooldown", 0.0f),
                 SkillType::Attack, // You can write a helper function to map string to enum
-                skillJson.value("base_damage", 0)
-            );
+                skillJson.value("base_damage", 0),
+                skillJson.value("hits", std::vector<int>{})
+              );
 
             // Handle unique chain parameters if they exist in the JSON object
             if (skillJson.contains("chain_window")) {

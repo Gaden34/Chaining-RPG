@@ -6,8 +6,9 @@
 
 
 Game::Game() : combat(party, messageLog, levelSystem), window(sf::VideoMode({ 800, 600 }), "Nameless RPG"), rng(std::random_device{}()) {
-	party.emplace_back(levelSystem, "spiky");
-	party.emplace_back(levelSystem, "bluey");
+	party.emplace_back("Gaden",levelSystem, "spiky");
+	party.emplace_back("Kari", levelSystem, "bluey");
+	party[1].setDiscipline(DisciplineID::Combatant);
 	window.setFramerateLimit(60);
 
 	startCharacterCreation();

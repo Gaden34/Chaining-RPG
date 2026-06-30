@@ -1,7 +1,7 @@
 #include "skill.h"
 
-Skill::Skill(const std::string& name, const std::string& description, int mpCost, float cooldown, SkillType type, int baseDamage, ChainData* chainData)
-    : name(name), description(description), mpCost(mpCost), cooldown(cooldown), type(type), baseDamage(baseDamage), chainData(chainData) {
+Skill::Skill(const std::string& name, const std::string& description, int mpCost, float cooldown, SkillType type, int baseDamage, const std::vector<int>& hits, ChainData* chainData)
+    : name(name), description(description), mpCost(mpCost), cooldown(cooldown), type(type), baseDamage(baseDamage), hits(hits), chainData(chainData) {
 }
 
 void Skill::initializeChaining(float chainWindow, float damagePerChain) {

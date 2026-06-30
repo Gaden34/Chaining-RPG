@@ -18,7 +18,7 @@ private:
 	std::vector<std::unique_ptr<Skill>> skills;
 
 public:
-	Player(LevelSystem& l, std::string textureName);
+	Player(std::string n, LevelSystem& l, std::string textureName);
 	Player(const Player&) = delete;
 	Player& operator=(const Player&) = delete;
 	Player(Player&&) = default;

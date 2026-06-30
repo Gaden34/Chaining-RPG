@@ -1,7 +1,8 @@
 #include "player.h"
 #include "skillDatabase.h"
 
-Player::Player(LevelSystem& l, std::string textureName) : levelSystem(l) {
+Player::Player(std::string n, LevelSystem& l, std::string textureName) : levelSystem(l) {
+	name = n;
 	texture.loadFromFile("assets/" + textureName + ".png");
 	sprite.setTexture(texture);
 	moveSpeed = 120.f;
