@@ -2,13 +2,29 @@
   "Combatant": {
     "2": {
       "name": "Double Strike",
-      "description": "Strike the enemy twice in quick succession",
+      "description": "Strike the enemy twice in quick succession. - Targets: 1 - Hits: 2",
       "mp_cost": 5,
       "cooldown": 2.0,
       "type": "Attack",
       "base_damage": 15,
       "hits":  [1, 2],
-      "chain_window": 1.5,
+      "chain_window": 0.2,
+      "chain_damage_pct": 25.0
+    }
+  }
+}
+
+{
+  "Mage": {
+    "2" {
+      "name": "Lightning Bolt",
+      "description": "Summon a bolt from the sky to zap the enemy. - Targets: 1 - Hits: 1.",
+      "mp_cost": 8,
+      "cooldown": 2.0,
+      "type": "Magic",
+      "base_damage": 22,
+      "hits": [1],
+      "chain_window": 0.2,
       "chain_damage_pct": 25.0
     }
   }

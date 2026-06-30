@@ -4,9 +4,11 @@
 
 enum class SkillType {
     Attack,
+	Magic,
     Heal,
     Buff,
-    Debuff
+    Debuff,
+	Steal
 };
 
 struct ChainData {
@@ -41,5 +43,6 @@ public:
 	const std::string& getName() const { return name; }
 	int getMpCost() const { return mpCost; }
 	SkillType getType() const { return type; }
+	static SkillType getSkillTypeFromString(const std::string& type);
 };
 

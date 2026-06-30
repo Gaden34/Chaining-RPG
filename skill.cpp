@@ -42,3 +42,15 @@ bool Skill::canChainIntoNextSkill() const {
     if (!chainData || !chainData->canChain) return false;
     return chainData->chainTimer > 0.f && chainData->chainHitCount > 0;
 }
+
+SkillType Skill::getSkillTypeFromString(const std::string& type) {
+    if (type == "Attack") return SkillType::Attack;
+    if (type == "Magic") return SkillType::Magic;
+    if (type == "Heal") return SkillType::Heal;
+    if (type == "Buff") return SkillType::Buff;
+    if (type == "Debuff") return SkillType::Debuff;
+    if (type == "Steal") return SkillType::Steal;
+
+    return SkillType::Attack;
+
+}
