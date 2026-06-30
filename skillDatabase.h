@@ -1,13 +1,14 @@
-#pragmaonce
+#pragma once
 #include <string>
 #include <vector>
 #include <map>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include "skill.h"
 
 class SkillDatabase {
 private:
-    static std::map<std::string, std::map<int, std::vector<class nlohmann::json>>> m_database;
+    static std::map<std::string, std::map<int, std::vector<nlohmann::json>>> m_database;
 
 public:
 

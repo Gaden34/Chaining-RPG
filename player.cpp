@@ -1,4 +1,5 @@
 #include "player.h"
+#include "skillDatabase.h"
 
 Player::Player(LevelSystem& l, std::string textureName) : levelSystem(l) {
 	texture.loadFromFile("assets/" + textureName + ".png");
@@ -119,4 +120,12 @@ void Player::unlockLevelSkills() {
             learnSkill(std::move(skill));
         }
     }
+}
+
+bool Player::hasSkill(const std::string& skillName) const {
+	for (const auto& skill : skills) {
+		if (skill->getName() == skillName) {
+			return true;
+		}
+	}
 }

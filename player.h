@@ -38,4 +38,5 @@ public:
 	const std::vector<std::unique_ptr<Skill>>& getSkills() const;
 	Skill* getSkillByIndex(int index);
 	void unlockLevelSkills();
+	bool hasSkill(const std::string& skillName) const;
 };
