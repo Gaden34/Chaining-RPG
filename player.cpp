@@ -129,4 +129,5 @@ bool Player::hasSkill(const std::string& skillName) const {
 			return true;
 		}
 	}
+	return false;
 }

@@ -26,7 +26,6 @@ private:
 	std::string name;
 	std::string description;
 	int mpCost;
-	float cooldown;
 	SkillType type;
 	int baseDamage;
 	std::vector<int> hits;
@@ -34,7 +33,7 @@ private:
 	ChainData* chainData; // Pointer to ChainData for this skill
 
 public:
-	Skill(const std::string& name, const std::string& description, int mpCost, float cooldown, SkillType type, int baseDamage, const std::vector<int>& hits = {}, ChainData* chainData = nullptr);
+	Skill(const std::string& name, const std::string& description, int mpCost, SkillType type, int baseDamage, const std::vector<int>& hits = {}, ChainData* chainData = nullptr);
 	void initializeChaining(float chainWindow, float damagePerChain);
 	void updateChainTimer(float dt);
 	void onHit();
