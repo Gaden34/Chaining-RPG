@@ -112,6 +112,7 @@ public:
 
 private:
 	void handlePlayerTurn();
+	Enemy& targetEnemy();
 	void playerAttack(Player& player, Enemy& enemy);
 	void playerUseSkill(Skill* skill);
 	void handleEnemyTurn();

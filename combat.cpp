@@ -53,7 +53,7 @@ void Combat::draw(sf::RenderWindow& window) {
 		if (!party.empty()) {
 			sf::Text nameLabel(party[activePlayerIndex].getName(), font, 12);
 			nameLabel.setPosition(400.f, 480.f);
-			nameLabel.setFillColor(sf::Color::Yellow);
+			nameLabel.setFillColor(sf::Color::White);
 			window.draw(nameLabel);
 		}
 		if (inSkillMenu)
@@ -67,6 +67,7 @@ void Combat::draw(sf::RenderWindow& window) {
 void Combat::start(EnemyData& data) {
 	currentState = CombatState::PlayerTurn;
 	activePlayerIndex = 0;
+	activeEnemyIndex = 0;
 	playerActed.assign(party.size(), false);
 	menu.reset();
 	inSkillMenu = false;
@@ -145,7 +146,7 @@ void Combat::handlePlayerTurn() {
 			CombatMenu::MenuOption selectedOption = menu.getSelectedOption();
 			switch (selectedOption) {
 			case CombatMenu::MenuOption::Attack:
-				playerAttack();
+				playerAttack(party[activePlayerIndex], enemies[activeEnemyIndex]);
 				break;
 			case CombatMenu::MenuOption::Skill:
 				skillMenu.populate(party[activePlayerIndex].getSkills());
@@ -163,6 +164,18 @@ void Combat::handlePlayerTurn() {
 		menu.setLastUpPressed(upPressed);
 		menu.setLastDownPressed(downPressed);
 		menu.setLastEnterPressed(enterPressed);
+	}
+}
+
+Enemy& Combat::targetEnemy() {
+	bool upPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
+	bool downPressed  = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
+
+	if (upPressed && !lastUpPressed) {
+		activeEnemyIndex = (activeEnemyIndex - 1 + (int)enemies.size()) % (int)enemies.size();
+	} 
+	if (downPressed && !lastDownPressed) {
+		activeEnemyIndex = (activeEnemyIndex + 1) % (int)enemies.size();
 	}
 }
 
