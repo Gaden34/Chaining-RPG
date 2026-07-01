@@ -17,7 +17,7 @@ MessageLog::MessageLog()
 void MessageLog::addMessage(const std::string& message, const sf::Color& color) {
 	messages.push_back(LogMessage({ message, color }));
 
-	if (messages.size() > 4) {
+	if (messages.size() > 5) {
 		messages.erase(messages.begin());
 	}
 }

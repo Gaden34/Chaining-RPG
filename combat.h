@@ -95,7 +95,9 @@ private:
 
 	float animationTimer = 0.f;
 	int activePlayerIndex = 0;
+	int activeEnemyIndex = 0;
 	std::vector<bool> playerActed;
+	std::vector<bool> enemyActed;
 	bool lastLeftPressed = false;
 	bool lastRightPressed = false;
 	sf::Font font;
@@ -110,7 +112,7 @@ public:
 
 private:
 	void handlePlayerTurn();
-	void playerAttack();
+	void playerAttack(Player& player, Enemy& enemy);
 	void playerUseSkill(Skill* skill);
 	void handleEnemyTurn();
 	void updatePlayerAnimation(float dt);

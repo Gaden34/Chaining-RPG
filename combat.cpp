@@ -166,12 +166,12 @@ void Combat::handlePlayerTurn() {
 	}
 }
 
-void Combat::playerAttack() {
-	Enemy& enemy = enemies[0];
-	int damage = party[activePlayerIndex].getAttack();
+void Combat::playerAttack(Player& player, Enemy& enemy) {
+	
+	int damage = player.getAttack();
 
 	enemy.takeDamage(damage);
-	messageLog.addMessage(party[activePlayerIndex].getName() + " hits the " + enemy.getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
+	messageLog.addMessage(player.getName() + " hits the " + enemy.getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
 
 	checkEnemyDeath(enemy);
 
@@ -238,8 +238,8 @@ void Combat::advanceActivePlayer() {
 void Combat::handleEnemyTurn() {
 	party[0].takeDamage(enemies[0].getAttack());
 	if (party[0].getHp() <= 0) party[0].setHp(0);
-	std::cout << "The " << enemies[0].getName() << " hits you for " << enemies[0].getAttack() << " damage!\n";
-	std::cout << "Player HP: " << party[0].getHp() << "/" << party[0].getMaxHp() << std::endl;
+	messageLog.addMessage("The " + enemies[0].getName() + " hits you for " + std::to_string(enemies[0].getAttack()) + " damage!", sf::Color::Black);
+	messageLog.addMessage("Player HP: " + std::to_string(party[0].getHp()) + "/" + std::to_string(party[0].getMaxHp()), sf::Color::Black);
 
 	currentState = CombatState::EnemyAnimation;
 }
