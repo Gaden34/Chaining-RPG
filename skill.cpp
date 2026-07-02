@@ -38,6 +38,10 @@ float Skill::getDamage() const {
     return baseDamage;
 }
 
+std::vector<int> Skill::getHits() const {
+    return hits;
+}
+
 bool Skill::canChainIntoNextSkill() const {
     if (!chainData || !chainData->canChain) return false;
     return chainData->chainTimer > 0.f && chainData->chainHitCount > 0;

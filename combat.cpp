@@ -225,8 +225,12 @@ void Combat::performSkill(QueuedAction& action) {
 	switch (skill->getType()) {
 	case SkillType::Attack: {
 		int damage = static_cast<int>(skill->getDamage());
+		int totalDamage = 0;
+		for (auto& hit : skill->getHits()) {
+		totalDamage += static_cast<int>(skill->getDamage());
 		enemy->takeDamage(damage);
-		messageLog.addMessage(player->getName() + " uses " + skill->getName() + " on the " + enemy->getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
+		}
+		messageLog.addMessage(player->getName() + " uses " + skill->getName() + " on the " + enemy->getName() + " for " + std::to_string(totalDamage) + " damage!", sf::Color::Black);
 		checkEnemyDeath(*enemy);
 		break;
 	}

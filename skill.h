@@ -38,6 +38,7 @@ public:
 	void updateChainTimer(float dt);
 	void onHit();
 	float getDamage() const;
+	std::vector<int> getHits() const;
 	bool canChainIntoNextSkill() const;
 	const std::string& getName() const { return name; }
 	int getMpCost() const { return mpCost; }
