@@ -21,6 +21,10 @@ void Game::draw() {
 
 	switch (currentState) {
 
+	case GameState::StartMenu:
+		drawStartMenu();
+		break;
+
 	case GameState::CharacterCreation:
 		drawCharacterCreation();
 		break;
@@ -35,6 +39,10 @@ void Game::draw() {
 	}
 
 	window.display();
+}
+
+void Game::drawStartMenu() {
+	
 }
 
 void Game::drawCharacterCreation() {

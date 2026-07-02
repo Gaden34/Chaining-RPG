@@ -15,12 +15,14 @@
 #include "disciplines.h"
 
 enum class GameState {
+	StartMenu
 	CharacterCreation,
 	Exploring,
 	Combat,
 	Menu,
 	GameOver
 };
+
 
 class Game {
 private:
@@ -41,6 +43,7 @@ public:
 	Game(const Game&) = delete;
 	Game& operator=(const Game&) = delete;
 	void draw();
+	void drawStartMenu();
 	void drawCharacterCreation();
 	void drawExploring();
 	void drawCombat();
@@ -48,6 +51,7 @@ public:
 	void handleTextInput(sf::Event event);
 	void handleCreationInput(sf::Event event);
 	void update(float dt);
+	void updateStartMenu(float dt);
 	void updateCombat(float dt);
 	void updateCharacterCreation(float dt);
 	void startCharacterCreation();
