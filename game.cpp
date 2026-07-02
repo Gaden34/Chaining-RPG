@@ -7,7 +7,7 @@
 
 
 Game::Game() : combat(party, messageLog, levelSystem), window(sf::VideoMode({ 800, 600 }), "Nameless RPG"), rng(std::random_device{}()) {
-	SkillDatabase::loadSkills("assets/skills.json");
+	SkillDatabase::loadSkills("skills.json");
 	party.emplace_back("Gaden",levelSystem, "spiky");
 	party.emplace_back("Kari", levelSystem, "bluey");
 	party[1].setDiscipline(DisciplineID::Combatant);

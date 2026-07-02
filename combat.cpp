@@ -16,6 +16,14 @@ void Combat::update(float dt) {
 		handlePlayerTurn();
 		break;
 
+	case CombatState::SelectingEnemy:
+		targetEnemy();
+		break;
+
+	case CombatState::ExecutingActions:
+		executeNextAction();
+		break;
+
 	case CombatState::PlayerAnimation:
 		updatePlayerAnimation(dt);
 		break;
@@ -124,8 +132,11 @@ void Combat::handlePlayerTurn() {
 				menu.setLastEnterPressed(true);
 			}
 			else {
-				Skill* skill = party[activePlayerIndex].getSkillByIndex(index);
-				if (skill) playerUseSkill(skill);
+				currentAction = {};
+				currentAction.type = ActionType::Skill;
+				currentAction.actor = &party[activePlayerIndex];
+				currentAction.skill = party[activePlayerIndex].getSkillByIndex(index);
+				currentState = CombatState::SelectingEnemy;
 			}
 		}
 		if (escapePressed && !skillMenu.getLastEscapePressed()) {
@@ -146,7 +157,10 @@ void Combat::handlePlayerTurn() {
 			CombatMenu::MenuOption selectedOption = menu.getSelectedOption();
 			switch (selectedOption) {
 			case CombatMenu::MenuOption::Attack:
-				playerAttack(party[activePlayerIndex], enemies[activeEnemyIndex]);
+				currentAction = {};
+				currentAction.type = ActionType::Attack;
+				currentAction.actor = &party[activePlayerIndex];
+				currentState = CombatState::SelectingEnemy;
 				break;
 			case CombatMenu::MenuOption::Skill:
 				skillMenu.populate(party[activePlayerIndex].getSkills());
@@ -167,9 +181,10 @@ void Combat::handlePlayerTurn() {
 	}
 }
 
-Enemy& Combat::targetEnemy() {
+void Combat::targetEnemy() {
 	bool upPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
 	bool downPressed  = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
+	bool enterPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Enter);
 
 	if (upPressed && !lastUpPressed) {
 		activeEnemyIndex = (activeEnemyIndex - 1 + (int)enemies.size()) % (int)enemies.size();
@@ -177,6 +192,95 @@ Enemy& Combat::targetEnemy() {
 	if (downPressed && !lastDownPressed) {
 		activeEnemyIndex = (activeEnemyIndex + 1) % (int)enemies.size();
 	}
+
+	if (enterPressed && !lastEnterPressed) {
+		currentAction.target = &enemies[activeEnemyIndex];
+		actionQueue.push_back(currentAction);
+		currentAction = {};
+		advanceActivePlayer();
+	}
+	lastUpPressed = upPressed;
+	lastDownPressed = downPressed;
+	lastEnterPressed = enterPressed;
+}
+
+void Combat::performAttack(QueuedAction& action) {
+	Player* player = static_cast<Player*>(action.actor);
+	Enemy* enemy = static_cast<Enemy*>(action.target);
+	int damage = player->getAttack();
+	enemy->takeDamage(damage);
+	messageLog.addMessage(player->getName() + " hits the " + enemy->getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
+	checkEnemyDeath(*enemy);
+}
+
+void Combat::performSkill(QueuedAction& action) {
+	Player* player = static_cast<Player*>(action.actor);
+	Enemy* enemy = static_cast<Enemy*>(action.target);
+	Skill* skill = action.skill;
+	if (player->getMp() < skill->getMpCost()) {
+		messageLog.addMessage("Not enough MP!", sf::Color::Red);
+		return;
+	}
+	player->setMp(player->getMp() - skill->getMpCost());
+	switch (skill->getType()) {
+	case SkillType::Attack: {
+		int damage = static_cast<int>(skill->getDamage());
+		enemy->takeDamage(damage);
+		messageLog.addMessage(player->getName() + " uses " + skill->getName() + " on the " + enemy->getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
+		checkEnemyDeath(*enemy);
+		break;
+	}
+	case SkillType::Heal: {
+		int healAmount = static_cast<int>(skill->getDamage());
+		player->setHp(std::min(player->getHp() + healAmount, player->getMaxHp()));
+		messageLog.addMessage(player->getName() + " uses " + skill->getName() + " and recovers " + std::to_string(healAmount) + " HP!", sf::Color::Green);
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void Combat::executeAction(QueuedAction& action)
+{
+	switch (action.type)
+	{
+	case ActionType::Attack:
+		performAttack(action);
+		break;
+
+	case ActionType::Skill:
+		performSkill(action);
+		break;
+
+	case ActionType::Item:
+		//performItem(action);
+		break;
+
+	case ActionType::Defend:
+		//performDefend(action);
+		break;
+
+	default:
+		break;
+	}
+}
+
+void Combat::executeNextAction() {
+	if (actionQueue.empty()) {
+		currentState = CombatState::EnemyTurn;
+		return;
+	}
+
+	executeAction(actionQueue.front());
+	actionQueue.erase(actionQueue.begin());
+
+	if (currentState == CombatState::Victory || currentState == CombatState::Defeat) {
+		actionQueue.clear();
+		return;
+	}
+
+	currentState = CombatState::PlayerAnimation;
 }
 
 void Combat::playerAttack(Player& player, Enemy& enemy) {
@@ -237,6 +341,7 @@ void Combat::advanceActivePlayer() {
 			activePlayerIndex = next;
 			menu.reset();
 			inSkillMenu = false;
+			currentState = CombatState::PlayerTurn;
 			return;
 		}
 	}
@@ -245,7 +350,7 @@ void Combat::advanceActivePlayer() {
 	activePlayerIndex = 0;
 	menu.reset();
 	inSkillMenu = false;
-	currentState = CombatState::PlayerAnimation;
+	currentState = CombatState::ExecutingActions;
 }
 
 void Combat::handleEnemyTurn() {
@@ -263,8 +368,8 @@ void Combat::updatePlayerAnimation(float dt) {
 	}
 
 	if (animationTimer >= 3.0f) {
-		currentState = CombatState::EnemyTurn;
 		animationTimer = 0.f;
+		currentState = CombatState::ExecutingActions;
 	}
 
 }

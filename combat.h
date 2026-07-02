@@ -11,11 +11,30 @@
 
 enum class CombatState {
 	PlayerTurn,
+	SelectingEnemy,
+	ExecutingActions,
 	PlayerAnimation,
 	EnemyTurn,
 	EnemyAnimation,
 	Victory,
 	Defeat
+};
+
+enum class ActionType {
+	None,
+	Attack,
+	Skill,
+	Item,
+	Defend
+};
+
+struct QueuedAction {
+	ActionType type = ActionType::None;
+	
+	Character* actor = nullptr;
+	Character* target = nullptr;
+	Skill* skill = nullptr;
+	//Item* item;
 };
 
 class CombatMenu {
@@ -92,6 +111,9 @@ private:
 	bool inSkillMenu = false;
 	MessageLog& messageLog;
 	LevelSystem& levelSystem;
+	QueuedAction currentAction;
+	std::vector<QueuedAction> actionQueue;
+	//Item* pendingItem = nullptr;
 
 	float animationTimer = 0.f;
 	int activePlayerIndex = 0;
@@ -100,6 +122,9 @@ private:
 	std::vector<bool> enemyActed;
 	bool lastLeftPressed = false;
 	bool lastRightPressed = false;
+	bool lastUpPressed = false;
+	bool lastDownPressed = false;
+	bool lastEnterPressed = false;
 	sf::Font font;
 
 public:
@@ -112,7 +137,11 @@ public:
 
 private:
 	void handlePlayerTurn();
-	Enemy& targetEnemy();
+	void targetEnemy();
+	void performAttack(QueuedAction& action);
+	void performSkill(QueuedAction& action);
+	void executeAction(QueuedAction& action);
+	void executeNextAction();
 	void playerAttack(Player& player, Enemy& enemy);
 	void playerUseSkill(Skill* skill);
 	void handleEnemyTurn();
