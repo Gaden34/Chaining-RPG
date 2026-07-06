@@ -10,7 +10,6 @@
 
 class Player : public Character {
 private:
-	LevelSystem levelSystem;
 	int level = 1;
 	int experience = 0;
 	bool isMoving = false;
@@ -18,7 +17,7 @@ private:
 	std::vector<std::unique_ptr<Skill>> skills;
 
 public:
-	Player(std::string n, LevelSystem& l, std::string textureName);
+	Player(std::string n, std::string textureName);
 	Player(const Player&) = delete;
 	Player& operator=(const Player&) = delete;
 	Player(Player&&) = default;
@@ -27,8 +26,9 @@ public:
 	void move(float dt) override;
 	int getExp();
 	void addExp(int amount);
+	int expNeededForNextLevel(int level);
 	int getLevel();
-	void incrementLevel();
+	void levelUp();
 	bool getIsMoving();
 	Discipline& getDiscipline();
 	void setDiscipline(DisciplineID id);

@@ -30,19 +30,20 @@ public:
 	virtual void draw(sf::RenderWindow& window) = 0;
 	virtual void move(float dt) = 0;
 
-	std::string getName() const;
-	void setPosition(float x, float y);
-	int getHp() const;
+	std::string getName() const { return name; }
+	void setPosition(float x, float y) { sprite.setPosition(x, y); }
+	sf::FloatRect getGlobalBounds() const { return sprite.getGlobalBounds(); }
+	int getHp() const { return hp; }
 	void setHp(int x);
-	int getMp() const;
+	int getMp() const { return mp; }
 	void setMp(int x);
-	int getMaxHp() const;
-	int getMaxMp() const;
-	int getAttack() const;
-	int getMagAttack() const;
-	float getMoveSpeed() const;
+	int getMaxHp() const { return maxHp; }
+	int getMaxMp() const { return maxMp; }
+	int getAttack() const { return attack; }
+	int getMagAttack() const { return magAttack; }
+	float getMoveSpeed() const { return moveSpeed; }
 	void takeDamage(int amount);
-	bool isAlive() const;
+	bool isAlive() const { return alive; }
 
 	
 };

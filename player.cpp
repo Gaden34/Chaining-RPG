@@ -1,7 +1,7 @@
 #include "player.h"
 #include "skillDatabase.h"
 
-Player::Player(std::string n, LevelSystem& l, std::string textureName) : levelSystem(l) {
+Player::Player(std::string n, std::string textureName) {
 	name = n;
 	texture.loadFromFile("assets/" + textureName + ".png");
 	sprite.setTexture(texture);
@@ -52,17 +52,21 @@ int Player::getExp() {
 void Player::addExp(int amount) {
 	experience += amount;
 
-	while (experience >= levelSystem.expNeededForLevel(level)) {
-		experience -= levelSystem.expNeededForLevel(level);
-		incrementLevel();
+	while (experience >= expNeededForNextLevel(level)) {
+		experience -= expNeededForNextLevel(level);
+		levelUp();
 	}
+}
+
+int Player::expNeededForNextLevel(int level) {
+	return (level - 1) * 27 + 50;
 }
 
 int Player::getLevel() {
 	return level;
 }
 
-void Player::incrementLevel() {
+void Player::levelUp() {
 	level++;
 	unlockLevelSkills();
 }

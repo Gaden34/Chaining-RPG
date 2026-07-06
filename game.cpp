@@ -6,14 +6,14 @@
 
 
 
-Game::Game() : combat(party, messageLog, levelSystem), window(sf::VideoMode({ 800, 600 }), "Nameless RPG"), rng(std::random_device{}()) {
+Game::Game() : combat(party, messageLog), window(sf::VideoMode({ 800, 600 }), "Nameless RPG"), rng(std::random_device{}()) {
 	SkillDatabase::loadSkills("skills.json");
-	party.emplace_back("Gaden",levelSystem, "spiky");
-	party.emplace_back("Kari", levelSystem, "bluey");
+	party.emplace_back("Gaden", "spiky");
+	party.emplace_back("Kari", "bluey");
 	party[1].setDiscipline(DisciplineID::Combatant);
 	window.setFramerateLimit(60);
 
-	startCharacterCreation();
+	currentState = GameState::StartMenu;
 }
 
 void Game::draw() {
@@ -22,7 +22,7 @@ void Game::draw() {
 	switch (currentState) {
 
 	case GameState::StartMenu:
-		drawStartMenu();
+		startMenu.draw(window);
 		break;
 
 	case GameState::CharacterCreation:
@@ -41,8 +41,37 @@ void Game::draw() {
 	window.display();
 }
 
-void Game::drawStartMenu() {
-	
+StartMenu::StartMenu() {
+	if (!font.loadFromFile("assets/Roboto_Condensed-Black.ttf")) {
+		std::cerr << "Failed to load font!" << std::endl;
+	}
+	std::vector<std::string> options = { "Start Game", "Combat Test" };
+	for (int i = 0; i < options.size(); i++) {
+		sf::Text text(options[i], font, 20);
+		text.setPosition(350.f, 400.f + (i * 40));
+		text.setFillColor(sf::Color::Black);
+		optionTexts.push_back(text);
+	}
+
+	backgroundTexture.loadFromFile("assets/characterCreation.png");
+	background.setTexture(backgroundTexture);
+}
+
+void StartMenu::draw(sf::RenderWindow& window) {
+	window.draw(background);
+
+
+	for (int i = 0; i < optionTexts.size(); i++) {
+		if (i == selectedIndex) {
+			optionTexts[i].setFillColor(sf::Color::White);
+		}
+		else {
+			optionTexts[i].setFillColor(sf::Color::Black);
+		}
+		window.draw(optionTexts[i]);
+	}
+
+
 }
 
 void Game::drawCharacterCreation() {
@@ -67,6 +96,9 @@ void Game::drawExploring() {
 void Game::update(float dt) {
 	switch (currentState)
 	{
+	case GameState::StartMenu:
+		handleStartMenu();
+		break;
 
 	case GameState::CharacterCreation:
 		updateCharacterCreation(dt);
@@ -115,6 +147,28 @@ void Game::startClassSelection() {
 	messageLog.addMessage("Hello, " + party[0].getName() + ". Please choose a discipline: ", sf::Color::Black);
 
 	messageLog.addMessage("-- 1. Mage -- 2. Thief -- 3. Combatant --", sf::Color::Black);
+}
+
+void Game::handleStartMenu() {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !startMenu.getLastUpPressed()) {
+		startMenu.moveUp();
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !startMenu.getLastDownPressed()) {
+		startMenu.moveDown();
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && !startMenu.getLastEnterPressed()) {
+		int selectedIndex = startMenu.getSelectedIndex();
+		if (selectedIndex == 0) {
+			startCharacterCreation();
+		}
+		else if (selectedIndex == 1) {
+			combat.start(knight);
+			currentState = GameState::Combat;
+		}
+	}
+	startMenu.setLastUpPressed(sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
+	startMenu.setLastDownPressed(sf::Keyboard::isKeyPressed(sf::Keyboard::Down));
+	startMenu.setLastEnterPressed(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter));
 }
 
 void Game::handleClassSelection(sf::Event event) {

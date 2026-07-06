@@ -3,11 +3,14 @@
 #include <algorithm>
 
 
-Combat::Combat(std::vector<Player>& p, MessageLog& m, LevelSystem& l) : party(p), messageLog(m), levelSystem(l) {
+Combat::Combat(std::vector<Player>& p, MessageLog& m) : party(p), messageLog(m) {
 	currentState = CombatState::PlayerTurn;
 	backgroundTexture.loadFromFile("assets/battleBG.png");
 	background.setTexture(backgroundTexture);
 	font.loadFromFile("assets/Roboto_Condensed-Black.ttf");
+	pointerTexture.loadFromFile("assets/targetPointer.png");
+	pointerSprite.setTexture(pointerTexture);
+
 }
 
 void Combat::update(float dt) {
@@ -68,6 +71,10 @@ void Combat::draw(sf::RenderWindow& window) {
 			skillMenu.draw(window);
 		else
 			menu.draw(window);
+
+	}
+	if (currentState == CombatState::SelectingEnemy) {
+		drawTargetPointer(window);
 	}
 
 }
@@ -150,9 +157,9 @@ void Combat::handlePlayerTurn() {
 	}
 	else {
 		if (upPressed && !menu.getLastUpPressed())
-			menu.handleInput(sf::Keyboard::Up);
+			menu.moveUp();
 		if (downPressed && !menu.getLastDownPressed())
-			menu.handleInput(sf::Keyboard::Down);
+			menu.moveDown();
 		if (enterPressed && !menu.getLastEnterPressed()) {
 			CombatMenu::MenuOption selectedOption = menu.getSelectedOption();
 			switch (selectedOption) {
@@ -160,6 +167,7 @@ void Combat::handlePlayerTurn() {
 				currentAction = {};
 				currentAction.type = ActionType::Attack;
 				currentAction.actor = &party[activePlayerIndex];
+				menu.setLastEnterPressed(true);
 				currentState = CombatState::SelectingEnemy;
 				break;
 			case CombatMenu::MenuOption::Skill:
@@ -198,10 +206,19 @@ void Combat::targetEnemy() {
 		actionQueue.push_back(currentAction);
 		currentAction = {};
 		advanceActivePlayer();
+		menu.setLastEnterPressed(true);
 	}
 	lastUpPressed = upPressed;
 	lastDownPressed = downPressed;
 	lastEnterPressed = enterPressed;
+}
+
+void Combat::drawTargetPointer(sf::RenderWindow& window) {
+	sf::FloatRect bounds = enemies[activeEnemyIndex].getGlobalBounds();
+	float x = bounds.left + bounds.width / 2.f - pointerSprite.getGlobalBounds().width / 2.f;
+	float y = bounds.top - pointerSprite.getGlobalBounds().height - 4.f;
+	pointerSprite.setPosition(x, y);
+	window.draw(pointerSprite);
 }
 
 void Combat::performAttack(QueuedAction& action) {
@@ -397,7 +414,9 @@ void Combat::checkEnemyDeath(Enemy& enemy) {
 		enemy.setHp(0);
 
 		messageLog.addMessage(party[0].getName() + " defeated the " + enemy.getName() + " and gained " + std::to_string(enemy.getExpValue()) + " experience points!", sf::Color::Blue);
-		party[0].addExp(enemy.getExpValue());
+		for (auto& player : party) {
+			player.addExp(enemy.getExpValue());
+		}
 		if (party[0].getLevel() > level) {
 			messageLog.addMessage(party[0].getName() + " has reached level " + std::to_string(party[0].getLevel()) + "!", sf::Color::Yellow);
 		}
@@ -441,15 +460,6 @@ CombatMenu::CombatMenu() {
 	}
 }
 
-void CombatMenu::handleInput(sf::Keyboard::Key key) {
-	if (key == sf::Keyboard::Up) {
-		selectedIndex = (selectedIndex - 1 + (int)MenuOption::Count) % (int)MenuOption::Count;
-	}
-	else if (key == sf::Keyboard::Down) {
-		selectedIndex = (selectedIndex + 1) % (int)MenuOption::Count;
-	}
-}
-
 void CombatMenu::draw(sf::RenderWindow& window) {
 	for (int i = 0; i < optionTexts.size(); i++) {
 		if (i == selectedIndex) {
@@ -466,9 +476,6 @@ CombatMenu::MenuOption CombatMenu::getSelectedOption() {
 	return static_cast<MenuOption>(selectedIndex);
 }
 
-void CombatMenu::reset() {
-	selectedIndex = 0;
-}
 
 SkillMenu::SkillMenu() {
 	if (!font.loadFromFile("assets/Roboto_Condensed-Black.ttf")) {
@@ -524,6 +531,3 @@ int SkillMenu::getSelectedIndex() const {
 	return -1;
 }
 
-void SkillMenu::reset() {
-	selectedIndex = 0;
-}

@@ -7,6 +7,7 @@
 #include "enemy.h"
 #include "enemyData.h"
 #include "map.h"
+#include "menu.h"
 #include "combat.h"
 #include "messageLog.h"
 #include "levelSystem.h"
@@ -15,7 +16,7 @@
 #include "disciplines.h"
 
 enum class GameState {
-	StartMenu
+	StartMenu,
 	CharacterCreation,
 	Exploring,
 	Combat,
@@ -23,14 +24,25 @@ enum class GameState {
 	GameOver
 };
 
+class StartMenu : public Menu {
+private:
+	sf::Texture backgroundTexture;
+	sf::Sprite background;
+
+public:
+	StartMenu();
+	void draw(sf::RenderWindow& window);
+
+};
+
 
 class Game {
 private:
-	LevelSystem levelSystem;
 	std::vector<Player> party;
 	Combat combat;
 	Map map;
 	MessageLog messageLog;
+	StartMenu startMenu;
 	sf::RenderWindow window;
 	sf::Clock clock;
 	GameState currentState = GameState::CharacterCreation;
@@ -47,6 +59,7 @@ public:
 	void drawCharacterCreation();
 	void drawExploring();
 	void drawCombat();
+	void handleStartMenu();
 	void handleEvents();
 	void handleTextInput(sf::Event event);
 	void handleCreationInput(sf::Event event);
