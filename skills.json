@@ -6,7 +6,7 @@
         "description": "Strike the enemy twice in quick succession. - Targets: 1 - Hits: 2",
         "mp_cost": 0,
         "type": "Attack",
-        "base_damage": 15,
+        "base_damage": 10,
         "hits": [ 1, 2 ],
         "chain_window": 0.2,
         "chain_damage_pct": 25.0
@@ -21,12 +21,24 @@
           "description": "Summon a bolt from the sky to zap the enemy. - Targets: 1 - Hits: 1.",
           "mp_cost": 8,
           "type": "Magic",
-          "base_damage": 22,
+          "base_damage": 24,
           "hits": [ 1 ],
           "chain_window": 0.2,
           "chain_damage_pct": 25.0
         }
-      ]
+      ],
+      "5": [
+        {
+        "name": "Flame Blitz",
+        "description": "Blast the enemy with a series of fire balls. - Targets: 1 - Hits: 5",
+        "mp_cost": 12,
+        "type": "Magic",
+        "base_damage": 5,
+        "hits":  [ 1, 2, 3, 4, 5 ],
+        "chain_window": 0.2,
+        "chain_damage_pct": 25.0
+        }
+      ] 
     },
 
   "Thief": {
