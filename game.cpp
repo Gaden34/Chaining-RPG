@@ -206,7 +206,6 @@ void Game::handleClassSelection(sf::Event event) {
 }
 
 
-
 void Game::handleEvents() {
 		sf::Event event;
 		while (window.pollEvent(event)) {

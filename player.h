@@ -29,6 +29,7 @@ public:
 	int expNeededForNextLevel(int level);
 	int getLevel();
 	void levelUp();
+	void setLevel(int newLevel) { level = newLevel; }
 	bool getIsMoving();
 	Discipline& getDiscipline();
 	void setDiscipline(DisciplineID id);
