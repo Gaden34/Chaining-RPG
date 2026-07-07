@@ -20,6 +20,7 @@ enum class GameState {
 	CharacterCreation,
 	Exploring,
 	Combat,
+	CombatTest,
 	Menu,
 	GameOver
 };
@@ -69,6 +70,7 @@ public:
 	void updateCharacterCreation(float dt);
 	void startCharacterCreation();
 	void startClassSelection();
+	void startCombatTest();
 	void handleNameSelection();
 	void handleClassSelection(sf::Event event);
 	void startExploring();

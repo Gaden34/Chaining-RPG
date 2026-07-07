@@ -36,6 +36,10 @@ void Game::draw() {
 	case GameState::Combat:
 		combat.draw(window);
 		break;
+
+	case GameState::CombatTest:
+		combat.draw(window);
+		break;
 	}
 
 	window.display();
@@ -147,6 +151,11 @@ void Game::startClassSelection() {
 	messageLog.addMessage("Hello, " + party[0].getName() + ". Please choose a discipline: ", sf::Color::Black);
 
 	messageLog.addMessage("-- 1. Mage -- 2. Thief -- 3. Combatant --", sf::Color::Black);
+}
+
+void Game::startCombatTest() {
+	messageLog.addMessage("1. Mage, 2. Thief, 3. Combatant", sf::Color::Black);
+	 
 }
 
 void Game::handleStartMenu() {
