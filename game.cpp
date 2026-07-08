@@ -220,6 +220,10 @@ void Game::handleEvents() {
 					handleCreationInput(event);
 				}
 			}
+
+			if(currentState = GameState::CombatTest) {
+				combatTestSetup.handleEvent(event);
+			}
 		}
 
 }

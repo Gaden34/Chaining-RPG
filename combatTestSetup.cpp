@@ -36,6 +36,8 @@ void CombatTestSetup::handleEvent(const sf::Event& event)
 
 void CombatTestSetup::handleDisciplineSelection(const sf::Event& event)
 {
+	messageLog.setCurrentMessage(party[currentCharacter].getName() + ": 1. Mage - 2. Thief - 3. Combatant", sf::Color::Black);
+
 	if (event.type == sf::Event::KeyPressed)
 	{
 		switch (event.key.code)
@@ -55,7 +57,11 @@ void CombatTestSetup::handleDisciplineSelection(const sf::Event& event)
 		default:
 			break;
 		}
+		messageLog.addMessage(party[currentCharacter].getName() + "'s discipline: " + party[currentCharacter].getDisicpline().getName(), sf::Color::Black);
+		messageLog.addMessage("Level: ", sf::Color::Black);
+		currentState = CombatSetupState::ChoosingLevel;
 	}
+
 }
 
 void CombatTestSetup::handleLevelInput(const sf::Event& event)
@@ -75,8 +81,14 @@ void CombatTestSetup::handleLevelInput(const sf::Event& event)
         {
             int finalLevel = firstDigit * 10 + currentDigit;
             party[currentCharacter].setLevel(finalLevel);
-
+			messageLog.addMessage(party[currentCharacter].getName() + " is level " + std::to_string(party[currentCharacter].getLevel()), sf::Color::Black);
             digitCounter = 0;
+			currentCharacter++;
+
+			if (currentCharacter < party.size()) {
+				currentState = CombatSetupState::ChoosingDiscipline; 
+				messageLog.addMessage(party[currentCharacter].getName() + ": 1. Mage - 2. Thief - 3. Combatant", sf::Color::Black);
+			} else currentState = CombatSetupState::Finished;
         }
     }
 }
