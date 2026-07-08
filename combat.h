@@ -70,18 +70,6 @@ public:
 	int getSelectedIndex() const;
 };
 
-class CombatTestMenu : public Menu {
-private:
-int digitCounter = 0;
-int firstDigit = 0;
-
-
-public:
-CombatTestMenu();
-void draw(sf::RenderWindow& window);
-void handleLeveLInput(sf::Event event, Player& player);
-};
-
 class Combat {
 private:
 	sf::Texture backgroundTexture;

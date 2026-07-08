@@ -57,6 +57,9 @@
     <ClCompile Include="menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="combatTestSetup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="character.h">
@@ -102,6 +105,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="combatTestSetup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

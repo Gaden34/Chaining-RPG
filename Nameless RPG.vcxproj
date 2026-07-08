@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="character.cpp" />
+    <ClCompile Include="combatTestSetup.cpp" />
     <ClCompile Include="discipline.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemyData.cpp" />
@@ -37,6 +38,7 @@
   <ItemGroup>
     <ClInclude Include="character.h" />
     <ClInclude Include="combat.h" />
+    <ClInclude Include="combatTestSetup.h" />
     <ClInclude Include="discipline.h" />
     <ClInclude Include="disciplines.h" />
     <ClInclude Include="enemy.h" />

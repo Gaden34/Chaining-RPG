@@ -14,6 +14,7 @@
 #include "enums.h"
 #include "discipline.h"
 #include "disciplines.h"
+#include "combatTestSetup.h"
 
 enum class GameState {
 	StartMenu,
@@ -44,6 +45,7 @@ private:
 	Map map;
 	MessageLog messageLog;
 	StartMenu startMenu;
+	CombatTestSetup combatTestSetup;
 	sf::RenderWindow window;
 	sf::Clock clock;
 	GameState currentState = GameState::CharacterCreation;

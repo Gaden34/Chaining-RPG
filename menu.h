@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 #include <SFML/Graphics.hpp>
 
 class Menu {
@@ -19,6 +20,11 @@ protected:
 
 
 public:
+	Menu() {
+		if (!font.loadFromFile("assets/Roboto_Condensed-Black.ttf")) {
+			std::cerr << "Failed to load font!" << std::endl;
+		}
+	}
 	virtual ~Menu() = default;
 	void reset() {
 		selectedIndex = 0;

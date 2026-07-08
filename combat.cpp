@@ -531,22 +531,4 @@ int SkillMenu::getSelectedIndex() const {
 	return -1;
 }
 
-CombatTestMenu::CombatTestMenu() {
-	
-}
-
-void CombatTestMenu::handleLevelInput(sf::Event event, Player& player) {
-	if (event.type == sf::Event::KeyPressed && event.key.code >= sf::Keyboard::Num0 && event.key.code <= sf::Keyboard::Num9) {
-		int currentDigit = event.key.code - sf::Keyboard::Num0;
-
-		if (this->digitCounter == 0) {
-			this->firstDigit = currentDigit;
-			digitCounter++;
-		} else if (this->digitCounter == 1) {
-			int finalLevel = (firstDigit * 10) + currentDigit;
-			player.setLevel(finalLevel);
-			this->digitCounter = 0;
-		}
-	}
-}
 
