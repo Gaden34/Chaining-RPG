@@ -80,7 +80,7 @@ void CombatTestSetup::handleLevelInput(const sf::Event& event)
         else
         {
             int finalLevel = firstDigit * 10 + currentDigit;
-            party[currentCharacter].setLevel(finalLevel);
+            party[currentCharacter].setLevelFromTest(finalLevel);
 			messageLog.addMessage(party[currentCharacter].getName() + " is level " + std::to_string(party[currentCharacter].getLevel()), sf::Color::Black);
             digitCounter = 0;
 			currentCharacter++;

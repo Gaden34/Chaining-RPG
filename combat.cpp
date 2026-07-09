@@ -410,15 +410,11 @@ void Combat::updateEnemyAnimation(float dt) {
 
 void Combat::checkEnemyDeath(Enemy& enemy) {
 	if (enemy.getHp() <= 0) {
-		int level = party[0].getLevel();
 		enemy.setHp(0);
 
-		messageLog.addMessage(party[0].getName() + " defeated the " + enemy.getName() + " and gained " + std::to_string(enemy.getExpValue()) + " experience points!", sf::Color::Blue);
+		messageLog.addMessage(party[activePlayerIndex].getName() + " defeated the " + enemy.getName() + " and gained " + std::to_string(enemy.getExpValue()) + " experience points!", sf::Color::Blue);
 		for (auto& player : party) {
 			player.addExp(enemy.getExpValue());
-		}
-		if (party[0].getLevel() > level) {
-			messageLog.addMessage(party[0].getName() + " has reached level " + std::to_string(party[0].getLevel()) + "!", sf::Color::Yellow);
 		}
 
 

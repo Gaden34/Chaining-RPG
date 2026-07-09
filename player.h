@@ -7,17 +7,19 @@
 #include "discipline.h"
 #include "disciplines.h"
 #include "skill.h"
+#include "messageLog.h"
 
 class Player : public Character {
 private:
 	int level = 1;
 	int experience = 0;
 	bool isMoving = false;
+	MessageLog& messageLog;
 	DisciplineID discipline;
 	std::vector<std::unique_ptr<Skill>> skills;
 
 public:
-	Player(std::string n, std::string textureName);
+	Player(MessageLog& m, std::string n, std::string textureName);
 	Player(const Player&) = delete;
 	Player& operator=(const Player&) = delete;
 	Player(Player&&) = default;

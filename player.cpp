@@ -1,7 +1,7 @@
 #include "player.h"
 #include "skillDatabase.h"
 
-Player::Player(std::string n, std::string textureName) {
+Player::Player(MessageLog& m, std::string n, std::string textureName) : messageLog(m) {
 	name = n;
 	texture.loadFromFile("assets/" + textureName + ".png");
 	sprite.setTexture(texture);
@@ -69,6 +69,7 @@ int Player::getLevel() {
 void Player::levelUp() {
 	level++;
 	unlockLevelSkills();
+	messageLog.addMessage(name + " has reached level " + std::to_string(level) + "!", sf::Color::Black);
 }
 
 void Player::setLevelFromTest(int targetLevel) {

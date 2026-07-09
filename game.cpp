@@ -8,8 +8,8 @@
 
 Game::Game() : combat(party, messageLog), combatTestSetup(party, messageLog), window(sf::VideoMode({ 800, 600 }), "Nameless RPG"), rng(std::random_device{}()) {
 	SkillDatabase::loadSkills("skills.json");
-	party.emplace_back("Gaden", "spiky");
-	party.emplace_back("Kari", "bluey");
+	party.emplace_back(messageLog, "Gaden", "spiky");
+	party.emplace_back(messageLog, "Kari", "bluey");
 	party[1].setDiscipline(DisciplineID::Combatant);
 	window.setFramerateLimit(60);
 
