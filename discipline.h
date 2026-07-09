@@ -9,6 +9,12 @@ enum class DisciplineID {
 	Combatant
 };
 
+struct StatGrowth {
+	int healthGrowth;
+	int mpGrowth;
+	int attackGrowth;
+	int magAttackGrowth;
+};
 
 class Discipline
 {
@@ -19,14 +25,18 @@ private:
 	int baseAttack;
 	int baseMagAttack;
 
+	StatGrowth statGrowth;
+
 
 	//std::vector<Skill> startingSkills;
 
 public: 
-	Discipline(std::string n, int health, int attack, int magAttack);
+	Discipline(std::string n, int health, int mp, int attack, int magAttack);
 	std::string getName();
 	int getBaseHealth() { return baseHealth; }
+	int getBaseMp() { return baseMp; }
 	int getBaseAttack() { return baseAttack; }
 	int getBaseMagAttack() { return baseMagAttack; }
+	StatGrowth getStatGrowth() { return statGrowth; }
 };
 

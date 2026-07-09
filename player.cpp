@@ -69,6 +69,10 @@ int Player::getLevel() {
 void Player::levelUp() {
 	level++;
 	unlockLevelSkills();
+	maxHp += getDiscipline().getStatGrowth().healthGrowth;
+	maxMp += getDiscipline().getStatGrowth().mpGrowth;
+	attack += getDiscipline().getStatGrowth().attackGrowth;
+	magAttack += getDiscipline().getStatGrowth().magAttackGrowth;
 	messageLog.addMessage(name + " has reached level " + std::to_string(level) + "!", sf::Color::Black);
 }
 
