@@ -14,8 +14,10 @@ class Discipline
 private:
 	std::string name;
 	int baseHealth;
+	int baseMp;
 	int baseAttack;
 	int baseMagAttack;
+
 
 	//std::vector<Skill> startingSkills;
 
