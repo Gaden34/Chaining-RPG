@@ -9,6 +9,7 @@ enum class DisciplineID {
 	Combatant
 };
 
+
 class Discipline
 {
 private:
