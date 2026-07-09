@@ -30,6 +30,7 @@ public:
 	void handleDisciplineSelection(const sf::Event& event);
 	void handleLevelInput(const sf::Event& event);
 	bool isFinished() const { return currentState == CombatSetupState::Finished; }
+	void reset() { currentState == CombatSetupState:: ChoosingDiscipline }
 	
 };
 

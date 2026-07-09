@@ -30,6 +30,7 @@ public:
 	int getLevel();
 	void levelUp();
 	void setLevel(int newLevel) { level = newLevel; }
+	void setLevelFromTest(int targetLevel);
 	bool getIsMoving();
 	Discipline& getDiscipline();
 	void setDiscipline(DisciplineID id);

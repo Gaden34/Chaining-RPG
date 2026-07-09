@@ -125,6 +125,7 @@ void Game::update(float dt) {
 		if (combatTestSetup.isFinished()) {
 			combat.start(knight);
 			currentState = GameState::Combat;
+			combatTestSetup.reset();
 		}
 		break;
 

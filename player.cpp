@@ -71,6 +71,12 @@ void Player::levelUp() {
 	unlockLevelSkills();
 }
 
+void Player::setLevelFromTest(int targetLevel) {
+	for (int i = 1; i < targetLevel; ++i) {
+		levelUp();
+	}
+}
+
 bool Player::getIsMoving() {
 	return isMoving;
 }
