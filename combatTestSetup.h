@@ -29,7 +29,7 @@ public:
 	void handleEvent(const sf::Event& event);
 	void handleDisciplineSelection(const sf::Event& event);
 	void handleLevelInput(const sf::Event& event);
-	void finishSetup();
+	bool isFinished() const { return currentState == CombatSetupState::Finished; }
 	
 };
 

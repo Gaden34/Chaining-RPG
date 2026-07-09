@@ -57,7 +57,7 @@ void CombatTestSetup::handleDisciplineSelection(const sf::Event& event)
 		default:
 			break;
 		}
-		messageLog.addMessage(party[currentCharacter].getName() + "'s discipline: " + party[currentCharacter].getDisicpline().getName(), sf::Color::Black);
+		messageLog.addMessage(party[currentCharacter].getName() + "'s discipline: " + party[currentCharacter].getDiscipline().getName(), sf::Color::Black);
 		messageLog.addMessage("Level: ", sf::Color::Black);
 		currentState = CombatSetupState::ChoosingLevel;
 	}

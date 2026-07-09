@@ -6,7 +6,7 @@
 
 
 
-Game::Game() : combat(party, messageLog), window(sf::VideoMode({ 800, 600 }), "Nameless RPG"), rng(std::random_device{}()) {
+Game::Game() : combat(party, messageLog), combatTestSetup(party, messageLog), window(sf::VideoMode({ 800, 600 }), "Nameless RPG"), rng(std::random_device{}()) {
 	SkillDatabase::loadSkills("skills.json");
 	party.emplace_back("Gaden", "spiky");
 	party.emplace_back("Kari", "bluey");
@@ -120,6 +120,14 @@ void Game::update(float dt) {
 		}
 		break;
 
+	case GameState::CombatTest:
+		combatTestSetup.update();
+		if (combatTestSetup.isFinished()) {
+			combat.start(knight);
+			currentState = GameState::Combat;
+		}
+		break;
+
 	}
 }
 
@@ -171,8 +179,7 @@ void Game::handleStartMenu() {
 			startCharacterCreation();
 		}
 		else if (selectedIndex == 1) {
-			combat.start(knight);
-			currentState = GameState::Combat;
+			currentState = GameState::CombatTest;
 		}
 	}
 	startMenu.setLastUpPressed(sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
@@ -221,7 +228,7 @@ void Game::handleEvents() {
 				}
 			}
 
-			if(currentState = GameState::CombatTest) {
+			if (currentState == GameState::CombatTest) {
 				combatTestSetup.handleEvent(event);
 			}
 		}

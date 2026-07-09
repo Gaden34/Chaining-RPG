@@ -11,13 +11,7 @@
         "chain_window": 0.2,
         "chain_damage_pct": 25.0
       }
-    ],
-    "4:" [
-      {
-        "name": "Shoulder Bash",
-      }
     ]
-
   },
 
     "Mage": {
