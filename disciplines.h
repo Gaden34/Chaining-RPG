@@ -8,20 +8,23 @@ namespace Disciplines {
 		"Mage",
 		27,
 		10,
-		15
+		15,
+		20
 	};
 
 	inline Discipline Thief{
 		"Thief",
 		29,
 		12,
-		8
+		8,
+		10
 	};
 
 	inline Discipline Combatant{
 		"Combatant",
 		32,
 		15,
-		5
+		5,
+		8
 	};
 }
