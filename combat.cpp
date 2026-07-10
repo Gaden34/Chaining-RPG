@@ -417,6 +417,30 @@ void Combat::updateEnemyAnimation(float dt) {
 
 }
 
+std::vector<EnemySpawn> Combat::makeRandomEncounter() {
+	std::vector<EnemySpawn> encounter;
+
+	int numEnemies = randomRange(1, 3);
+	for (int i = 0; i < numEnemies; ++i) {
+		int enemyType = randomRange(0, 2);
+		switch (enemyType) {
+		case 0:
+			encounter.push_back({ &EnemyDatabase::getEnemyData("Goblin"), 1 });
+			break;
+		case 1:
+			encounter.push_back({ &EnemyDatabase::getEnemyData("Orc"), 1 });
+			break;
+		case 2:
+			encounter.push_back({ &EnemyDatabase::getEnemyData("Troll"), 1 });
+			break;
+		default:
+			break;
+		}
+	}
+
+	return encounter;
+}
+
 void Combat::checkEnemyDeath(Enemy& enemy) {
 	if (enemy.getHp() <= 0) {
 		enemy.setHp(0);

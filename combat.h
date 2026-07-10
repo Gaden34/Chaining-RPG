@@ -129,6 +129,7 @@ private:
 	void handleEnemyTurn();
 	void updatePlayerAnimation(float dt);
 	void updateEnemyAnimation(float dt);
+	std::vector<EnemySpawn> makeRandomEncounter();
 	void checkEnemyDeath(Enemy& enemy);
 	void checkCombatEnd();
 	void advanceActivePlayer();
