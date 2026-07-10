@@ -2,6 +2,7 @@
 #include <vector>
 #include <random>
 #include <string>
+#include <initializer_list>
 #include <SFML/Graphics.hpp>
 #include "player.h"
 #include "enemy.h"
@@ -36,6 +37,11 @@ struct QueuedAction {
 	Character* target = nullptr;
 	Skill* skill = nullptr;
 	//Item* item;
+};
+
+struct EnemySpawn {
+	const EnemyData* data = nullptr;
+	int count = 1;
 };
 
 class CombatMenu : public Menu {
@@ -106,7 +112,8 @@ public:
 	Combat(std::vector<Player>& p, MessageLog& m, std::mt19937& rng);
 	void update(float dt);
 	void draw(sf::RenderWindow& window);
-	void start(EnemyData& data);
+	void start(std::initializer_list<EnemySpawn> spawns);
+	void start(const EnemyData& data) { start({ EnemySpawn{ &data, 1 } }); }
 	CombatState getState();
 
 private:
@@ -118,7 +125,6 @@ private:
 	void performSkill(QueuedAction& action);
 	void executeAction(QueuedAction& action);
 	void executeNextAction();
-	void playerAttack(Player& player, Enemy& enemy);
 	void playerUseSkill(Skill* skill);
 	void handleEnemyTurn();
 	void updatePlayerAnimation(float dt);

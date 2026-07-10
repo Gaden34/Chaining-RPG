@@ -79,14 +79,28 @@ void Combat::draw(sf::RenderWindow& window) {
 
 }
 
-void Combat::start(EnemyData& data) {
+void Combat::start(std::initializer_list<EnemySpawn> spawns) {
 	currentState = CombatState::PlayerTurn;
 	activePlayerIndex = 0;
 	activeEnemyIndex = 0;
 	playerActed.assign(party.size(), false);
+	enemyActed.clear();
+	actionQueue.clear();
+	currentAction = {};
 	menu.reset();
 	inSkillMenu = false;
-	enemies.emplace_back(data);
+	enemies.clear();
+
+	for (const EnemySpawn& spawn : spawns) {
+		if spawn.data == nullptr || spawn.count <= 0) {
+			continue; // Skip invalid spawns
+		}
+		for (int i = 0; i < spawn.count; ++i) {
+			enemies.emplace_back(*spawn.data);
+		}
+	}
+
+	if (enemies.empty()) return;
 
 	party[0].setPosition(200.f, 400.f);
 	party[1].setPosition(200.f, 450.f);
@@ -94,6 +108,8 @@ void Combat::start(EnemyData& data) {
 	for (int i = 0; i < enemies.size(); i++) {
 		enemies[i].setPosition(600.f, 350.f + i * 50);
 	}
+
+	enemyActed.assign(enemies.size(), false);
 
 }
 
@@ -248,9 +264,9 @@ void Combat::performSkill(QueuedAction& action) {
 	player->setMp(player->getMp() - skill->getMpCost());
 	switch (skill->getType()) {
 	case SkillType::Attack: {
-		int damage = static_cast<int>(skill->getDamage());
 		int totalDamage = 0;
 		for (auto& hit : skill->getHits()) {
+		int damage = randomRange((skill->getDamage() * 90) / 100, (skill->getDamage() * 110) / 100);
 		totalDamage += static_cast<int>(skill->getDamage());
 		enemy->takeDamage(damage);
 		}
@@ -309,22 +325,6 @@ void Combat::executeNextAction() {
 	}
 
 	currentState = CombatState::PlayerAnimation;
-}
-
-void Combat::playerAttack(Player& player, Enemy& enemy) {
-	
-	int damage = player.getAttack();
-
-	enemy.takeDamage(damage);
-	chain.registerHit();
-	std::cout << "Chain count: " << chain.getChainCount() << std::endl;
-	messageLog.addMessage(player.getName() + " hits the " + enemy.getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
-
-	checkEnemyDeath(enemy);
-
-	if (currentState == CombatState::PlayerTurn) {
-		advanceActivePlayer();
-	}
 }
 
 void Combat::playerUseSkill(Skill* skill) {
