@@ -96,6 +96,8 @@ void Player::setDiscipline(DisciplineID id) {
 
 	maxHp = d.getBaseHealth();
 	hp = maxHp;
+	maxMp = d.getBaseMp();
+	mp = maxMp;
 	attack = d.getBaseAttack();
 	magAttack = d.getBaseMagAttack();
 	

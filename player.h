@@ -3,7 +3,6 @@
 #include <vector>
 #include <memory>
 #include "character.h"
-#include "levelSystem.h"
 #include "discipline.h"
 #include "disciplines.h"
 #include "skill.h"

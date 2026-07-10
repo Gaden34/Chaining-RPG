@@ -10,7 +10,6 @@
 #include "menu.h"
 #include "combat.h"
 #include "messageLog.h"
-#include "levelSystem.h"
 #include "enums.h"
 #include "discipline.h"
 #include "disciplines.h"

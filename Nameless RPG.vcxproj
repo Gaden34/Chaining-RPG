@@ -19,13 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="chainSystem.cpp" />
     <ClCompile Include="character.cpp" />
     <ClCompile Include="combatTestSetup.cpp" />
     <ClCompile Include="discipline.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemyData.cpp" />
     <ClCompile Include="game.cpp" />
-    <ClCompile Include="levelSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map.cpp" />
     <ClCompile Include="menu.cpp" />
@@ -36,6 +36,7 @@
     <ClCompile Include="skillDatabase.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="chainSystem.h" />
     <ClInclude Include="character.h" />
     <ClInclude Include="combat.h" />
     <ClInclude Include="combatTestSetup.h" />
@@ -45,7 +46,6 @@
     <ClInclude Include="enemyData.h" />
     <ClInclude Include="enums.h" />
     <ClInclude Include="game.h" />
-    <ClInclude Include="levelSystem.h" />
     <ClInclude Include="map.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="messageLog.h" />

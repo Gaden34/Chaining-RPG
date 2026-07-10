@@ -10,9 +10,9 @@ namespace Disciplines {
 		20,
 		10,
 		15,
-		{ 3, 2, 1, 2}
-		
+		{ 3, 2, 1, 2 }
 	};
+
 
 	inline Discipline Thief{
 		"Thief",
@@ -31,4 +31,5 @@ namespace Disciplines {
 		5,
 		{ 5, 1, 3, 1 }
 	};
+
 }

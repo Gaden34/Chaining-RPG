@@ -42,9 +42,6 @@
     <ClCompile Include="messageLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="levelSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="discipline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -58,6 +55,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="combatTestSetup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="chainSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,9 +86,6 @@
     <ClInclude Include="messageLog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="levelSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="enums.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -108,6 +105,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="combatTestSetup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="chainSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

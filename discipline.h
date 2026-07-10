@@ -31,7 +31,7 @@ private:
 	//std::vector<Skill> startingSkills;
 
 public: 
-	Discipline(std::string n, int health, int mp, int attack, int magAttack);
+	Discipline(std::string n, int health, int mp, int attack, int magAttack, StatGrowth growth);
 	std::string getName();
 	int getBaseHealth() { return baseHealth; }
 	int getBaseMp() { return baseMp; }

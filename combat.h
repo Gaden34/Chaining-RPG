@@ -7,8 +7,8 @@
 #include "enemy.h"
 #include "enemyData.h"
 #include "messageLog.h"
-#include "levelSystem.h"
 #include "menu.h"
+#include "chainSystem.h"
 
 enum class CombatState {
 	PlayerTurn,
@@ -82,6 +82,7 @@ private:
 	CombatMenu menu;
 	SkillMenu skillMenu;
 	bool inSkillMenu = false;
+	ChainSystem chain;
 	MessageLog& messageLog;
 	QueuedAction currentAction;
 	std::vector<QueuedAction> actionQueue;

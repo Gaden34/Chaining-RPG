@@ -226,6 +226,8 @@ void Combat::performAttack(QueuedAction& action) {
 	Enemy* enemy = static_cast<Enemy*>(action.target);
 	int damage = player->getAttack();
 	enemy->takeDamage(damage);
+	chain.registerHit();
+	std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 	messageLog.addMessage(player->getName() + " hits the " + enemy->getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
 	checkEnemyDeath(*enemy);
 }
@@ -309,6 +311,8 @@ void Combat::playerAttack(Player& player, Enemy& enemy) {
 	int damage = player.getAttack();
 
 	enemy.takeDamage(damage);
+	chain.registerHit();
+	std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 	messageLog.addMessage(player.getName() + " hits the " + enemy.getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
 
 	checkEnemyDeath(enemy);
