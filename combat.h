@@ -79,6 +79,7 @@ private:
 	CombatState currentState;
 	std::vector<Player>& party;
 	std::vector<Enemy> enemies;
+	std::mt19937& rng;
 	CombatMenu menu;
 	SkillMenu skillMenu;
 	bool inSkillMenu = false;
@@ -102,7 +103,7 @@ private:
 
 public:
 
-	Combat(std::vector<Player>& p, MessageLog& m);
+	Combat(std::vector<Player>& p, MessageLog& m, std::mt19937& rng);
 	void update(float dt);
 	void draw(sf::RenderWindow& window);
 	void start(EnemyData& data);
@@ -112,6 +113,7 @@ private:
 	void handlePlayerTurn();
 	void targetEnemy();
 	void drawTargetPointer(sf::RenderWindow& window);
+	int randomRange(int min, int max);
 	void performAttack(QueuedAction& action);
 	void performSkill(QueuedAction& action);
 	void executeAction(QueuedAction& action);

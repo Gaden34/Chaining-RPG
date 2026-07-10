@@ -3,7 +3,7 @@
 #include <algorithm>
 
 
-Combat::Combat(std::vector<Player>& p, MessageLog& m) : party(p), messageLog(m) {
+Combat::Combat(std::vector<Player>& p, MessageLog& m, std::mt19937& rng) : party(p), messageLog(m), rng(rng) {
 	currentState = CombatState::PlayerTurn;
 	backgroundTexture.loadFromFile("assets/battleBG.png");
 	background.setTexture(backgroundTexture);
@@ -221,10 +221,15 @@ void Combat::drawTargetPointer(sf::RenderWindow& window) {
 	window.draw(pointerSprite);
 }
 
+int Combat::randomRange(int min, int max) {
+	std::uniform_int_distribution<int> dist(min, max);
+	return dist(rng);
+}
+
 void Combat::performAttack(QueuedAction& action) {
 	Player* player = static_cast<Player*>(action.actor);
 	Enemy* enemy = static_cast<Enemy*>(action.target);
-	int damage = player->getAttack();
+	int damage = randomRange((player->getAttack() * 90) / 100, (player->getAttack() * 110) / 100);
 	enemy->takeDamage(damage);
 	chain.registerHit();
 	std::cout << "Chain count: " << chain.getChainCount() << std::endl;
