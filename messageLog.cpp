@@ -7,11 +7,11 @@ MessageLog::MessageLog()
 	text.setFont(font);
 	text.setCharacterSize(12);
 	text.setFillColor(sf::Color::White);
-	text.setPosition(20.f, 500.f);
+	text.setPosition(16.f, 300.f);
 
 	texture.loadFromFile("assets/messageLog.png");
 	sprite.setTexture(texture);
-	sprite.setPosition(18.f, 498.f);
+	sprite.setPosition(14.f, 299.f);
 }
 
 void MessageLog::addMessage(const std::string& message, const sf::Color& color) {
@@ -34,17 +34,17 @@ void MessageLog::setCurrentMessage(const std::string& message, const sf::Color& 
 }
 
 
-void MessageLog::draw(sf::RenderWindow& window) {
-	float y = 500.f;
+void MessageLog::draw(sf::RenderTarget& target) {
+	float y = 300.f;
 
-	window.draw(sprite);
+	target.draw(sprite);
 
 	for (auto& message : messages) {
 		text.setString(message.text);
-		text.setPosition(20.f, y);
+		text.setPosition(16.f, y);
 		text.setFillColor(message.color);
 
-		window.draw(text);
+		target.draw(text);
 
 		y += 15.f;
 	}

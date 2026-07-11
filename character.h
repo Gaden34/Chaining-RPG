@@ -27,7 +27,7 @@ public:
 	Character(Character&&);
 	Character& operator=(Character&&);
 	virtual void update(float dt) = 0;
-	virtual void draw(sf::RenderWindow& window) = 0;
+	virtual void draw(sf::RenderTarget& target) = 0;
 	virtual void move(float dt) = 0;
 
 	std::string getName() const { return name; }

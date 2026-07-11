@@ -10,3 +10,14 @@ EnemyData knight{
 	100.f,
 	"assets/enemyknight.png"
 };
+
+EnemyData bat{
+	"Bat",
+	18,
+	6,
+	6,
+	2,
+	18,
+	150.f,
+	"assets/batSprite.png"
+};

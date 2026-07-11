@@ -9,7 +9,7 @@ private:
 
 public:
 	Map();
-	void draw(sf::RenderWindow& window);
+	void draw(sf::RenderTarget& target);
 	void setTexture(std::string t);
 	
 

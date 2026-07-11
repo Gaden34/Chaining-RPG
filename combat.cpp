@@ -47,39 +47,40 @@ void Combat::update(float dt) {
 
 }
 
-void Combat::draw(sf::RenderWindow& window) {
+void Combat::draw(sf::RenderTarget& target) {
 
-	window.draw(background);
+	target.draw(background);
 
 	for (auto& player : party) {
-		player.draw(window);
+		player.draw(target);
 	}
 	for (auto& enemy : enemies) {
-		enemy.draw(window);
+		enemy.draw(target);
 	}
 
-	messageLog.draw(window);
+	messageLog.draw(target);
 
 	if (currentState == CombatState::PlayerTurn) {
 		if (!party.empty()) {
 			sf::Text nameLabel(party[activePlayerIndex].getName(), font, 12);
-			nameLabel.setPosition(400.f, 480.f);
+			nameLabel.setPosition(320.f, 288.f);
 			nameLabel.setFillColor(sf::Color::White);
-			window.draw(nameLabel);
+			target.draw(nameLabel);
 		}
 		if (inSkillMenu)
-			skillMenu.draw(window);
+			skillMenu.draw(target);
 		else
-			menu.draw(window);
+			menu.draw(target);
 
 	}
 	if (currentState == CombatState::SelectingEnemy) {
-		drawTargetPointer(window);
+		drawTargetPointer(target);
 	}
 
 }
 
-void Combat::start(std::initializer_list<EnemySpawn> spawns) {
+void Combat::start() {
+	auto encounter = makeRandomEncounter();
 	currentState = CombatState::PlayerTurn;
 	activePlayerIndex = 0;
 	activeEnemyIndex = 0;
@@ -91,8 +92,8 @@ void Combat::start(std::initializer_list<EnemySpawn> spawns) {
 	inSkillMenu = false;
 	enemies.clear();
 
-	for (const EnemySpawn& spawn : spawns) {
-		if spawn.data == nullptr || spawn.count <= 0) {
+	for (const EnemySpawn& spawn : encounter) {
+		if (spawn.data == nullptr || spawn.count <= 0) {
 			continue; // Skip invalid spawns
 		}
 		for (int i = 0; i < spawn.count; ++i) {
@@ -102,11 +103,11 @@ void Combat::start(std::initializer_list<EnemySpawn> spawns) {
 
 	if (enemies.empty()) return;
 
-	party[0].setPosition(200.f, 400.f);
-	party[1].setPosition(200.f, 450.f);
+	party[0].setPosition(160.f, 240.f);
+	party[1].setPosition(160.f, 270.f);
 
 	for (int i = 0; i < enemies.size(); i++) {
-		enemies[i].setPosition(600.f, 350.f + i * 50);
+		enemies[i].setPosition(480.f, 210.f + i * 30);
 	}
 
 	enemyActed.assign(enemies.size(), false);
@@ -229,12 +230,12 @@ void Combat::targetEnemy() {
 	lastEnterPressed = enterPressed;
 }
 
-void Combat::drawTargetPointer(sf::RenderWindow& window) {
+void Combat::drawTargetPointer(sf::RenderTarget& target) {
 	sf::FloatRect bounds = enemies[activeEnemyIndex].getGlobalBounds();
 	float x = bounds.left + bounds.width / 2.f - pointerSprite.getGlobalBounds().width / 2.f;
 	float y = bounds.top - pointerSprite.getGlobalBounds().height - 4.f;
 	pointerSprite.setPosition(x, y);
-	window.draw(pointerSprite);
+	target.draw(pointerSprite);
 }
 
 int Combat::randomRange(int min, int max) {
@@ -425,13 +426,13 @@ std::vector<EnemySpawn> Combat::makeRandomEncounter() {
 		int enemyType = randomRange(0, 2);
 		switch (enemyType) {
 		case 0:
-			encounter.push_back({ &EnemyDatabase::getEnemyData("Goblin"), 1 });
+			encounter.push_back({ &knight, 1});
 			break;
 		case 1:
-			encounter.push_back({ &EnemyDatabase::getEnemyData("Orc"), 1 });
+			encounter.push_back({ &bat, 1 });
 			break;
 		case 2:
-			encounter.push_back({ &EnemyDatabase::getEnemyData("Troll"), 1 });
+			encounter.push_back({ &bat, 1 });
 			break;
 		default:
 			break;
@@ -489,7 +490,7 @@ CombatMenu::CombatMenu() {
 	}
 }
 
-void CombatMenu::draw(sf::RenderWindow& window) {
+void CombatMenu::draw(sf::RenderTarget& target) {
 	for (int i = 0; i < optionTexts.size(); i++) {
 		if (i == selectedIndex) {
 			optionTexts[i].setFillColor(sf::Color::White);
@@ -497,7 +498,7 @@ void CombatMenu::draw(sf::RenderWindow& window) {
 		else {
 			optionTexts[i].setFillColor(sf::Color::Black);
 		}
-		window.draw(optionTexts[i]);
+		target.draw(optionTexts[i]);
 	}
 }
 
@@ -542,16 +543,16 @@ void SkillMenu::handleInput(sf::Keyboard::Key key) {
 	}
 }
 
-void SkillMenu::draw(sf::RenderWindow& window) {
+void SkillMenu::draw(sf::RenderTarget& target) {
 	if (skillCount == 0) {
 		sf::Text noSkills("No skills learned.", font, 12);
 		noSkills.setPosition(menuX, menuY - optionSpacing);
 		noSkills.setFillColor(sf::Color(128, 128, 128));
-		window.draw(noSkills);
+		target.draw(noSkills);
 	}
 	for (int i = 0; i < static_cast<int>(optionTexts.size()); i++) {
 		optionTexts[i].setFillColor(i == selectedIndex ? sf::Color::White : sf::Color::Black);
-		window.draw(optionTexts[i]);
+		target.draw(optionTexts[i]);
 	}
 }
 

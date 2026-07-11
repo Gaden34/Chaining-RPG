@@ -25,7 +25,7 @@ private:
 public:
 	CombatTestSetup(std::vector<Player>& p, MessageLog& m) : party(p), messageLog(m) {}
 	void update();
-	void draw(sf::RenderWindow& window);
+	void draw(sf::RenderTarget& target);
 	void handleEvent(const sf::Event& event);
 	void handleDisciplineSelection(const sf::Event& event);
 	void handleLevelInput(const sf::Event& event);

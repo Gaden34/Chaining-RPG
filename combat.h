@@ -50,13 +50,13 @@ public:
 
 private:
 	std::vector<MenuOption> availableOptions;
-	const float menuX = 400.f;
-	const float menuY = 500.f;
-	const float optionSpacing = 20.f;
+	const float menuX = 320.f;
+	const float menuY = 300.f;
+	const float optionSpacing = 12.f;
 
 public:
 	CombatMenu();
-	void draw(sf::RenderWindow& window);
+	void draw(sf::RenderTarget& target);
 	MenuOption getSelectedOption();
 
 };
@@ -64,15 +64,15 @@ public:
 class SkillMenu : public Menu {
 private:
 	int skillCount = 0;
-	const float menuX = 440.f;
-	const float menuY = 500.f;
-	const float optionSpacing = 20.f;;
+	const float menuX = 352.f;
+	const float menuY = 300.f;
+	const float optionSpacing = 12.f;;
 
 public:
 	SkillMenu();
 	void populate(const std::vector<std::unique_ptr<Skill>>& skills);
 	void handleInput(sf::Keyboard::Key key);
-	void draw(sf::RenderWindow& window);
+	void draw(sf::RenderTarget& target);
 	int getSelectedIndex() const;
 };
 
@@ -111,15 +111,15 @@ public:
 
 	Combat(std::vector<Player>& p, MessageLog& m, std::mt19937& rng);
 	void update(float dt);
-	void draw(sf::RenderWindow& window);
-	void start(std::initializer_list<EnemySpawn> spawns);
-	void start(const EnemyData& data) { start({ EnemySpawn{ &data, 1 } }); }
+	void draw(sf::RenderTarget& target);
+	void start();
+	//void start(const EnemyData& data) { start({ EnemySpawn{ &data, 1 } }); }
 	CombatState getState();
 
 private:
 	void handlePlayerTurn();
 	void targetEnemy();
-	void drawTargetPointer(sf::RenderWindow& window);
+	void drawTargetPointer(sf::RenderTarget& target);
 	int randomRange(int min, int max);
 	void performAttack(QueuedAction& action);
 	void performSkill(QueuedAction& action);

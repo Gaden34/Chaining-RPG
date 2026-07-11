@@ -6,7 +6,8 @@
 
 
 
-Game::Game() : combat(party, messageLog), combatTestSetup(party, messageLog), window(sf::VideoMode({ 800, 600 }), "Nameless RPG"), rng(std::random_device{}()) {
+Game::Game() : combat(party, messageLog, rng), combatTestSetup(party, messageLog), window(sf::VideoMode({ 1280, 720 }), "Nameless RPG"), rng(std::random_device{}()) {
+	gameTexture.create(640, 360);
 	SkillDatabase::loadSkills("skills.json");
 	party.emplace_back(messageLog, "Gaden", "spiky");
 	party.emplace_back(messageLog, "Kari", "bluey");
@@ -17,12 +18,12 @@ Game::Game() : combat(party, messageLog), combatTestSetup(party, messageLog), wi
 }
 
 void Game::draw() {
-	window.clear();
+	gameTexture.clear();
 
 	switch (currentState) {
 
 	case GameState::StartMenu:
-		startMenu.draw(window);
+		startMenu.draw(gameTexture);
 		break;
 
 	case GameState::CharacterCreation:
@@ -34,14 +35,23 @@ void Game::draw() {
 		break;
 
 	case GameState::Combat:
-		combat.draw(window);
+		combat.draw(gameTexture);
 		break;
 
 	case GameState::CombatTest:
-		combat.draw(window);
+		combat.draw(gameTexture);
 		break;
 	}
 
+	gameTexture.display();
+
+	sf::Sprite gameSprite(gameTexture.getTexture());
+	float scaleX = window.getSize().x / static_cast<float>(VirtualWidth);
+	float scaleY = window.getSize().y / static_cast<float>(VirtualHeight);
+	gameSprite.setScale(scaleX, scaleY);
+
+	window.clear();
+	window.draw(gameSprite);
 	window.display();
 }
 
@@ -52,7 +62,7 @@ StartMenu::StartMenu() {
 	std::vector<std::string> options = { "Start Game", "Combat Test" };
 	for (int i = 0; i < options.size(); i++) {
 		sf::Text text(options[i], font, 20);
-		text.setPosition(350.f, 400.f + (i * 40));
+		text.setPosition(280.f, 240.f + (i * 24));
 		text.setFillColor(sf::Color::Black);
 		optionTexts.push_back(text);
 	}
@@ -61,8 +71,8 @@ StartMenu::StartMenu() {
 	background.setTexture(backgroundTexture);
 }
 
-void StartMenu::draw(sf::RenderWindow& window) {
-	window.draw(background);
+void StartMenu::draw(sf::RenderTarget& target) {
+	target.draw(background);
 
 
 	for (int i = 0; i < optionTexts.size(); i++) {
@@ -72,7 +82,7 @@ void StartMenu::draw(sf::RenderWindow& window) {
 		else {
 			optionTexts[i].setFillColor(sf::Color::Black);
 		}
-		window.draw(optionTexts[i]);
+		target.draw(optionTexts[i]);
 	}
 
 
@@ -80,20 +90,20 @@ void StartMenu::draw(sf::RenderWindow& window) {
 
 void Game::drawCharacterCreation() {
 	map.setTexture("characterCreation");
-	map.draw(window);
-	party[0].draw(window);
-	messageLog.draw(window);
+	map.draw(gameTexture);
+	party[0].draw(gameTexture);
+	messageLog.draw(gameTexture);
 
-	
+
 }
 
 void Game::drawExploring() {
 	map.setTexture("dirtgrassmap");
-	map.draw(window);
-	party[0].draw(window);
-	messageLog.draw(window);
+	map.draw(gameTexture);
+	party[0].draw(gameTexture);
+	messageLog.draw(gameTexture);
 
-	
+
 }
 
 
@@ -123,7 +133,7 @@ void Game::update(float dt) {
 	case GameState::CombatTest:
 		combatTestSetup.update();
 		if (combatTestSetup.isFinished()) {
-			combat.start(knight);
+			combat.start();
 			currentState = GameState::Combat;
 			combatTestSetup.reset();
 		}
@@ -150,7 +160,7 @@ void Game::startCharacterCreation() {
 	currentState = GameState::CharacterCreation;
 	creationStep = CreationStep::Name;
 
-	party[0].setPosition(400.f, 300.f);
+	party[0].setPosition(320.f, 180.f);
 }
 
 
@@ -267,7 +277,7 @@ void Game::handleCreationInput(sf::Event event) {
 void Game::startExploring() {
 	currentState = GameState::Exploring;
 
-	party[0].setPosition(100.f, 100.f);
+	party[0].setPosition(80.f, 60.f);
 }
 
 void Game::checkForEncounter(float dt) {
@@ -276,7 +286,7 @@ void Game::checkForEncounter(float dt) {
 
 	if (encounterTimer >= 3.0f && party[0].getIsMoving()) {
 		if (rollEncounter(rng) == 1) {
-			combat.start(knight);
+			combat.start();
 			messageLog.addMessage("You've encountered a knight!", sf::Color::White);
 			currentState = GameState::Combat;
 			encounterTimer = 0.f;

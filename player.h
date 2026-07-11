@@ -23,7 +23,7 @@ public:
 	Player& operator=(const Player&) = delete;
 	Player(Player&&) = default;
 	void update(float dt) override;
-	void draw(sf::RenderWindow& window) override;
+	void draw(sf::RenderTarget& target) override;
 	void move(float dt) override;
 	int getExp();
 	void addExp(int amount);

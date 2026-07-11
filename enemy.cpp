@@ -26,8 +26,8 @@ void Enemy::update(float dt) {
 
 }
 
-void Enemy::draw(sf::RenderWindow& window) {
-	window.draw(sprite);
+void Enemy::draw(sf::RenderTarget& target) {
+	target.draw(sprite);
 }
 
 void Enemy::move(float dt) {

@@ -21,6 +21,6 @@ public:
 	MessageLog();
 	void addMessage(const std::string& message, const sf::Color& color);
 	void setCurrentMessage(const std::string& message, const sf::Color& color);
-	void draw(sf::RenderWindow& window);
+	void draw(sf::RenderTarget& target);
 
 };

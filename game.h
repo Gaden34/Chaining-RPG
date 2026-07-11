@@ -32,7 +32,7 @@ private:
 
 public:
 	StartMenu();
-	void draw(sf::RenderWindow& window);
+	void draw(sf::RenderTarget& target);
 
 };
 
@@ -46,6 +46,7 @@ private:
 	StartMenu startMenu;
 	CombatTestSetup combatTestSetup;
 	sf::RenderWindow window;
+	sf::RenderTexture gameTexture;
 	sf::Clock clock;
 	GameState currentState = GameState::CharacterCreation;
 	CreationStep creationStep = CreationStep::Name;
@@ -80,3 +81,6 @@ public:
 	void run();
 
 };
+
+constexpr unsigned VirtualWidth = 640;
+constexpr unsigned VirtualHeight = 360;

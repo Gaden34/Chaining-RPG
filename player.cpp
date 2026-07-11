@@ -17,8 +17,8 @@ void Player::update(float dt) {
 	move(dt);
 }
 
-void Player::draw(sf::RenderWindow& window) {
-	window.draw(sprite);
+void Player::draw(sf::RenderTarget& target) {
+	target.draw(sprite);
 }
 
 void Player::move(float dt) {

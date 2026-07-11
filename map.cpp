@@ -6,8 +6,8 @@ Map::Map() {
 	sprite.setTexture(texture);
 }
 
-void Map::draw(sf::RenderWindow& window) {
-	window.draw(sprite);
+void Map::draw(sf::RenderTarget& target) {
+	target.draw(sprite);
 }
 
 void Map::setTexture(std::string t) {
