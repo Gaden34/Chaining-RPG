@@ -2,16 +2,16 @@
 
 MessageLog::MessageLog()
 {
-	font.loadFromFile("assets/Roboto_Condensed-Black.ttf");
+	font.loadFromFile("assets/Silver.ttf");
 
 	text.setFont(font);
-	text.setCharacterSize(12);
+	text.setCharacterSize(18);
 	text.setFillColor(sf::Color::White);
-	text.setPosition(16.f, 300.f);
+	text.setPosition(16.f, 264.f);
 
 	texture.loadFromFile("assets/messageLog.png");
 	sprite.setTexture(texture);
-	sprite.setPosition(14.f, 299.f);
+	sprite.setPosition(14.f, 280.f);
 }
 
 void MessageLog::addMessage(const std::string& message, const sf::Color& color) {
@@ -35,7 +35,7 @@ void MessageLog::setCurrentMessage(const std::string& message, const sf::Color& 
 
 
 void MessageLog::draw(sf::RenderTarget& target) {
-	float y = 300.f;
+	float y = 278.f;
 
 	target.draw(sprite);
 

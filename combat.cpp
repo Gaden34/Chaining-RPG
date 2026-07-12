@@ -5,7 +5,7 @@
 
 Combat::Combat(std::vector<Player>& p, MessageLog& m, std::mt19937& rng) : party(p), messageLog(m), rng(rng) {
 	currentState = CombatState::PlayerTurn;
-	backgroundTexture.loadFromFile("assets/battleBG.png");
+	backgroundTexture.loadFromFile("assets/battleSimulator.png");
 	background.setTexture(backgroundTexture);
 	font.loadFromFile("assets/Roboto_Condensed-Black.ttf");
 	pointerTexture.loadFromFile("assets/targetPointer.png");
@@ -103,11 +103,11 @@ void Combat::start() {
 
 	if (enemies.empty()) return;
 
-	party[0].setPosition(160.f, 240.f);
-	party[1].setPosition(160.f, 270.f);
+	party[0].setPosition(175.f, 180.f);
+	party[1].setPosition(175.f, 220.f);
 
 	for (int i = 0; i < enemies.size(); i++) {
-		enemies[i].setPosition(480.f, 210.f + i * 30);
+		enemies[i].setPosition(465.f, 180.f + i * 40);
 	}
 
 	enemyActed.assign(enemies.size(), false);
@@ -251,6 +251,7 @@ void Combat::performAttack(QueuedAction& action) {
 	chain.registerHit();
 	std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 	messageLog.addMessage(player->getName() + " hits the " + enemy->getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
+	if (actionQueue.empty())
 	checkEnemyDeath(*enemy);
 }
 
@@ -266,12 +267,16 @@ void Combat::performSkill(QueuedAction& action) {
 	switch (skill->getType()) {
 	case SkillType::Attack: {
 		int totalDamage = 0;
+		
 		for (auto& hit : skill->getHits()) {
 		int damage = randomRange((skill->getDamage() * 90) / 100, (skill->getDamage() * 110) / 100);
 		totalDamage += static_cast<int>(skill->getDamage());
 		enemy->takeDamage(damage);
 		}
+		
 		messageLog.addMessage(player->getName() + " uses " + skill->getName() + " on the " + enemy->getName() + " for " + std::to_string(totalDamage) + " damage!", sf::Color::Black);
+		
+		if (actionQueue.empty())
 		checkEnemyDeath(*enemy);
 		break;
 	}
@@ -328,40 +333,7 @@ void Combat::executeNextAction() {
 	currentState = CombatState::PlayerAnimation;
 }
 
-void Combat::playerUseSkill(Skill* skill) {
-	if (party[activePlayerIndex].getMp() < skill->getMpCost()) {
-		messageLog.addMessage("Not enough MP!", sf::Color::Red);
-		return;
-	}
 
-	party[activePlayerIndex].setMp(party[activePlayerIndex].getMp() - skill->getMpCost());
-
-	switch (skill->getType()) {
-	case SkillType::Attack: {
-		Enemy& enemy = enemies[0];
-		int damage = static_cast<int>(skill->getDamage());
-		enemy.takeDamage(damage);
-		messageLog.addMessage(party[activePlayerIndex].getName() + " uses " + skill->getName() + " on the " + enemy.getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
-		checkEnemyDeath(enemy);
-		break;
-	}
-	case SkillType::Heal: {
-		int healAmount = static_cast<int>(skill->getDamage());
-		party[activePlayerIndex].setHp(std::min(party[activePlayerIndex].getHp() + healAmount, party[activePlayerIndex].getMaxHp()));
-		messageLog.addMessage(party[activePlayerIndex].getName() + " uses " + skill->getName() + " and recovers " + std::to_string(healAmount) + " HP!", sf::Color::Green);
-		break;
-	}
-	default:
-		break;
-	}
-
-	inSkillMenu = false;
-	skillMenu.reset();
-
-	if (currentState == CombatState::PlayerTurn) {
-		advanceActivePlayer();
-	}
-}
 
 void Combat::advanceActivePlayer() {
 	playerActed[activePlayerIndex] = true;
@@ -385,10 +357,21 @@ void Combat::advanceActivePlayer() {
 }
 
 void Combat::handleEnemyTurn() {
-	party[0].takeDamage(enemies[0].getAttack());
-	if (party[0].getHp() <= 0) party[0].setHp(0);
-	messageLog.addMessage("The " + enemies[0].getName() + " hits you for " + std::to_string(enemies[0].getAttack()) + " damage!", sf::Color::Black);
-	messageLog.addMessage("Player HP: " + std::to_string(party[0].getHp()) + "/" + std::to_string(party[0].getMaxHp()), sf::Color::Black);
+
+	for (auto& enemy : enemies) {
+		int randomPlayerIndex = randomRange(0, (int)party.size() - 1);
+		
+		if (enemy.isAlive()) {
+			party[randomPlayerIndex].takeDamage(enemy.getAttack());
+			
+			for (auto& player : party) {
+				if (player.getHp() <= 0) player.setHp(0);
+			}
+
+			messageLog.addMessage("The " + enemy.getName() + " hits " + party[randomPlayerIndex].getName() + " for " + std::to_string(enemy.getAttack()) + " damage!", sf::Color::Black);
+			messageLog.addMessage(party[randomPlayerIndex].getName() + " HP: " + std::to_string(party[randomPlayerIndex].getHp()) + "/" + std::to_string(party[randomPlayerIndex].getMaxHp()), sf::Color::Black);
+		}
+	}
 
 	currentState = CombatState::EnemyAnimation;
 }

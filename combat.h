@@ -125,7 +125,6 @@ private:
 	void performSkill(QueuedAction& action);
 	void executeAction(QueuedAction& action);
 	void executeNextAction();
-	void playerUseSkill(Skill* skill);
 	void handleEnemyTurn();
 	void updatePlayerAnimation(float dt);
 	void updateEnemyAnimation(float dt);
