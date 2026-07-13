@@ -271,7 +271,7 @@ void Combat::performSkill(QueuedAction& action) {
 		int totalDamage = 0;
 		
 		for (auto& hit : skill->getHits()) {
-		int damage = randomRange((skill->getDamage() * 90) / 100, (skill->getDamage() * 110) / 100);
+		int damage = randomRange(((skill->getDamage() + (player->getAttack() * 2 / 10)) * 90) / 100, ((skill->getDamage() + (player->getAttack() * 2 / 10)) * 110) / 100);
 		totalDamage += static_cast<int>(skill->getDamage());
 		enemy->takeDamage(damage);
 		chain.registerHit();
@@ -286,6 +286,27 @@ void Combat::performSkill(QueuedAction& action) {
 		if (actionQueue.empty()) eraseDeadEnemies();
 		break;
 	}
+
+	case SkillType::Magic {
+		int totalDamage = 0;
+		
+		for (auto& hit : skill->getHits()) {
+		int damage = randomRange(((skill->getDamage() + (player->getMagAttack() * 2 / 10)) * 90) / 100, ((skill->getDamage() + (player->getMagAttack() * 2 / 10)) * 110) / 100);
+		totalDamage += static_cast<int>(skill->getDamage());
+		enemy->takeDamage(damage);
+		chain.registerHit();
+		chain.openWindow();
+		std::cout << "Chain count: " << chain.getChainCount() << std::endl;
+		}
+	
+		
+		messageLog.addMessage(player->getName() + " uses " + skill->getName() + " on the " + enemy->getName() + " for " + std::to_string(totalDamage) + " damage!", sf::Color::Black);
+		
+		checkEnemyDeath(*enemy);
+		if (actionQueue.empty()) eraseDeadEnemies();
+		break;
+	}
+
 	case SkillType::Heal: {
 		int healAmount = static_cast<int>(skill->getDamage());
 		player->setHp(std::min(player->getHp() + healAmount, player->getMaxHp()));
