@@ -249,6 +249,7 @@ void Combat::performAttack(QueuedAction& action) {
 	int damage = randomRange((player->getAttack() * 90) / 100, (player->getAttack() * 110) / 100);
 	enemy->takeDamage(damage);
 	chain.registerHit();
+	chain.openWindow();
 	std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 	messageLog.addMessage(player->getName() + " hits the " + enemy->getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
 	
@@ -273,7 +274,11 @@ void Combat::performSkill(QueuedAction& action) {
 		int damage = randomRange((skill->getDamage() * 90) / 100, (skill->getDamage() * 110) / 100);
 		totalDamage += static_cast<int>(skill->getDamage());
 		enemy->takeDamage(damage);
+		chain.registerHit();
+		chain.openWindow();
+		std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 		}
+	
 		
 		messageLog.addMessage(player->getName() + " uses " + skill->getName() + " on the " + enemy->getName() + " for " + std::to_string(totalDamage) + " damage!", sf::Color::Black);
 		

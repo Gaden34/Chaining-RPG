@@ -5,7 +5,7 @@ class ChainSystem
 {
 private:
 	int chainCount = 0;
-	bool windowOpen = true;
+	bool windowOpen = false;
 
 public:
 	void openWindow() { windowOpen = true; }
