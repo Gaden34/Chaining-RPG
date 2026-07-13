@@ -251,8 +251,9 @@ void Combat::performAttack(QueuedAction& action) {
 	chain.registerHit();
 	std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 	messageLog.addMessage(player->getName() + " hits the " + enemy->getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
-	if (actionQueue.empty())
+	
 	checkEnemyDeath(*enemy);
+	if (actionQueue.empty()) eraseDeadEnemies();
 }
 
 void Combat::performSkill(QueuedAction& action) {
@@ -276,8 +277,8 @@ void Combat::performSkill(QueuedAction& action) {
 		
 		messageLog.addMessage(player->getName() + " uses " + skill->getName() + " on the " + enemy->getName() + " for " + std::to_string(totalDamage) + " damage!", sf::Color::Black);
 		
-		if (actionQueue.empty())
 		checkEnemyDeath(*enemy);
+		if (actionQueue.empty()) eraseDeadEnemies();
 		break;
 	}
 	case SkillType::Heal: {
@@ -322,8 +323,17 @@ void Combat::executeNextAction() {
 		return;
 	}
 
-	executeAction(actionQueue.front());
+	QueuedAction action = actionQueue.front();
+	if (!action.target->isAlive()) {
+		for (auto& enemy : enemies) {
+			if (enemy.isAlive()) {
+				action.target = &enemy;
+				break;
+			}
+		}
+	}
 	actionQueue.erase(actionQueue.begin());
+	executeAction(action);
 
 	if (currentState == CombatState::Victory || currentState == CombatState::Defeat) {
 		actionQueue.clear();
@@ -434,15 +444,19 @@ void Combat::checkEnemyDeath(Enemy& enemy) {
 			player.addExp(enemy.getExpValue());
 		}
 
-
-		std::erase_if(enemies, [](const auto& enemy) {
-			return enemy.getHp() <= 0;
-			});
-
-		if (enemies.empty()) {
-			currentState = CombatState::Victory;
+		for (auto& enemy : enemies) {
+			if (enemy.isAlive()) {
+				return;
+			}
 		}
+		currentState = CombatState::Victory;
 	}
+}
+
+void Combat::eraseDeadEnemies() {
+	std::erase_if(enemies, [](const auto& enemy) {
+		return enemy.getHp() <= 0;
+		});
 }
 
 void Combat::checkCombatEnd() {
