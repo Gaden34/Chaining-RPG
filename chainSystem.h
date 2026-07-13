@@ -6,9 +6,11 @@ class ChainSystem
 private:
 	int chainCount = 0;
 	bool windowOpen = false;
+	float chainTimer = 0.f;
 
 public:
-	void openWindow() { windowOpen = true; }
+	void startChainTimer(float dt);
+	void openWindow();
 	void closeWindow() { windowOpen = false; }
 	void registerHit();
 	void reset() { chainCount = 0; }
