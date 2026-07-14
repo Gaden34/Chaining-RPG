@@ -24,7 +24,7 @@ void Combat::update(float dt) {
 		break;
 
 	case CombatState::ExecutingActions:
-		executeNextAction();
+		handleQueuedActionMenu();
 		break;
 
 	case CombatState::PlayerAnimation:
@@ -59,7 +59,7 @@ void Combat::draw(sf::RenderTarget& target) {
 	}
 
 	messageLog.draw(target);
-
+	}
 	if (currentState == CombatState::PlayerTurn) {
 		if (!party.empty()) {
 			sf::Text nameLabel(party[activePlayerIndex].getName(), font, 12);
@@ -379,6 +379,8 @@ void Combat::executeNextAction() {
 }
 
 void Combat::handleQueuedActionMenu() {
+	queuedActionMenu.populate(actionQueue);
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !queuedActionMenu.getLastUpPressed()) {
 		queuedActionMenu.moveUp();
 	}
@@ -386,6 +388,15 @@ void Combat::handleQueuedActionMenu() {
 		queuedActionMenu.moveDown();
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && !queuedActionMenu.getLastEnterPressed()) {
+		int selectedIndex = queuedActionMenu.getSelectedIndex();
+		if (selectedIndex >= 0 && selectedIndex < actionQueue.size()) {
+			actionQueue.erase(actionQueue.begin() + selectedIndex);
+		}
+	}
+
+	queuedActionMenu.setLastUpPressed(sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
+	queuedActionMenu.setLastDownPressed(sf::Keyboard::isKeyPressed(sf::Keyboard::Down));
+	queuedActionMenu.setLastEnterPressed(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter));
 }
 
 

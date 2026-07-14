@@ -101,6 +101,7 @@ private:
 	std::mt19937& rng;
 	CombatMenu menu;
 	SkillMenu skillMenu;
+	QueuedActionMenu queuedActionMenu;
 	bool inSkillMenu = false;
 	ChainSystem chain;
 	MessageLog& messageLog;
