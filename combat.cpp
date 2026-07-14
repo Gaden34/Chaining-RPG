@@ -254,7 +254,10 @@ void Combat::performAttack(QueuedAction& action) {
 	messageLog.addMessage(player->getName() + " hits the " + enemy->getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
 	
 	checkEnemyDeath(*enemy);
-	if (actionQueue.empty()) eraseDeadEnemies();
+	if (actionQueue.empty()) {
+		eraseDeadEnemies();
+		resetEnemyIndex();
+	}
 }
 
 void Combat::performSkill(QueuedAction& action) {
@@ -272,7 +275,7 @@ void Combat::performSkill(QueuedAction& action) {
 		
 		for (auto& hit : skill->getHits()) {
 		int damage = randomRange(((skill->getDamage() + (player->getAttack() * 2 / 10)) * 90) / 100, ((skill->getDamage() + (player->getAttack() * 2 / 10)) * 110) / 100);
-		totalDamage += static_cast<int>(skill->getDamage());
+		totalDamage += static_cast<int>(damage);
 		enemy->takeDamage(damage);
 		chain.registerHit();
 		chain.openWindow();
@@ -283,16 +286,19 @@ void Combat::performSkill(QueuedAction& action) {
 		messageLog.addMessage(player->getName() + " uses " + skill->getName() + " on the " + enemy->getName() + " for " + std::to_string(totalDamage) + " damage!", sf::Color::Black);
 		
 		checkEnemyDeath(*enemy);
-		if (actionQueue.empty()) eraseDeadEnemies();
+		if (actionQueue.empty()) {
+			eraseDeadEnemies();
+			resetEnemyIndex();
+		}
 		break;
 	}
 
-	case SkillType::Magic {
+	case SkillType::Magic: {
 		int totalDamage = 0;
 		
 		for (auto& hit : skill->getHits()) {
 		int damage = randomRange(((skill->getDamage() + (player->getMagAttack() * 2 / 10)) * 90) / 100, ((skill->getDamage() + (player->getMagAttack() * 2 / 10)) * 110) / 100);
-		totalDamage += static_cast<int>(skill->getDamage());
+		totalDamage += static_cast<int>(damage);
 		enemy->takeDamage(damage);
 		chain.registerHit();
 		chain.openWindow();
@@ -303,7 +309,10 @@ void Combat::performSkill(QueuedAction& action) {
 		messageLog.addMessage(player->getName() + " uses " + skill->getName() + " on the " + enemy->getName() + " for " + std::to_string(totalDamage) + " damage!", sf::Color::Black);
 		
 		checkEnemyDeath(*enemy);
-		if (actionQueue.empty()) eraseDeadEnemies();
+		if (actionQueue.empty()) {
+			eraseDeadEnemies();
+			resetEnemyIndex();
+		}
 		break;
 	}
 
@@ -584,4 +593,48 @@ int SkillMenu::getSelectedIndex() const {
 	return -1;
 }
 
+QueuedActionMenu::QueuedActionMenu() {
+	if (!font.loadFromFile("assets/Roboto_Condensed-Black.ttf")) {
+		std::cerr << "Failed to load font!" << std::endl;
+	}
+}
 
+void QueuedActionMenu::populate(const std::vector<QueuedAction>& actions) {
+	optionTexts.clear();
+	for (const auto& action : actions) {
+		std::string actionName;
+		switch (action.type) {
+		case ActionType::Attack:
+			actionName = action.actor->getName() + ": Attack";
+			break;
+		case ActionType::Skill:
+			actionName = action.actor->getName() + ": " + action.skill->getName();
+			break;
+		case ActionType::Item:
+			actionName = action.actor->getName() + ": Item";
+			break;
+		case ActionType::Defend:
+			actionName = action.actor->getName() + ": Defend";
+			break;
+		default:
+			actionName = "Unknown";
+			break;
+		}
+		sf::Text text(actionName, font, 12);
+		text.setPosition(menuX, menuY + optionTexts.size() * optionSpacing);
+		text.setFillColor(sf::Color::Black);
+		optionTexts.push_back(text);
+	}
+	selectedIndex = 0;
+}
+
+void QueuedActionMenu::draw(sf::RenderTarget& target) {
+	for (int i = 0; i < static_cast<int>(optionTexts.size()); i++) {
+		optionTexts[i].setFillColor(i == selectedIndex ? sf::Color::White : sf::Color::Black);
+		target.draw(optionTexts[i]);
+	}
+}
+
+void Combat::resetEnemyIndex() {
+	activeEnemyIndex = 0;
+}

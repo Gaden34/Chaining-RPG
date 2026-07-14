@@ -66,7 +66,7 @@ private:
 	int skillCount = 0;
 	const float menuX = 352.f;
 	const float menuY = 300.f;
-	const float optionSpacing = 12.f;;
+	const float optionSpacing = 12.f;
 
 public:
 	SkillMenu();
@@ -74,6 +74,19 @@ public:
 	void handleInput(sf::Keyboard::Key key);
 	void draw(sf::RenderTarget& target);
 	int getSelectedIndex() const;
+};
+
+class QueuedActionMenu : public Menu {
+private:
+	const float menuX = 320.f;
+	const float menuY = 300.f;
+	const float optionSpacing = 12.f;
+
+public:
+	QueuedActionMenu();
+	void populate(const std::vector<QueuedAction>& actions);
+	void draw(sf::RenderTarget& target);
+
 };
 
 class Combat {
@@ -133,4 +146,5 @@ private:
 	void eraseDeadEnemies();
 	void checkCombatEnd();
 	void advanceActivePlayer();
+	void resetEnemyIndex();
 };
