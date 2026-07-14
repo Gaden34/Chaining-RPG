@@ -378,6 +378,15 @@ void Combat::executeNextAction() {
 	currentState = CombatState::PlayerAnimation;
 }
 
+void Combat::handleQueuedActionMenu() {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !queuedActionMenu.getLastUpPressed()) {
+		queuedActionMenu.moveUp();
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !queuedActionMenu.getLastDownPressed()) {
+		queuedActionMenu.moveDown();
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && !queuedActionMenu.getLastEnterPressed()) {
+}
 
 
 void Combat::advanceActivePlayer() {
