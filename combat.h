@@ -14,7 +14,7 @@
 enum class CombatState {
 	PlayerTurn,
 	SelectingEnemy,
-	ExecutingActions,
+	ChoosingQueuedActions,
 	PlayerAnimation,
 	EnemyTurn,
 	EnemyAnimation,
@@ -37,6 +37,15 @@ struct QueuedAction {
 	Character* target = nullptr;
 	Skill* skill = nullptr;
 	//Item* item;
+};
+
+struct ActiveAnimation {
+	Character* character = nullptr;
+	sf::Vector2f startPosition;
+	sf::Vector2f targetPosition;
+	float duration = 0.f;
+	float elapsedTime = 0.f;
+	bool isActive = false;
 };
 
 struct EnemySpawn {
@@ -98,6 +107,7 @@ private:
 	CombatState currentState;
 	std::vector<Player>& party;
 	std::vector<Enemy> enemies;
+	std::vector<ActiveAnimation> activeAnimations;
 	std::mt19937& rng;
 	CombatMenu menu;
 	SkillMenu skillMenu;
@@ -141,6 +151,7 @@ private:
 	void executeNextAction();
 	void handleQueuedActionMenu();
 	void handleEnemyTurn();
+	void updateAnimations(float dt);
 	void updatePlayerAnimation(float dt);
 	void updateEnemyAnimation(float dt);
 	std::vector<EnemySpawn> makeRandomEncounter();

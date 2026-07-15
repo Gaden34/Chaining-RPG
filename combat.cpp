@@ -23,7 +23,7 @@ void Combat::update(float dt) {
 		targetEnemy();
 		break;
 
-	case CombatState::ExecutingActions:
+	case CombatState::ChoosingQueuedActions:
 		handleQueuedActionMenu();
 		break;
 
@@ -59,23 +59,29 @@ void Combat::draw(sf::RenderTarget& target) {
 	}
 
 	messageLog.draw(target);
+
+switch (currentState) {	
+case CombatState::PlayerTurn:
+	if (!party.empty()) {
+		sf::Text nameLabel(party[activePlayerIndex].getName(), font, 12);
+		nameLabel.setPosition(320.f, 288.f);
+		nameLabel.setFillColor(sf::Color::White);
+		target.draw(nameLabel);
 	}
-	if (currentState == CombatState::PlayerTurn) {
-		if (!party.empty()) {
-			sf::Text nameLabel(party[activePlayerIndex].getName(), font, 12);
-			nameLabel.setPosition(320.f, 288.f);
-			nameLabel.setFillColor(sf::Color::White);
-			target.draw(nameLabel);
-		}
 		if (inSkillMenu)
 			skillMenu.draw(target);
 		else
 			menu.draw(target);
+		break;
 
-	}
-	if (currentState == CombatState::SelectingEnemy) {
-		drawTargetPointer(target);
-	}
+case CombatState::SelectingEnemy:
+	drawTargetPointer(target);
+	break;
+
+case CombatState::ChoosingQueuedActions:
+	queuedActionMenu.draw(target);
+	break;
+}
 
 }
 
@@ -379,7 +385,6 @@ void Combat::executeNextAction() {
 }
 
 void Combat::handleQueuedActionMenu() {
-	queuedActionMenu.populate(actionQueue);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !queuedActionMenu.getLastUpPressed()) {
 		queuedActionMenu.moveUp();
@@ -390,8 +395,24 @@ void Combat::handleQueuedActionMenu() {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && !queuedActionMenu.getLastEnterPressed()) {
 		int selectedIndex = queuedActionMenu.getSelectedIndex();
 		if (selectedIndex >= 0 && selectedIndex < actionQueue.size()) {
+			if (!actionQueue[selectedIndex].target->isAlive()) {
+				for (auto& enemy : enemies) {
+					if (enemy.isAlive()) {
+						actionQueue[selectedIndex].target = &enemy;
+						break;
+					}
+				}
+			}
+			executeAction(actionQueue[selectedIndex]);
 			actionQueue.erase(actionQueue.begin() + selectedIndex);
+			queuedActionMenu.populate(actionQueue);
 		}
+	}
+
+	if (actionQueue.empty()) {
+		eraseDeadEnemies();
+		resetEnemyIndex();
+		currentState = CombatState::EnemyTurn;
 	}
 
 	queuedActionMenu.setLastUpPressed(sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
@@ -418,7 +439,8 @@ void Combat::advanceActivePlayer() {
 	activePlayerIndex = 0;
 	menu.reset();
 	inSkillMenu = false;
-	currentState = CombatState::ExecutingActions;
+	queuedActionMenu.populate(actionQueue);
+	currentState = CombatState::ChoosingQueuedActions;
 }
 
 void Combat::handleEnemyTurn() {
@@ -441,6 +463,17 @@ void Combat::handleEnemyTurn() {
 	currentState = CombatState::EnemyAnimation;
 }
 
+void Combat::updateAnimations(float dt) {
+	for (auto& anim : activeAnimations)
+		anim.elapsedTime += dt;
+
+	activeAnimations.erase(
+		std::remove_if(activeAnimations.begin(), activeAnimations.end(),
+			[](const ActiveAnimation& a) { return a.elapsedTime >= a.duration; }),
+		activeAnimations.end());
+	
+}
+
 void Combat::updatePlayerAnimation(float dt) {
 	if (currentState == CombatState::PlayerAnimation) {
 		animationTimer += dt;
@@ -448,7 +481,7 @@ void Combat::updatePlayerAnimation(float dt) {
 
 	if (animationTimer >= 3.0f) {
 		animationTimer = 0.f;
-		currentState = CombatState::ExecutingActions;
+		currentState = CombatState::ChoosingQueuedActions;
 	}
 
 }

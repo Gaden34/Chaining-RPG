@@ -10,7 +10,7 @@ private:
     bool lastDownPressed = false;
     bool lastRightPressed = false;
     bool lastLeftPressed = false;
-    bool lastEnterPressed = false;
+    bool lastEnterPressed = true;
     bool lastEscapePressed = false;
 
 protected:
