@@ -7,6 +7,10 @@ enum class ItemType {
     Damage
 }
 
+enum class Attribute { HP, MP }
+
+enum class StatusEffect { Poison, Paralysis }
+
 struct ItemData {
     int id;
     std::string name;
