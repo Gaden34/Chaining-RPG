@@ -1,0 +1,36 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "Potion",
+      "description": "Restores a small amount of HP.",
+      "max_stack_size": 99,
+      "is_consumable": true,
+      "type": "Heal",
+      "effects": [
+        {
+          "target_attribute": "HP",
+          "amount": 50,
+          "cures_status": "None",
+          "inflict_status": "None"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Ether",
+      "description": "Restores a small amount of MP.",
+      "max_stack_size": 99,
+      "is_consumable": true,
+      "type": "Heal",
+      "effects": [
+        {
+          "target_attribute": "MP",
+          "amount": 20,
+          "cures_status": "None",
+          "inflict_status": "None"
+        }
+      ]
+    }
+  ]
+}
