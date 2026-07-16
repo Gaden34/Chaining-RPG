@@ -1,25 +1,42 @@
 #include "chainSystem.h"
 
 
-void ChainSystem::startChainTimer(float dt) {
-	if (windowOpen) {
-		chainTimer += dt;
-		if (chainTimer >= 0.2f) {
-			chainCount = 0;
-			windowOpen = false;
-			chainTimer = 0.f;
-		}
-	}
-}
+const std::array<ChainBonus, 4> ChainSystem::chainBonuses = {{
+	{ 2, 115 },
+	{ 5, 120 },
+	{ 10, 130 },
+	{ 15, 135 }
+}};
 
-void ChainSystem::openWindow() {
-	windowOpen = true;
-	startChainTimer(0.f);
+void ChainSystem::update(float dt) {
+	if (!chainActive) return;
+	
+	chainTimer += dt;
+
+	if (chainTimer >= 0.2f) {
+		chainCount = 0;
+		chainActive = false;
+		chainTimer = 0.f;
+	}
 }
 
 void ChainSystem::registerHit() {
-	if (windowOpen) {
+	if (chainActive) {
 		chainCount++;
 	}
 	else chainCount = 1;
+
+	chainActive = true;
+	chainTimer = 0.f;
+}
+
+int ChainSystem::getDamagePercent() const {
+	int damagePercent = 100;
+	for (const auto& bonus : chainBonuses) {
+		if (chainCount >= bonus.hitsRequired) {
+			damagePercent = bonus.damagePercent;
+		}
+		else break;
+	}
+	return damagePercent;
 }

@@ -1,20 +1,27 @@
 #pragma once
+#include <array>
+
+struct ChainBonus {
+	int hitsRequired;
+	int damagePercent;
+};
 
 
 class ChainSystem
 {
 private:
 	int chainCount = 0;
-	bool windowOpen = false;
+	bool chainActive = false;
 	float chainTimer = 0.f;
 
+	static const std::array<ChainBonus, 4> chainBonuses;
+
 public:
-	void startChainTimer(float dt);
-	void openWindow();
-	void closeWindow() { windowOpen = false; }
+	void update(float dt);
 	void registerHit();
 	void reset() { chainCount = 0; }
 	int getChainCount() const { return chainCount; }
-	bool isWindowOpen() const { return windowOpen; }
+	bool isChainActive() const { return chainActive; }
+	int getDamagePercent() const;
 };
 
