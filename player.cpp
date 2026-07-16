@@ -73,6 +73,8 @@ void Player::levelUp() {
 	maxMp += getDiscipline().getStatGrowth().mpGrowth;
 	attack += getDiscipline().getStatGrowth().attackGrowth;
 	magAttack += getDiscipline().getStatGrowth().magAttackGrowth;
+	hp = maxHp;
+	mp = maxMp;
 	messageLog.addMessage(name + " has reached level " + std::to_string(level) + "!", sf::Color::Black);
 }
 

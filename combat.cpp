@@ -14,6 +14,9 @@ Combat::Combat(std::vector<Player>& p, MessageLog& m, std::mt19937& rng) : party
 }
 
 void Combat::update(float dt) {
+
+	chain.update(dt);
+
 	switch (currentState) {
 	case CombatState::PlayerTurn:
 		handlePlayerTurn();
@@ -253,9 +256,9 @@ void Combat::performAttack(QueuedAction& action) {
 	Player* player = static_cast<Player*>(action.actor);
 	Enemy* enemy = static_cast<Enemy*>(action.target);
 	int damage = randomRange((player->getAttack() * 90) / 100, (player->getAttack() * 110) / 100);
+	damage = damage * chain.getDamagePercent() / 100;
 	enemy->takeDamage(damage);
 	chain.registerHit();
-	chain.openWindow();
 	std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 	messageLog.addMessage(player->getName() + " hits the " + enemy->getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
 	
@@ -281,10 +284,10 @@ void Combat::performSkill(QueuedAction& action) {
 		
 		for (auto& hit : skill->getHits()) {
 		int damage = randomRange(((skill->getDamage() + (player->getAttack() * 2 / 10)) * 90) / 100, ((skill->getDamage() + (player->getAttack() * 2 / 10)) * 110) / 100);
+		damage = damage * chain.getDamagePercent() / 100;
 		totalDamage += static_cast<int>(damage);
 		enemy->takeDamage(damage);
 		chain.registerHit();
-		chain.openWindow();
 		std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 		}
 	
@@ -292,10 +295,6 @@ void Combat::performSkill(QueuedAction& action) {
 		messageLog.addMessage(player->getName() + " uses " + skill->getName() + " on the " + enemy->getName() + " for " + std::to_string(totalDamage) + " damage!", sf::Color::Black);
 		
 		checkEnemyDeath(*enemy);
-		if (actionQueue.empty()) {
-			eraseDeadEnemies();
-			resetEnemyIndex();
-		}
 		break;
 	}
 
@@ -304,10 +303,10 @@ void Combat::performSkill(QueuedAction& action) {
 		
 		for (auto& hit : skill->getHits()) {
 		int damage = randomRange(((skill->getDamage() + (player->getMagAttack() * 2 / 10)) * 90) / 100, ((skill->getDamage() + (player->getMagAttack() * 2 / 10)) * 110) / 100);
+		damage = damage * chain.getDamagePercent() / 100;
 		totalDamage += static_cast<int>(damage);
 		enemy->takeDamage(damage);
 		chain.registerHit();
-		chain.openWindow();
 		std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 		}
 	
@@ -315,10 +314,6 @@ void Combat::performSkill(QueuedAction& action) {
 		messageLog.addMessage(player->getName() + " uses " + skill->getName() + " on the " + enemy->getName() + " for " + std::to_string(totalDamage) + " damage!", sf::Color::Black);
 		
 		checkEnemyDeath(*enemy);
-		if (actionQueue.empty()) {
-			eraseDeadEnemies();
-			resetEnemyIndex();
-		}
 		break;
 	}
 
@@ -409,10 +404,17 @@ void Combat::handleQueuedActionMenu() {
 		}
 	}
 
+	if (currentState == CombatState::Victory || currentState == CombatState::Defeat) {
+		actionQueue.clear();
+		queuedActionMenu.reset();
+		return;
+	}
+
 	if (actionQueue.empty()) {
 		eraseDeadEnemies();
 		resetEnemyIndex();
-		currentState = CombatState::EnemyTurn;
+		currentState = CombatState::PlayerAnimation;
+		queuedActionMenu.reset();
 	}
 
 	queuedActionMenu.setLastUpPressed(sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
@@ -481,7 +483,7 @@ void Combat::updatePlayerAnimation(float dt) {
 
 	if (animationTimer >= 3.0f) {
 		animationTimer = 0.f;
-		currentState = CombatState::ChoosingQueuedActions;
+		currentState = CombatState::EnemyTurn;
 	}
 
 }

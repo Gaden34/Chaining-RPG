@@ -98,7 +98,7 @@ void Game::drawCharacterCreation() {
 }
 
 void Game::drawExploring() {
-	map.setTexture("dirtgrassmap");
+	map.setTexture("betterGrassMap");
 	map.draw(gameTexture);
 	party[0].draw(gameTexture);
 	messageLog.draw(gameTexture);
