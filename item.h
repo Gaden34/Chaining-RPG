@@ -1,4 +1,7 @@
 #pragma once
+#include <vector>
+
+class Character;
 
 enum class ItemType {
     Heal,
@@ -7,9 +10,16 @@ enum class ItemType {
     Damage
 }
 
-enum class Attribute { HP, MP }
+enum class Attribute { None = 0, HP, MP }
 
-enum class StatusEffect { Poison, Paralysis }
+enum class StatusEffect { None = 0, Poison, Paralysis }
+
+struct ItemEffect {
+    Attribute targetAttribute = Attribute::None;
+    StatusEffect cureStatus = StatusEffect::None;
+    StatusEffect inflictStatus = StatusEffect::None;
+
+}
 
 struct ItemData {
     int id;
@@ -20,12 +30,16 @@ struct ItemData {
     bool isConsumable;
 
     ItemType type;
-    Rarity rarity;
+    //Rarity rarity;
+
+    std::vector<ItemEffect> effects;
 }
 
-class Item {
+class ItemSystem {
 private:
 
 
 public:
+
+static bool useItem(const ItemData& item, Character& user, Character& target);
 }
