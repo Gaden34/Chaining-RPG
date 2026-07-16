@@ -16,7 +16,7 @@ enum class StatusEffect { None = 0, Poison, Paralysis }
 
 struct ItemEffect {
     Attribute targetAttribute = Attribute::None;
-    StatusEffect cureStatus = StatusEffect::None;
+    StatusEffect curesStatus = StatusEffect::None;
     StatusEffect inflictStatus = StatusEffect::None;
 
 }
