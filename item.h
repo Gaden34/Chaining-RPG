@@ -36,6 +36,11 @@ struct ItemData {
     std::vector<ItemEffect> effects;
 };
 
+struct InventorySlot {
+    int itemID;
+    int quantity;
+};
+
 class ItemDatabase {
 private:
     static std::vector<ItemData> m_items;
@@ -53,4 +58,15 @@ private:
 
 public:
     static bool useItem(const ItemData& item, Character& user, Character& target);
+};
+
+class Inventory {
+private:
+    std::vector<InventorySlot> slots;
+
+public:
+	bool addItem(int itemID, int amount = 1);
+	bool removeItem(int itemID, int amount = 1);
+    int getQuantity(int itemID) const;
+    const std::vector<InventorySlot>& getItems() const;
 };

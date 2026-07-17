@@ -26,6 +26,7 @@
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemyData.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map.cpp" />
     <ClCompile Include="menu.cpp" />
@@ -46,6 +47,7 @@
     <ClInclude Include="enemyData.h" />
     <ClInclude Include="enums.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="item.h" />
     <ClInclude Include="map.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="messageLog.h" />
@@ -55,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\copilot-instructions.md" />
+    <None Include="items.json" />
     <None Include="packages.config" />
     <None Include="skills.json" />
   </ItemGroup>

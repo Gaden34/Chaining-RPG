@@ -7,6 +7,7 @@
 #include "disciplines.h"
 #include "skill.h"
 #include "messageLog.h"
+#include "item.h"
 
 class Player : public Character {
 private:

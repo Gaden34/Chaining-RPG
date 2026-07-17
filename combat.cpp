@@ -255,7 +255,7 @@ int Combat::randomRange(int min, int max) {
 void Combat::performAttack(QueuedAction& action) {
 	Player* player = static_cast<Player*>(action.actor);
 	Enemy* enemy = static_cast<Enemy*>(action.target);
-	int damage = randomRange((player->getAttack() * 90) / 100, (player->getAttack() * 110) / 100);
+	int damage = randomRange(player->getAttack() * 90 / 100, player->getAttack() * 110 / 100);
 	damage = damage * chain.getDamagePercent() / 100;
 	enemy->takeDamage(damage);
 	chain.registerHit();
@@ -283,12 +283,14 @@ void Combat::performSkill(QueuedAction& action) {
 		int totalDamage = 0;
 		
 		for (auto& hit : skill->getHits()) {
-		int damage = randomRange(((skill->getDamage() + (player->getAttack() * 2 / 10)) * 90) / 100, ((skill->getDamage() + (player->getAttack() * 2 / 10)) * 110) / 100);
-		damage = damage * chain.getDamagePercent() / 100;
-		totalDamage += static_cast<int>(damage);
-		enemy->takeDamage(damage);
-		chain.registerHit();
-		std::cout << "Chain count: " << chain.getChainCount() << std::endl;
+			int damage = skill->getDamage();
+			damage = damage * (100 + player->getAttack()) / 100;
+			damage = randomRange(damage * 90 / 100, damage * 110 / 100);
+			damage = damage * chain.getDamagePercent() / 100;
+			totalDamage += static_cast<int>(damage);
+			enemy->takeDamage(damage);
+			chain.registerHit();
+			std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 		}
 	
 		
@@ -302,12 +304,14 @@ void Combat::performSkill(QueuedAction& action) {
 		int totalDamage = 0;
 		
 		for (auto& hit : skill->getHits()) {
-		int damage = randomRange(((skill->getDamage() + (player->getMagAttack() * 2 / 10)) * 90) / 100, ((skill->getDamage() + (player->getMagAttack() * 2 / 10)) * 110) / 100);
-		damage = damage * chain.getDamagePercent() / 100;
-		totalDamage += static_cast<int>(damage);
-		enemy->takeDamage(damage);
-		chain.registerHit();
-		std::cout << "Chain count: " << chain.getChainCount() << std::endl;
+			int damage = skill->getDamage();
+			damage = damage * (100 + player->getMagAttack()) / 100;
+			damage = randomRange(damage * 90 / 100, damage * 110 / 100);
+			damage = damage * chain.getDamagePercent() / 100;
+			totalDamage += static_cast<int>(damage);
+			enemy->takeDamage(damage);
+			chain.registerHit();
+			std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 		}
 	
 		

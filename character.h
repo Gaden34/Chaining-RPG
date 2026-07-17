@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include "item.h"
 
 
 class Character {
@@ -18,6 +19,8 @@ protected:
 	int magAttack;
 	float moveSpeed;
 	bool alive = true;
+
+	Inventory inventory;
 
 public:
 	Character() = default;
