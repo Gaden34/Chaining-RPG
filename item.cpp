@@ -188,3 +188,56 @@ bool ItemSystem::useItem(const ItemData& item, Character& user, Character& targe
 
     return appliedAnyEffect;
 }
+
+bool Inventory::addItem(int itemID, int quantity) {
+    if (quantity <= 0) {
+        return false;
+    }
+
+    const ItemData* itemData = ItemDatabase::getItemByID(itemID);
+    if (!itemData) {
+        return false;
+    }
+
+    for (auto& slot : slots) {
+        if (slot.itemID == itemID) {
+            int newQuantity = slot.quantity + quantity;
+            if (newQuantity > itemData->maxStackSize) {
+                slot.quantity = itemData->maxStackSize;
+                return true;
+            } else {
+                slot.quantity = newQuantity;
+                return true;
+            }
+        }
+    }
+
+    if (slots.size() < 1000) {
+        slots.push_back({itemID, std::min(quantity, itemData->maxStackSize)});
+        return true;
+    }
+
+    return false;
+}
+
+bool Inventory::removeItem(int itemID, int amount) {
+    if (amount <= 0) {
+        return false;
+    }
+
+    for (auto it = slots.begin(); it != slots.end(); ++it) {
+        if (it->itemID == itemID) {
+            if (it->quantity > amount) {
+                it->quantity -= amount;
+                return true;
+            } else if (it->quantity == amount) {
+                slots.erase(it);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    return false;
+}
