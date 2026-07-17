@@ -68,5 +68,5 @@ public:
 	bool addItem(int itemID, int amount = 1);
 	bool removeItem(int itemID, int amount = 1);
     int getQuantity(int itemID) const;
-    const std::vector<InventorySlot>& getItems() const;
+    const std::vector<InventorySlot>& getItems() const { return slots; }
 };

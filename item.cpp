@@ -241,3 +241,12 @@ bool Inventory::removeItem(int itemID, int amount) {
 
     return false;
 }
+
+int Inventory::getQuantity(int itemID) const {
+    for (const auto& slot : slots) {
+        if (slot.itemID == itemID) {
+            return slot.quantity;
+        }
+    }
+    return 0;
+}
