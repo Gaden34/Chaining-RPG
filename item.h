@@ -29,6 +29,7 @@ struct ItemData {
 
     int maxStackSize = 1;
     bool isConsumable = true;
+    float stealChance = 0.0f;
 
     ItemType type = ItemType::Heal;
     //Rarity rarity;

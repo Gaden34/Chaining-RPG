@@ -100,6 +100,7 @@ bool ItemDatabase::loadItems(const std::string& filePath) {
         item.description = itemJson.value("description", "");
         item.maxStackSize = itemJson.value("max_stack_size", 1);
         item.isConsumable = itemJson.value("is_consumable", true);
+        item.stealChance = itemJson.value("steal_chance", 0.0f);
         item.type = parseItemType(itemJson.value("type", "Heal"));
 
         if (itemJson.contains("effects") && itemJson["effects"].is_array()) {

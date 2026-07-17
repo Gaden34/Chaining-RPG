@@ -25,4 +25,6 @@ StealResult Skill::useSteal(Character& user, Character& target) {
     if (target.getInventory().getItems().empty()) {
         return StealResult::NoItems;
     }
+
+    
 }

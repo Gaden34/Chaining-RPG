@@ -7,6 +7,7 @@
       "max_stack_size": 99,
       "is_consumable": true,
       "type": "Heal",
+      "steal_chance": 0.9,
       "effects": [
         {
           "target_attribute": "HP",
@@ -23,6 +24,7 @@
       "max_stack_size": 99,
       "is_consumable": true,
       "type": "Heal",
+      "steal_chance": 0.7,
       "effects": [
         {
           "target_attribute": "MP",
