@@ -16,7 +16,7 @@ enum class SkillType {
 
 enum class StealResult {
 	Success,
-	Failure,
+	Failed,
 	NoItems
 };
 

@@ -28,10 +28,21 @@ StealResult Skill::useSteal(Character& user, Character& target, std::mt19937& rn
         return StealResult::NoItems;
     }
 
-    std::uniform_int_distribution<int> dist(0, target.getInventory().getItems().size() - 1);
-    int index = dist(rng);
-    Item stolenItem = target.getInventory().getItems()[index];
+    std::uniform_real_distribution<float> dist(0, 1);
+    for (const auto& item : target.getInventory().getItems()) {
+		const ItemData* itemData = ItemDatabase::getItemByID(item.itemID);
+		if (!itemData) {
+			continue;
+		}
+		float chance = itemData->stealChance;
+		if (dist(rng) < chance) {
+			user.getInventory().addItem(item.itemID, 1);
+			target.getInventory().removeItem(item.itemID, 1);
+			return StealResult::Success;
+		}
+    }
     
+    if 
 
-    return StealResult::Success;
+    return StealResult::Failed;
 }
