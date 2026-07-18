@@ -47,6 +47,7 @@ public:
 	float getMoveSpeed() const { return moveSpeed; }
 	void takeDamage(int amount);
 	bool isAlive() const { return alive; }
+	Inventory& getInventory() { return inventory; }
 
 	
 };

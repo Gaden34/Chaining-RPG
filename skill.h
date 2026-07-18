@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <random>
+
+class Character;
 
 enum class SkillType {
     Attack,
@@ -28,15 +31,13 @@ private:
 	int baseDamage;
 	std::vector<int> hits;
 
-	ChainData* chainData; // Pointer to ChainData for this skill
-
 public:
-	Skill(const std::string& name, const std::string& description, int mpCost, SkillType type, int baseDamage, const std::vector<int>& hits = {}, ChainData* chainData = nullptr);
+	Skill(const std::string& name, const std::string& description, int mpCost, SkillType type, int baseDamage, const std::vector<int>& hits = {});
 	std::vector<int> getHits() const;
 	const std::string& getName() const { return name; }
 	int getMpCost() const { return mpCost; }
 	SkillType getType() const { return type; }
 	static SkillType getSkillTypeFromString(const std::string& type);
-	StealResult useSteal(Character& user, Character& target);
+	StealResult useSteal(Character& user, Character& target, std::mt19937& rng);
 };
 

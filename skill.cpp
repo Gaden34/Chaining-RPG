@@ -1,7 +1,9 @@
 #include "skill.h"
+#include "character.h"
+#include "item.h"
 
-Skill::Skill(const std::string& name, const std::string& description, int mpCost, SkillType type, int baseDamage, const std::vector<int>& hits, ChainData* chainData)
-    : name(name), description(description), mpCost(mpCost), type(type), baseDamage(baseDamage), hits(hits), chainData(chainData) {
+Skill::Skill(const std::string& name, const std::string& description, int mpCost, SkillType type, int baseDamage, const std::vector<int>& hits)
+    : name(name), description(description), mpCost(mpCost), type(type), baseDamage(baseDamage), hits(hits) {
 }
 
 
@@ -21,10 +23,15 @@ SkillType Skill::getSkillTypeFromString(const std::string& type) {
 
 }
 
-StealResult Skill::useSteal(Character& user, Character& target) {
+StealResult Skill::useSteal(Character& user, Character& target, std::mt19937& rng) {
     if (target.getInventory().getItems().empty()) {
         return StealResult::NoItems;
     }
 
+    std::uniform_int_distribution<int> dist(0, target.getInventory().getItems().size() - 1);
+    int index = dist(rng);
+    Item stolenItem = target.getInventory().getItems()[index];
     
+
+    return StealResult::Success;
 }
