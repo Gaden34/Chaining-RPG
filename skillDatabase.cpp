@@ -52,12 +52,7 @@ std::vector<std::unique_ptr<Skill>> SkillDatabase::getSkillsForLevel(const std::
               );
 
             // Handle unique chain parameters if they exist in the JSON object
-            if (skillJson.contains("chain_window")) {
-                skill->initializeChaining(
-                    skillJson["chain_window"].get<float>(),
-                    skillJson["chain_damage_pct"].get<float>()
-                );
-            }
+
 
             unlockedSkills.push_back(std::move(skill));
         }

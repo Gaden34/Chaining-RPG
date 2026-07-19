@@ -25,7 +25,7 @@ SkillType Skill::getSkillTypeFromString(const std::string& type) {
 
 StealResult Skill::useSteal(Character& user, Character& target, std::mt19937& rng) {
     if (target.getInventory().getItems().empty()) {
-        return StealResult::NoItems;
+        return StealResult{StealResult::Result::NoItems, -1};
     }
 
     std::uniform_real_distribution<float> dist(0, 1);
@@ -38,11 +38,9 @@ StealResult Skill::useSteal(Character& user, Character& target, std::mt19937& rn
 		if (dist(rng) < chance) {
 			user.getInventory().addItem(item.itemID, 1);
 			target.getInventory().removeItem(item.itemID, 1);
-			return StealResult::Success;
+			return StealResult{StealResult::Result::Success, item.itemID};
 		}
     }
-    
-    if 
 
-    return StealResult::Failed;
+    return StealResult{StealResult::Result::Failed, -1};
 }

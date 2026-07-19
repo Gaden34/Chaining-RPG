@@ -14,10 +14,15 @@ enum class SkillType {
 	Steal
 };
 
-enum class StealResult {
-	Success,
-	Failed,
-	NoItems
+struct StealResult {
+	enum class Result {
+		Success,
+		Failed,
+		NoItems
+	};
+
+	Result result = Result::Failed;
+	int stolenItemID = -1;
 };
 
 
@@ -35,6 +40,7 @@ public:
 	Skill(const std::string& name, const std::string& description, int mpCost, SkillType type, int baseDamage, const std::vector<int>& hits = {});
 	std::vector<int> getHits() const;
 	const std::string& getName() const { return name; }
+	int getDamage() const { return baseDamage; }
 	int getMpCost() const { return mpCost; }
 	SkillType getType() const { return type; }
 	static SkillType getSkillTypeFromString(const std::string& type);
