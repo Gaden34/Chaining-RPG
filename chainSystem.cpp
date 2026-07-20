@@ -2,10 +2,10 @@
 
 
 const std::array<ChainBonus, 4> ChainSystem::chainBonuses = {{
-	{ 2, 115 },
-	{ 5, 120 },
-	{ 10, 130 },
-	{ 15, 135 }
+	{ 2, 120 },
+	{ 5, 130 },
+	{ 10, 140 },
+	{ 15, 150 }
 }};
 
 void ChainSystem::update(float dt) {

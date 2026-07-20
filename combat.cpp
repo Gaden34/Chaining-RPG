@@ -285,24 +285,25 @@ void Combat::performSkill(QueuedAction& action) {
 void Combat::calculateSkillDamage(Skill* skill, Character* actor, Character* target) {
 
 	int totalDamage = 0;
+	std::cout << actor->getName() << std::endl;
 
 	for (auto& hit : skill->getHits()) {
 		chain.registerHit();
-		int damage = skill->getDamage();
+		float damage = static_cast<float>(skill->getDamage());
 
 		switch (skill->getType()) {
 		case SkillType::Attack: {
-			damage = damage * (100 + actor->getAttack()) / 100;
+			damage = damage * (100.0f + actor->getAttack()) / 100.0f;
 			break;
 		}
 		
 		case SkillType::Magic: {
-			damage = damage * (100 + actor->getMagAttack()) / 100;
+			damage = damage * (100.0f + actor->getMagAttack()) / 100.0f;
 			break;
 		}
 
 		case SkillType::Steal: {
-			damage = damage * (100 + actor->getAttack()) / 100;
+			damage = damage * (100.0f + actor->getAttack()) / 100.0f;
 			break;
 		}
 		default:
@@ -311,10 +312,11 @@ void Combat::calculateSkillDamage(Skill* skill, Character* actor, Character* tar
 
 		}
 		
-		damage = randomRange(damage * 90 / 100, damage * 110 / 100);
-		damage = damage * chain.getDamagePercent() / 100;
-		totalDamage += static_cast<int>(damage);
-		target->takeDamage(damage);
+		damage = randomRange(damage * 0.9f, damage * 1.1f);
+		damage = damage * chain.getDamagePercent() / 100.0f;
+		int finalDamage = static_cast<int>(std::round(damage));
+		totalDamage += finalDamage;
+		target->takeDamage(finalDamage);
 		std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 		
 
