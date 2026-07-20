@@ -33,6 +33,23 @@
           "inflict_status": "None"
         }
       ]
+    },
+    {
+      "id": 3,
+      "name": "Throwing Knife",
+      "description": "A knife that can be thrown at enemies.",
+      "max_stack_size": 99,
+      "is_consumable": true,
+      "type": "Damage",
+      "steal_chance": 0.5,
+      "effects": [
+        {
+          "target_attribute": "None",
+          "amount": -15,
+          "cures_status": "None",
+          "inflict_status": "None"
+        }
+      ]
     }
   ]
 }
