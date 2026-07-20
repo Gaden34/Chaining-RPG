@@ -148,6 +148,7 @@ private:
 	void performAttack(QueuedAction& action);
 	void performSkill(QueuedAction& action);
 	void calculateSkillDamage(Skill* skill, Character* actor, Character* target);
+	void handleSteal (Skill* skill, Character* actor, Character* target);
 	void executeAction(QueuedAction& action);
 	void executeNextAction();
 	void handleQueuedActionMenu();

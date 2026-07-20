@@ -1,4 +1,5 @@
 #include "combat.h"
+#include "item.h"
 #include <iostream>
 #include <algorithm>
 
@@ -279,6 +280,7 @@ void Combat::performSkill(QueuedAction& action) {
 	}
 	player->setMp(player->getMp() - skill->getMpCost());
 	calculateSkillDamage(skill, player, enemy);
+	handleSteal(skill, player, enemy);
 	checkEnemyDeath(*enemy);
 }
 
@@ -322,6 +324,26 @@ void Combat::calculateSkillDamage(Skill* skill, Character* actor, Character* tar
 
 	}
 	messageLog.addMessage(actor->getName() + " uses " + skill->getName() + " on the " + target->getName() + " for " + std::to_string(totalDamage) + " damage!", sf::Color::Black);
+}
+
+void handleSteal(Skill* skill, Character* actor, Character* target) {
+	if (skill->getType() != SkillType::Steal) {
+		return;
+	}
+	StealResult result = skill->useSteal(*actor, *target, rng);
+	switch (result.result) {
+	case StealResult::Result::Success:
+		messageLog.addMessage(actor->getName() + " successfully stole a " + getItemFromID(result.stolenItemID)->name + " from " + target->getName() + "!", sf::Color::Black);
+		break;
+	case StealResult::Result::Failed:
+		messageLog.addMessage(target->getName() + " thwarted the steal.", sf::Color::Red);
+		break;
+	case StealResult::Result::NoItems:
+		messageLog.addMessage("There was nothing to steal.", sf::Color::Black);
+		break;
+	default:
+		break;
+	}
 }
 
 void Combat::executeAction(QueuedAction& action)
