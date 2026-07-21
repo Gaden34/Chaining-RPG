@@ -287,6 +287,20 @@ void Combat::performSkill(QueuedAction& action) {
 	checkEnemyDeath(*enemy);
 }
 
+void Combat::performItem(QueuedAction& action) {
+	Player* player = static_cast<Player*>(action.actor);
+	Character* target = action.target;
+	const ItemData* item = action.item;
+
+	if (!ItemSystem::useItem(*item, *player, *target)) {
+		messageLog.addMessage("Failed to use " + item->name + ".", sf::Color::Red);
+		return;
+	}
+
+	messageLog.addMessage(player->getName() + " uses " + item->name + " on " + target->getName() + ".", sf::Color::Black);
+	checkEnemyDeath(*target);
+}
+
 void Combat::calculateSkillDamage(Skill* skill, Character* actor, Character* target) {
 
 	int totalDamage = 0;

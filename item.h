@@ -15,6 +15,18 @@ enum class Attribute { None = 0, HP, MP };
 
 enum class StatusEffect { None = 0, Poison, Paralysis };
 
+enum class ItemEventKind {
+    Heal,
+    StatusHeal,
+    Buff,
+    Damage
+};
+
+enum class ItemEventTarget {
+    User,
+    Target
+};
+
 struct ItemEffect {
     Attribute targetAttribute = Attribute::None;
     StatusEffect curesStatus = StatusEffect::None;
@@ -43,6 +55,10 @@ struct InventorySlot {
     int itemID;
     int quantity;
 };
+
+struct ItemUseResult {
+
+}
 
 class ItemDatabase {
 private:
