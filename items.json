@@ -12,6 +12,7 @@
         {
           "target_attribute": "HP",
           "amount": 50,
+          "damage_power": 0,
           "cures_status": "None",
           "inflict_status": "None"
         }
@@ -29,6 +30,7 @@
         {
           "target_attribute": "MP",
           "amount": 20,
+          "damage_power": 0,
           "cures_status": "None",
           "inflict_status": "None"
         }
@@ -41,11 +43,30 @@
       "max_stack_size": 99,
       "is_consumable": true,
       "type": "Damage",
-      "steal_chance": 0.5,
+      "steal_chance": 0.7,
       "effects": [
         {
           "target_attribute": "None",
-          "amount": -15,
+          "amount": 0,
+          "damage_power": 15,
+          "cures_status": "None",
+          "inflict_status": "None"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Bat Fang",
+      "description": "A magic fang that can be thrown at enemies and recover a small amount of HP.",
+      "max_stack_size": 99,
+      "is_consumable": true,
+      "type": "Damage",
+      "steal_chance": 0.8,
+      "effects": [
+        {
+          "target_attribute": "None",
+          "amount": 0,
+          "damage_power": 10,
           "cures_status": "None",
           "inflict_status": "None"
         }

@@ -62,6 +62,7 @@ ItemEffect parseEffect(const json& effectJson) {
     effect.curesStatus = parseStatusEffect(effectJson.value("cures_status", "None"));
     effect.inflictStatus = parseStatusEffect(effectJson.value("inflict_status", "None"));
     effect.amount = effectJson.value("amount", 0);
+    effect.damagePower = effectJson.value("damage_power", 0);
     return effect;
 }
 
@@ -145,49 +146,63 @@ bool ItemSystem::useItem(const ItemData& item, Character& user, Character& targe
     (void)user;
     bool appliedAnyEffect = false;
 
-    for (const auto& effect : item.effects) {
-        switch (effect.targetAttribute) {
-            case Attribute::HP:
-                target.setHp(target.getHp() + effect.amount);
+    switch (item.type) {
+        case ItemType::Heal:
+            for (const auto& effect : item.effects) {
+                handleHealingItem(effect, target);
                 appliedAnyEffect = true;
-                break;
-
-            case Attribute::MP:
-                target.setMp(target.getMp() + effect.amount);
+            }
+            break;
+        case ItemType::StatusHeal:
+            for (const auto& effect : item.effects) {
+                handleStatusHealItem(effect, target);
                 appliedAnyEffect = true;
-                break;
-
-            case Attribute::None:
-            default:
-                break;
-        }
-
-        switch (effect.curesStatus) {
-            case StatusEffect::Poison:
-            case StatusEffect::Paralysis:
-                // Status application hooks can be implemented when Character exposes status APIs.
+            }
+            break;
+        case ItemType::Buff:
+            for (const auto& effect : item.effects) {
+                handleBuffItem(effect, target);
                 appliedAnyEffect = true;
-                break;
-
-            case StatusEffect::None:
-            default:
-                break;
-        }
-
-        switch (effect.inflictStatus) {
-            case StatusEffect::Poison:
-            case StatusEffect::Paralysis:
-                // Status application hooks can be implemented when Character exposes status APIs.
+            }
+            break;
+        case ItemType::Damage:
+            for (const auto& effect : item.effects) {
+                handleDamageItem(effect, target);
                 appliedAnyEffect = true;
-                break;
-
-            case StatusEffect::None:
-            default:
-                break;
-        }
+            }
+            break;
+        default:
+            std::cerr << "Unknown item type used: " << static_cast<int>(item.type) << std::endl;
+            break;
     }
 
     return appliedAnyEffect;
+}
+
+void ItemSystem::handleHealingItem(const ItemEffect& effect, Character& target) {
+    if (effect.targetAttribute == Attribute::HP) {
+        target.setHp(target.getHp() + effect.amount);
+    } else if (effect.targetAttribute == Attribute::MP) {
+        target.setMp(target.getMp() + effect.amount);
+    }
+}
+
+void ItemSystem::handleStatusHealItem(const ItemEffect& effect, Character& target) {
+    if (effect.curesStatus != StatusEffect::None) {
+        // Implement status cure logic here when Character exposes status APIs.
+    }
+}
+
+void ItemSystem::handleBuffItem(const ItemEffect& effect, Character& target) {
+    // Implement buff logic here when Character exposes buff APIs.
+}
+
+void ItemSystem::handleDamageItem(const ItemEffect& effect, Character& target) {
+    if (effect.targetAttribute == Attribute::HP) {
+        target.setHp(target.getHp() - effect.damagePower);
+    } else if (effect.targetAttribute == Attribute::MP) {
+        target.setMp(target.getMp() - effect.damagePower);
+    }
 }
 
 bool Inventory::addItem(int itemID, int quantity) {

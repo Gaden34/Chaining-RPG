@@ -20,7 +20,9 @@ struct ItemEffect {
     StatusEffect curesStatus = StatusEffect::None;
     StatusEffect inflictStatus = StatusEffect::None;
     int amount = 0;
+    int damagePower = 0;
 };
+
 
 struct ItemData {
     int id = -1;
@@ -59,6 +61,10 @@ private:
 
 public:
     static bool useItem(const ItemData& item, Character& user, Character& target);
+    static void handleHealingItem(const ItemEffect& effect, Character& target);
+    static void handleStatusHealItem(const ItemEffect& effect, Character& target);
+    static void handleBuffItem(const ItemEffect& effect, Character& target);
+    static void handleDamageItem(const ItemEffect& effect, Character& target);
 };
 
 class Inventory {
