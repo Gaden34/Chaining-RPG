@@ -143,31 +143,30 @@ const ItemData* ItemSystem::getItemFromID(int targetID) {
 }
 
 bool ItemSystem::useItem(const ItemData& item, Character& user, Character& target) {
-    (void)user;
     bool appliedAnyEffect = false;
 
     switch (item.type) {
         case ItemType::Heal:
             for (const auto& effect : item.effects) {
-                handleHealingItem(effect, target);
+                handleHealingItem(effect, user, target);
                 appliedAnyEffect = true;
             }
             break;
         case ItemType::StatusHeal:
             for (const auto& effect : item.effects) {
-                handleStatusHealItem(effect, target);
+                handleStatusHealItem(effect, user, target);
                 appliedAnyEffect = true;
             }
             break;
         case ItemType::Buff:
             for (const auto& effect : item.effects) {
-                handleBuffItem(effect, target);
+                handleBuffItem(effect, user, target);
                 appliedAnyEffect = true;
             }
             break;
         case ItemType::Damage:
             for (const auto& effect : item.effects) {
-                handleDamageItem(effect, target);
+                handleDamageItem(effect, user, target);
                 appliedAnyEffect = true;
             }
             break;
@@ -179,7 +178,7 @@ bool ItemSystem::useItem(const ItemData& item, Character& user, Character& targe
     return appliedAnyEffect;
 }
 
-void ItemSystem::handleHealingItem(const ItemEffect& effect, Character& target) {
+void ItemSystem::handleHealingItem(const ItemEffect& effect, Character& user, Character& target) {
     if (effect.targetAttribute == Attribute::HP) {
         target.setHp(target.getHp() + effect.amount);
     } else if (effect.targetAttribute == Attribute::MP) {
@@ -187,20 +186,22 @@ void ItemSystem::handleHealingItem(const ItemEffect& effect, Character& target) 
     }
 }
 
-void ItemSystem::handleStatusHealItem(const ItemEffect& effect, Character& target) {
+void ItemSystem::handleStatusHealItem(const ItemEffect& effect, Character& user, Character& target) {
     if (effect.curesStatus != StatusEffect::None) {
         // Implement status cure logic here when Character exposes status APIs.
     }
 }
 
-void ItemSystem::handleBuffItem(const ItemEffect& effect, Character& target) {
+void ItemSystem::handleBuffItem(const ItemEffect& effect, Character& user, Character& target) {
     // Implement buff logic here when Character exposes buff APIs.
 }
 
-void ItemSystem::handleDamageItem(const ItemEffect& effect, Character& target) {
+void ItemSystem::handleDamageItem(const ItemEffect& effect, Character& user, Character& target) {
     if (effect.targetAttribute == Attribute::HP) {
-        target.setHp(target.getHp() - effect.damagePower);
+        user.setHp(user.getHp() + effect.amount);
+        target.takeDamage(effect.damagePower);
     } else if (effect.targetAttribute == Attribute::MP) {
+        user.setMp(user.getMp() + effect.amount);
         target.setMp(target.getMp() - effect.damagePower);
     }
 }

@@ -36,7 +36,7 @@ struct QueuedAction {
 	Character* actor = nullptr;
 	Character* target = nullptr;
 	Skill* skill = nullptr;
-	//Item* item;
+	ItemData* item = nullptr;
 };
 
 struct ActiveAnimation {
@@ -83,6 +83,18 @@ public:
 	void handleInput(sf::Keyboard::Key key);
 	void draw(sf::RenderTarget& target);
 	int getSelectedIndex() const;
+};
+
+class ItemMenu : public Menu {
+private:
+	const float menuX = 352.f;
+	const float menuY = 300.f;
+	const float optionSpacing = 12.f;
+
+public:
+	ItemMenu();
+	void populate(const std::vector<ItemData*>& items);
+	void draw(sf::RenderTarget& target);
 };
 
 class QueuedActionMenu : public Menu {
@@ -147,6 +159,7 @@ private:
 	int randomRange(int min, int max);
 	void performAttack(QueuedAction& action);
 	void performSkill(QueuedAction& action);
+	void performItem(QueuedAction& action);
 	void calculateSkillDamage(Skill* skill, Character* actor, Character* target);
 	void handleSteal (Skill* skill, Character* actor, Character* target);
 	void executeAction(QueuedAction& action);

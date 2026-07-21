@@ -61,10 +61,10 @@ private:
 
 public:
     static bool useItem(const ItemData& item, Character& user, Character& target);
-    static void handleHealingItem(const ItemEffect& effect, Character& target);
-    static void handleStatusHealItem(const ItemEffect& effect, Character& target);
-    static void handleBuffItem(const ItemEffect& effect, Character& target);
-    static void handleDamageItem(const ItemEffect& effect, Character& target);
+    static void handleHealingItem(const ItemEffect& effect, Character& user, Character& target);
+    static void handleStatusHealItem(const ItemEffect& effect, Character& user, Character& target);
+    static void handleBuffItem(const ItemEffect& effect, Character& user, Character& target);
+    static void handleDamageItem(const ItemEffect& effect, Character& user, Character& target);
 };
 
 class Inventory {
