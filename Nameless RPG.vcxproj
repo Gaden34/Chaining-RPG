@@ -35,6 +35,7 @@
     <ClCompile Include="combat.cpp" />
     <ClCompile Include="skill.cpp" />
     <ClCompile Include="skillDatabase.cpp" />
+    <ClCompile Include="textUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="chainSystem.h" />
@@ -54,6 +55,7 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="skill.h" />
     <ClInclude Include="skillDatabase.h" />
+    <ClInclude Include="textUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\copilot-instructions.md" />

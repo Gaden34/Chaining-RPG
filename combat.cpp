@@ -1,5 +1,6 @@
 #include "combat.h"
 #include "item.h"
+#include "textUtils.h"
 #include <iostream>
 #include <algorithm>
 
@@ -256,12 +257,14 @@ int Combat::randomRange(int min, int max) {
 void Combat::performAttack(QueuedAction& action) {
 	Player* player = static_cast<Player*>(action.actor);
 	Enemy* enemy = static_cast<Enemy*>(action.target);
-	int damage = randomRange(player->getAttack() * 90 / 100, player->getAttack() * 110 / 100);
+	float damage = static_cast<float>(player->getAttack());
+	damage = randomRange(damage * 0.95f, damage * 1.05f);
 	damage = damage * chain.getDamagePercent() / 100;
-	enemy->takeDamage(damage);
+	int finalDamage = static_cast<int>(std::round(damage));
+	enemy->takeDamage(finalDamage);
 	chain.registerHit();
 	std::cout << "Chain count: " << chain.getChainCount() << std::endl;
-	messageLog.addMessage(player->getName() + " hits the " + enemy->getName() + " for " + std::to_string(damage) + " damage!", sf::Color::Black);
+	messageLog.addMessage(player->getName() + " hits the " + TextUtils::lowerFirst(enemy->getName()) + " for " + std::to_string(finalDamage) + " damage!", sf::Color::Black);
 	
 	checkEnemyDeath(*enemy);
 	if (actionQueue.empty()) {
@@ -314,7 +317,7 @@ void Combat::calculateSkillDamage(Skill* skill, Character* actor, Character* tar
 
 		}
 		
-		damage = randomRange(damage * 0.9f, damage * 1.1f);
+		damage = randomRange(damage * 0.95f, damage * 1.05f);
 		damage = damage * chain.getDamagePercent() / 100.0f;
 		int finalDamage = static_cast<int>(std::round(damage));
 		totalDamage += finalDamage;
@@ -323,7 +326,7 @@ void Combat::calculateSkillDamage(Skill* skill, Character* actor, Character* tar
 		
 
 	}
-	messageLog.addMessage(actor->getName() + " uses " + skill->getName() + " on the " + target->getName() + " for " + std::to_string(totalDamage) + " damage!", sf::Color::Black);
+	messageLog.addMessage(actor->getName() + " uses " + skill->getName() + " on the " + TextUtils::lowerFirst(target->getName()) + " for " + std::to_string(totalDamage) + " damage!", sf::Color::Black);
 }
 
 void Combat::handleSteal(Skill* skill, Character* actor, Character* target) {
@@ -332,12 +335,13 @@ void Combat::handleSteal(Skill* skill, Character* actor, Character* target) {
 	}
 	StealResult result = skill->useSteal(*actor, *target, rng);
 	switch (result.result) {
-	case StealResult::Result::Success:
+	case StealResult::Result::Success: {
 		const ItemData* stolenItem = ItemDatabase::getItemByID(result.stolenItemID);
 		messageLog.addMessage(actor->getName() + " successfully stole a " + stolenItem->name + " from " + target->getName() + "!", sf::Color::Black);
 		break;
+	}
 	case StealResult::Result::Failed:
-		messageLog.addMessage(target->getName() + " thwarted the steal.", sf::Color::Red);
+		messageLog.addMessage(target->getName() + " thwarted the steal.", sf::Color::Black);
 		break;
 	case StealResult::Result::NoItems:
 		messageLog.addMessage("There was nothing to steal.", sf::Color::Black);
