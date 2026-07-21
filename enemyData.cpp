@@ -2,7 +2,7 @@
 
 EnemyData knight{
 	"Knight",
-	24,
+	63,
 	10,
 	8,
 	5,
@@ -13,7 +13,7 @@ EnemyData knight{
 
 EnemyData bat{
 	"Bat",
-	18,
+	52,
 	6,
 	6,
 	2,
