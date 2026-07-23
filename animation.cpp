@@ -1,24 +1,35 @@
 #include "animation.h"
 
+Animation::Animation(const std::vector<AnimationFrame>& newFrames, bool shouldLoop) {
+	setAnimation(newFrames, shouldLoop);
+}
+
 void Animation::update(float dt) {
-	if (frames.empty()) return;
+	if (frames.empty() || finished) return;
 
 	elapsedTime += dt;
 
-	if (elapsedTime >= frames[currentFrame].duration) {
+	while (elapsedTime >= frames[currentFrame].duration) {
 		elapsedTime -= frames[currentFrame].duration;
-		currentFrame++;
-
-		if (currentFrame >= frames.size()) {
-			currentFrame = 0;
+		
+		if (currentFrame + 1 < frames.size()) {
+			currentFrame++;
+		} else if (loop) {
+				currentFrame = 0;
+			} else {
+				finished = true;
+				break;
+			}
 		}
 	}
 }
 
-void Animation::setAnimation(const std::vector<AnimationFrame>& newFrames) {
+void Animation::setAnimation(const std::vector<AnimationFrame>& newFrames, bool shouldLoop) {
 	frames = newFrames;
+	loop = shouldLoop;
 	currentFrame = 0;
 	elapsedTime = 0.0f;
+	finished = frames.empty();
 }
 
 sf::IntRect Animation::getCurrentFrame() const {
