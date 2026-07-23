@@ -35,6 +35,21 @@ struct ItemEffect {
     int damagePower = 0;
 };
 
+struct ItemEffectEvent {
+    ItemEventKind kind = ItemEventKind::Heal;
+    ItemEventTarget affected = ItemEventTarget::User;
+    Attribute attribute = Attribute::None;
+    StatusEffect status = StatusEffect::None;
+    int requestedAmount = 0;
+    int appliedAmount = 0;
+};
+
+struct ItemUseResult {
+    bool success = false;
+    std::string failureReason;
+    std::vector<ItemEffectEvent> effectEvents;
+}
+
 
 struct ItemData {
     int id = -1;
@@ -58,7 +73,7 @@ struct InventorySlot {
 
 struct ItemUseResult {
 
-};
+}
 
 class ItemDatabase {
 private:
@@ -76,11 +91,11 @@ private:
     static const ItemData* getItemFromID(int targetID);
 
 public:
-    static bool useItem(const ItemData& item, Character& user, Character& target);
-    static void handleHealingItem(const ItemEffect& effect, Character& user, Character& target);
-    static void handleStatusHealItem(const ItemEffect& effect, Character& user, Character& target);
-    static void handleBuffItem(const ItemEffect& effect, Character& user, Character& target);
-    static void handleDamageItem(const ItemEffect& effect, Character& user, Character& target);
+    static ItemUseResult useItem(const ItemData& item, Character& user, Character& target);
+    static void handleHealingItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result);
+    static void handleStatusHealItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result);
+    static void handleBuffItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result);
+    static void handleDamageItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result);
 };
 
 class Inventory {

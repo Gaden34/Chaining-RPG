@@ -142,43 +142,50 @@ const ItemData* ItemSystem::getItemFromID(int targetID) {
     return ItemDatabase::getItemByID(targetID);
 }
 
-bool ItemSystem::useItem(const ItemData& item, Character& user, Character& target) {
-    bool appliedAnyEffect = false;
+ItemUseResult ItemSystem::useItem(const ItemData& item, Character& user, Character& target) {
+    ItemUseResult result;
+
+    if (item.effects.empty()) {
+        result.failureReason = "Item has no effect.";
+        return result;
+    }
 
     switch (item.type) {
         case ItemType::Heal:
             for (const auto& effect : item.effects) {
-                handleHealingItem(effect, user, target);
-                appliedAnyEffect = true;
+                handleHealingItem(effect, user, target, result);
             }
             break;
         case ItemType::StatusHeal:
             for (const auto& effect : item.effects) {
-                handleStatusHealItem(effect, user, target);
-                appliedAnyEffect = true;
+                handleStatusHealItem(effect, user, target, result);
             }
             break;
         case ItemType::Buff:
             for (const auto& effect : item.effects) {
-                handleBuffItem(effect, user, target);
-                appliedAnyEffect = true;
+                handleBuffItem(effect, user, target, result);
             }
             break;
         case ItemType::Damage:
             for (const auto& effect : item.effects) {
-                handleDamageItem(effect, user, target);
-                appliedAnyEffect = true;
+                handleDamageItem(effect, user, target, result);
             }
             break;
         default:
-            std::cerr << "Unknown item type used: " << static_cast<int>(item.type) << std::endl;
+            result.failureReason = "Unknown item type.";
             break;
     }
 
-    return appliedAnyEffect;
+    if (result.failureReason.empty() && result.effectEvents.empty()) {
+        result.failureReason = "Item had no effect.";
+    }
+
+    result.success = result.failureReason.empty();
+
+    return result;
 }
 
-void ItemSystem::handleHealingItem(const ItemEffect& effect, Character& user, Character& target) {
+void ItemSystem::handleHealingItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result) {
     if (effect.targetAttribute == Attribute::HP) {
         target.setHp(target.getHp() + effect.amount);
     } else if (effect.targetAttribute == Attribute::MP) {
@@ -186,17 +193,17 @@ void ItemSystem::handleHealingItem(const ItemEffect& effect, Character& user, Ch
     }
 }
 
-void ItemSystem::handleStatusHealItem(const ItemEffect& effect, Character& user, Character& target) {
+void ItemSystem::handleStatusHealItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result) {
     if (effect.curesStatus != StatusEffect::None) {
         // Implement status cure logic here when Character exposes status APIs.
     }
 }
 
-void ItemSystem::handleBuffItem(const ItemEffect& effect, Character& user, Character& target) {
+void ItemSystem::handleBuffItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result) {
     // Implement buff logic here when Character exposes buff APIs.
 }
 
-void ItemSystem::handleDamageItem(const ItemEffect& effect, Character& user, Character& target) {
+void ItemSystem::handleDamageItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result) {
     if (effect.targetAttribute == Attribute::HP) {
         user.setHp(user.getHp() + effect.amount);
         target.takeDamage(effect.damagePower);
