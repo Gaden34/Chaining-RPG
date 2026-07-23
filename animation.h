@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <unordered_map>
 
 
 struct AnimationFrame {
@@ -8,6 +9,28 @@ struct AnimationFrame {
 	float duration;
 };
 
+struct SpriteSheetGridSpec {
+	int totalFrames = 0;
+	int columns = 4;
+	int frameWidth = 0; 
+	int frameHeight = 0;
+	float frameDuration = 0.1f;
+	int startX = 0;
+	int startY = 0;
+};
+
+struct AnimationClip {
+	std::vector<AnimationFrame> frames;
+	bool loop = true;
+};
+
+struct AnimationAsset {
+	std::string texturePath;
+	std::unordered_map<std::string, AnimationClip> clips;
+};
+
+std::vector<AnimationFrame> buildGridFrames (const SpriteSheetGridSpec& spec);
+AnimationClip buildClipFromGrid(const SpriteSheetGredSpec& spec, bool loop);
 
 class Animation
 {
@@ -30,3 +53,10 @@ public:
 	sf::IntRect getCurrentFrame() const;
 };
 
+class AnimationLoader {
+private:
+
+
+public:
+	static bool loadAssetFromFile(const std::string& filePath, const std::string& assetName, AnimationAsset& outAsset);
+};
