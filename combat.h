@@ -170,7 +170,7 @@ private:
 	void updatePlayerAnimation(float dt);
 	void updateEnemyAnimation(float dt);
 	std::vector<EnemySpawn> makeRandomEncounter();
-	void checkEnemyDeath(Enemy& enemy);
+	void handleDeath(Character& character);
 	void eraseDeadEnemies();
 	void checkCombatEnd();
 	void advanceActivePlayer();
