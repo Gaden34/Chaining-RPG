@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <memory>
+#include "animation.h"
 #include "character.h"
 #include "discipline.h"
 #include "disciplines.h"
@@ -17,6 +18,8 @@ private:
 	MessageLog& messageLog;
 	DisciplineID discipline;
 	std::vector<std::unique_ptr<Skill>> skills;
+	Animation walkAnimation;
+	sf::Texture walkTexture;
 
 public:
 	Player(MessageLog& m, std::string n, std::string textureName);

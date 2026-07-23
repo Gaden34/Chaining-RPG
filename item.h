@@ -58,7 +58,7 @@ struct InventorySlot {
 
 struct ItemUseResult {
 
-}
+};
 
 class ItemDatabase {
 private:

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="animation.cpp" />
     <ClCompile Include="chainSystem.cpp" />
     <ClCompile Include="character.cpp" />
     <ClCompile Include="combatTestSetup.cpp" />
@@ -38,6 +39,7 @@
     <ClCompile Include="textUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="animation.h" />
     <ClInclude Include="chainSystem.h" />
     <ClInclude Include="character.h" />
     <ClInclude Include="combat.h" />

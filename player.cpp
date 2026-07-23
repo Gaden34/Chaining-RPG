@@ -11,14 +11,38 @@ Player::Player(MessageLog& m, std::string n, std::string textureName) : messageL
 	maxMp = 30;
 	mp = maxMp;
 	attack = 25;
+
+
+	walkTexture.loadFromFile("assets/spikyWalkFront-Sheet.png");
+	std::vector<AnimationFrame> walkFrames;
+	int totalFrames = 10;
+	int cols = 4;
+	int frameW = 32, frameH = 32;
+	float frameDuration = 0.1f;
+
+	for (int i = 0; i < totalFrames; i++) {
+		int col = i % cols;
+		int row = i / cols;
+		walkFrames.push_back({ sf::IntRect(col * frameW, row * frameH, frameW, frameH), frameDuration });
+	}
+	walkAnimation.setAnimation(walkFrames);
 }
 
 void Player::update(float dt) {
 	move(dt);
+	if (isMoving) {
+		walkAnimation.update(dt);
+	}
 }
 
 void Player::draw(sf::RenderTarget& target) {
+	if (isMoving) {
+		sprite.setTexture(walkTexture);
+		sprite.setTextureRect(walkAnimation.getCurrentFrame());
+		}
+
 	target.draw(sprite);
+
 }
 
 void Player::move(float dt) {

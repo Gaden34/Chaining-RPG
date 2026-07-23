@@ -266,7 +266,7 @@ void Combat::performAttack(QueuedAction& action) {
 	std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 	messageLog.addMessage(player->getName() + " hits the " + TextUtils::lowerFirst(enemy->getName()) + " for " + std::to_string(finalDamage) + " damage!", sf::Color::Black);
 	
-	checkEnemyDeath(*enemy);
+	handleDeath(*enemy);
 	if (actionQueue.empty()) {
 		eraseDeadEnemies();
 		resetEnemyIndex();
@@ -284,7 +284,7 @@ void Combat::performSkill(QueuedAction& action) {
 	player->setMp(player->getMp() - skill->getMpCost());
 	calculateSkillDamage(skill, player, enemy);
 	handleSteal(skill, player, enemy);
-	checkEnemyDeath(*enemy);
+	handleDeath(*enemy);
 }
 
 void Combat::performItem(QueuedAction& action) {
@@ -298,7 +298,7 @@ void Combat::performItem(QueuedAction& action) {
 	}
 
 	messageLog.addMessage(player->getName() + " uses " + item->name + " on " + target->getName() + ".", sf::Color::Black);
-	checkEnemyDeath(*target);
+	handleDeath(*target);
 }
 
 void Combat::calculateSkillDamage(Skill* skill, Character* actor, Character* target) {
@@ -562,13 +562,16 @@ std::vector<EnemySpawn> Combat::makeRandomEncounter() {
 	return encounter;
 }
 
-void Combat::checkEnemyDeath(Enemy& enemy) {
-	if (enemy.getHp() <= 0) {
-		enemy.setHp(0);
+void Combat::handleDeath(Character& character) {
+	if (character.getHp() > 0) return;
+	
+		character.setHp(0);
 
-		messageLog.addMessage(party[activePlayerIndex].getName() + " defeated the " + enemy.getName() + " and gained " + std::to_string(enemy.getExpValue()) + " experience points!", sf::Color::Blue);
-		for (auto& player : party) {
-			player.addExp(enemy.getExpValue());
+		if (Enemy* enemy = dynamic_cast<Enemy*>(&character)) {
+			messageLog.addMessage(party[activePlayerIndex].getName() + " defeated the " + enemy->getName() + " and gained " + std::to_string(enemy->getExpValue()) + " experience points!", sf::Color::Blue);
+			for (auto& player : party) {
+				player.addExp(enemy->getExpValue());
+			}
 		}
 
 		for (auto& enemy : enemies) {
@@ -578,7 +581,6 @@ void Combat::checkEnemyDeath(Enemy& enemy) {
 		}
 		currentState = CombatState::Victory;
 	}
-}
 
 void Combat::eraseDeadEnemies() {
 	std::erase_if(enemies, [](const auto& enemy) {
