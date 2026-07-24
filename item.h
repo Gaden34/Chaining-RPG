@@ -71,10 +71,6 @@ struct InventorySlot {
     int quantity;
 };
 
-struct ItemUseResult {
-
-}
-
 class ItemDatabase {
 private:
     static std::vector<ItemData> m_items;
