@@ -1,12 +1,16 @@
 #include "animation.h"
 
+#include <fstream>
+#include <iostream>
+
+#include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 
 std::vector<AnimationFrame> buildGridFrames(const SpriteSheetGridSpec& spec) {
 	std::vector<AnimationFrame> frames;
-	if (spec.totalFrames <= 0 || spec.frameWidth <= 0 || spec.frameHeight <= 0) {
-		return frames; // Return empty if invalid spec
+    if (spec.totalFrames <= 0 || spec.columns <= 0 || spec.frameWidth <= 0 || spec.frameHeight <= 0 || spec.frameDuration <= 0.0f) {
+        return frames;
 	}
 
 	frames.reserve(static_cast<std::size_t>(spec.totalFrames));
@@ -29,26 +33,35 @@ AnimationClip buildClipFromGrid(const SpriteSheetGridSpec& spec, bool loop) {
 	return clip;
 }
 
+Animation::Animation(const AnimationClip& clip) {
+	setAnimation(clip);
+}
+
 Animation::Animation(const std::vector<AnimationFrame>& newFrames, bool shouldLoop) {
 	setAnimation(newFrames, shouldLoop);
 }
 
+void Animation::setAnimation(const AnimationClip& clip) {
+    setAnimation(clip.frames, clip.loop);
+}
+
 void Animation::update(float dt) {
-	if (frames.empty() || finished) return;
+    if (frames.empty() || finished) {
+        return;
+    }
 
 	elapsedTime += dt;
 
 	while (elapsedTime >= frames[currentFrame].duration) {
 		elapsedTime -= frames[currentFrame].duration;
-		
+
 		if (currentFrame + 1 < frames.size()) {
-			currentFrame++;
+            ++currentFrame;
 		} else if (loop) {
-				currentFrame = 0;
-			} else {
-				finished = true;
-				break;
-			}
+            currentFrame = 0;
+        } else {
+            finished = true;
+            break;
 		}
 	}
 }
@@ -68,24 +81,24 @@ sf::IntRect Animation::getCurrentFrame() const {
 
 namespace {
 	bool parseGridSpec(const json& node, SpriteSheetGridSpec& outSpec) {
-		 if (!node.is_object()) {
-        return false;
+        if (!node.is_object()) {
+            return false;
+        }
+
+        outSpec.totalFrames = node.value("totalFrames", 0);
+        outSpec.columns = node.value("columns", 4);
+        outSpec.frameWidth = node.value("frameWidth", 0);
+        outSpec.frameHeight = node.value("frameHeight", 0);
+        outSpec.frameDuration = node.value("frameDuration", 0.1f);
+        outSpec.startX = node.value("startX", 0);
+        outSpec.startY = node.value("startY", 0);
+
+        return outSpec.totalFrames > 0
+            && outSpec.columns > 0
+            && outSpec.frameWidth > 0
+            && outSpec.frameHeight > 0
+            && outSpec.frameDuration > 0.0f;
     }
-
-    outSpec.totalFrames = node.value("totalFrames", 0);
-    outSpec.columns = node.value("columns", 4);
-    outSpec.frameWidth = node.value("frameWidth", 0);
-    outSpec.frameHeight = node.value("frameHeight", 0);
-    outSpec.frameDuration = node.value("frameDuration", 0.1f);
-    outSpec.startX = node.value("startX", 0);
-    outSpec.startY = node.value("startY", 0);
-
-    return outSpec.totalFrames > 0
-        && outSpec.columns > 0
-        && outSpec.frameWidth > 0
-        && outSpec.frameHeight > 0
-        && outSpec.frameDuration > 0.0f;
-}
 }
 
 bool AnimationLoader::loadAssetFromFile(
@@ -95,7 +108,7 @@ bool AnimationLoader::loadAssetFromFile(
 ) {
     std::ifstream file(filePath);
     if (!file.is_open()) {
-        std::cerr << "Failed to open animation file: " << filePath << "\n";
+        std::cerr << "Failed to open animation file at: " << filePath << '\n';
         return false;
     }
 
@@ -103,12 +116,12 @@ bool AnimationLoader::loadAssetFromFile(
     try {
         file >> root;
     } catch (const std::exception& e) {
-        std::cerr << "Failed to parse animation JSON: " << e.what() << "\n";
+        std::cerr << "Failed to parse animation JSON: " << e.what() << '\n';
         return false;
     }
 
     if (!root.contains(assetName)) {
-        std::cerr << "Missing asset in animation JSON: " << assetName << "\n";
+        std::cerr << "Missing animation asset: " << assetName << '\n';
         return false;
     }
 
@@ -117,13 +130,13 @@ bool AnimationLoader::loadAssetFromFile(
     outAsset.texturePath = assetNode.value("texture", "");
 
     if (outAsset.texturePath.empty()) {
-        std::cerr << "Animation asset has empty texture path: " << assetName << "\n";
+        std::cerr << "Animation asset has no texture path: " << assetName << '\n';
         return false;
     }
 
     const json& animationsNode = assetNode["animations"];
     if (!animationsNode.is_object()) {
-        std::cerr << "animations must be an object for asset: " << assetName << "\n";
+        std::cerr << "animations must be an object for asset: " << assetName << '\n';
         return false;
     }
 
@@ -133,7 +146,7 @@ bool AnimationLoader::loadAssetFromFile(
 
         SpriteSheetGridSpec spec;
         if (!parseGridSpec(clipNode, spec)) {
-            std::cerr << "Invalid clip spec for " << assetName << ":" << clipName << "\n";
+            std::cerr << "Invalid clip spec for " << assetName << ": " << clipName << '\n';
             continue;
         }
 
@@ -142,6 +155,4 @@ bool AnimationLoader::loadAssetFromFile(
     }
 
     return !outAsset.clips.empty();
-}
-	})
 }

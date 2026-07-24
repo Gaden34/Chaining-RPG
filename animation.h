@@ -1,7 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <vector>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 
 struct AnimationFrame {
@@ -12,7 +13,7 @@ struct AnimationFrame {
 struct SpriteSheetGridSpec {
 	int totalFrames = 0;
 	int columns = 4;
-	int frameWidth = 0; 
+	int frameWidth = 0;
 	int frameHeight = 0;
 	float frameDuration = 0.1f;
 	int startX = 0;
@@ -29,14 +30,14 @@ struct AnimationAsset {
 	std::unordered_map<std::string, AnimationClip> clips;
 };
 
-std::vector<AnimationFrame> buildGridFrames (const SpriteSheetGridSpec& spec);
-AnimationClip buildClipFromGrid(const SpriteSheetGredSpec& spec, bool loop);
+std::vector<AnimationFrame> buildGridFrames(const SpriteSheetGridSpec& spec);
+AnimationClip buildClipFromGrid(const SpriteSheetGridSpec& spec, bool loop = true);
 
 class Animation
 {
 private:
 	std::vector<AnimationFrame> frames;
-	int currentFrame = 0;
+	std::size_t currentFrame = 0;
 	float elapsedTime = 0.0f;
 	bool loop = true;
 	bool finished = false;
@@ -44,8 +45,10 @@ private:
 
 public:
 	Animation() = default;
+	explicit Animation(const AnimationClip& clip);
 	explicit Animation(const std::vector<AnimationFrame>& newFrames, bool shouldLoop = true);
 	void update(float dt);
+	void setAnimation(const AnimationClip& clip);
 	void setAnimation(const std::vector<AnimationFrame>& newFrames, bool shouldLoop = true);
 	void reset() { currentFrame = 0; elapsedTime = 0.0f; finished = frames.empty(); }
 	bool isFinished() const { return finished; }
