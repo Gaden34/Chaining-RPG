@@ -11,6 +11,8 @@
 #include "menu.h"
 #include "chainSystem.h"
 
+class Inventory;
+
 enum class CombatState {
 	PlayerTurn,
 	SelectingEnemy,
@@ -93,7 +95,7 @@ private:
 
 public:
 	ItemMenu();
-	void populate(const std::vector<ItemData*>& items);
+	void populate(const Inventory& inventory);
 	void draw(sf::RenderTarget& target);
 };
 
@@ -123,8 +125,10 @@ private:
 	std::mt19937& rng;
 	CombatMenu menu;
 	SkillMenu skillMenu;
+	ItemMenu itemMenu;
 	QueuedActionMenu queuedActionMenu;
 	bool inSkillMenu = false;
+	bool inItemMenu = false;
 	ChainSystem chain;
 	MessageLog& messageLog;
 	QueuedAction currentAction;

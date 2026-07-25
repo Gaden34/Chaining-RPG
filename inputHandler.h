@@ -5,15 +5,15 @@ class Command {
 private:
 
 public:
-    virtual ~Command()
-    virtual void execute();
-}
+    virtual ~Command() = default;
+    virtual void execute() = 0;
+};
 
 
 
 class InputHandler {
 private:
-    Command*
+    //Command*
 
 
 public:

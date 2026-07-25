@@ -30,7 +30,7 @@ struct AnimationAsset {
 };
 
 std::vector<AnimationFrame> buildGridFrames (const SpriteSheetGridSpec& spec);
-AnimationClip buildClipFromGrid(const SpriteSheetGredSpec& spec, bool loop);
+AnimationClip buildClipFromGrid(const SpriteSheetGridSpec& spec, bool loop);
 
 class Animation
 {

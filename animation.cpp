@@ -1,4 +1,7 @@
 #include "animation.h"
+#include <nlohmann/json.hpp>
+#include <fstream>
+#include <iostream>
 
 
 using json = nlohmann::json;
@@ -51,7 +54,6 @@ void Animation::update(float dt) {
 			}
 		}
 	}
-}
 
 void Animation::setAnimation(const std::vector<AnimationFrame>& newFrames, bool shouldLoop) {
 	frames = newFrames;
@@ -88,11 +90,7 @@ namespace {
 }
 }
 
-bool AnimationLoader::loadAssetFromFile(
-    const std::string& filePath,
-    const std::string& assetName,
-    AnimationAsset& outAsset
-) {
+bool AnimationLoader::loadAssetFromFile(const std::string& filePath, const std::string& assetName, AnimationAsset& outAsset) {
     std::ifstream file(filePath);
     if (!file.is_open()) {
         std::cerr << "Failed to open animation file: " << filePath << "\n";
@@ -142,6 +140,4 @@ bool AnimationLoader::loadAssetFromFile(
     }
 
     return !outAsset.clips.empty();
-}
-	})
 }

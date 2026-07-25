@@ -186,11 +186,24 @@ ItemUseResult ItemSystem::useItem(const ItemData& item, Character& user, Charact
 }
 
 void ItemSystem::handleHealingItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result) {
+    ItemEffectEvent event;
+    event.kind = ItemEventKind::Heal;
+    event.affected = ItemEventTarget::Target;
+    event.attribute = effect.targetAttribute;
+    event.requestedAmount = effect.amount;
+
     if (effect.targetAttribute == Attribute::HP) {
+        int before = target.getHp();
         target.setHp(target.getHp() + effect.amount);
+        event.appliedAmount = target.getHp() - before;
     } else if (effect.targetAttribute == Attribute::MP) {
+        int before = target.getMp();
         target.setMp(target.getMp() + effect.amount);
+        event.appliedAmount = target.getMp() - before;
+    } else {
+        return;
     }
+    result.effectEvents.push_back(event);
 }
 
 void ItemSystem::handleStatusHealItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result) {
@@ -204,13 +217,27 @@ void ItemSystem::handleBuffItem(const ItemEffect& effect, Character& user, Chara
 }
 
 void ItemSystem::handleDamageItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result) {
+    ItemEffectEvent event;
+    event.kind = ItemEventKind::Damage;
+    event.affected = ItemEventTarget::Target;
+    event.attribute = effect.targetAttribute;
+
     if (effect.targetAttribute == Attribute::HP) {
-        user.setHp(user.getHp() + effect.amount);
+        event.requestedAmount = effect.damagePower;
         target.takeDamage(effect.damagePower);
+        event.appliedAmount = effect.damagePower;
+        if (effect.amount != 0)
+            user.setHp(user.getHp() + effect.amount);
     } else if (effect.targetAttribute == Attribute::MP) {
-        user.setMp(user.getMp() + effect.amount);
+        event.requestedAmount = effect.damagePower;
         target.setMp(target.getMp() - effect.damagePower);
+        event.appliedAmount = effect.damagePower;
+        if (effect.amount != 0)
+            user.setMp(user.getMp() + effect.amount);
+    } else {
+        return;
     }
+    result.effectEvents.push_back(event);
 }
 
 bool Inventory::addItem(int itemID, int quantity) {

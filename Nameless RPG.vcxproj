@@ -27,6 +27,7 @@
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemyData.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="inputHandler.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map.cpp" />
@@ -50,6 +51,7 @@
     <ClInclude Include="enemyData.h" />
     <ClInclude Include="enums.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="inputHandler.h" />
     <ClInclude Include="item.h" />
     <ClInclude Include="map.h" />
     <ClInclude Include="menu.h" />

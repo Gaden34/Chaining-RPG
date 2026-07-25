@@ -48,7 +48,7 @@ struct ItemUseResult {
     bool success = false;
     std::string failureReason;
     std::vector<ItemEffectEvent> effectEvents;
-}
+};
 
 
 struct ItemData {

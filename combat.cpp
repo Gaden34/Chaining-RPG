@@ -73,7 +73,9 @@ case CombatState::PlayerTurn:
 		nameLabel.setFillColor(sf::Color::White);
 		target.draw(nameLabel);
 	}
-		if (inSkillMenu)
+		if (inItemMenu)
+			itemMenu.draw(target);
+		else if (inSkillMenu)
 			skillMenu.draw(target);
 		else
 			menu.draw(target);
@@ -101,6 +103,8 @@ void Combat::start() {
 	currentAction = {};
 	menu.reset();
 	inSkillMenu = false;
+	inItemMenu = false;
+	itemMenu.reset();
 	enemies.clear();
 
 	for (const EnemySpawn& spawn : encounter) {
@@ -154,7 +158,41 @@ void Combat::handlePlayerTurn() {
 
 	if (playerActed[activePlayerIndex]) return;
 
-	if (inSkillMenu) {
+	if (inItemMenu) {
+		if (upPressed && !itemMenu.getLastUpPressed())
+			itemMenu.moveUp();
+		if (downPressed && !itemMenu.getLastDownPressed())
+			itemMenu.moveDown();
+		if (enterPressed && !itemMenu.getLastEnterPressed()) {
+			const auto& slots = party[activePlayerIndex].getInventory().getItems();
+			int index = itemMenu.getSelectedIndex();
+			if (!slots.empty() && index >= 0 && index < (int)slots.size()) {
+				const ItemData* item = ItemDatabase::getItemByID(slots[index].itemID);
+				if (item) {
+					currentAction = {};
+					currentAction.type = ActionType::Item;
+					currentAction.actor = &party[activePlayerIndex];
+					currentAction.target = &party[activePlayerIndex];
+					currentAction.item = const_cast<ItemData*>(item);
+					actionQueue.push_back(currentAction);
+					currentAction = {};
+					inItemMenu = false;
+					itemMenu.reset();
+					advanceActivePlayer();
+					menu.setLastEnterPressed(true);
+				}
+			}
+		}
+		if (escapePressed && !itemMenu.getLastEscapePressed()) {
+			inItemMenu = false;
+			itemMenu.reset();
+		}
+		itemMenu.setLastUpPressed(upPressed);
+		itemMenu.setLastDownPressed(downPressed);
+		itemMenu.setLastEnterPressed(enterPressed);
+		itemMenu.setLastEscapePressed(escapePressed);
+	}
+	else if (inSkillMenu) {
 		if (upPressed && !skillMenu.getLastUpPressed())
 			skillMenu.handleInput(sf::Keyboard::Up);
 		if (downPressed && !skillMenu.getLastDownPressed())
@@ -204,6 +242,9 @@ void Combat::handlePlayerTurn() {
 				inSkillMenu = true;
 				break;
 			case CombatMenu::MenuOption::Item:
+				itemMenu.populate(party[activePlayerIndex].getInventory());
+				itemMenu.setLastEnterPressed(true);
+				inItemMenu = true;
 				break;
 			case CombatMenu::MenuOption::Defend:
 				break;
@@ -292,12 +333,40 @@ void Combat::performItem(QueuedAction& action) {
 	Character* target = action.target;
 	const ItemData* item = action.item;
 
-	if (!ItemSystem::useItem(*item, *player, *target)) {
-		messageLog.addMessage("Failed to use " + item->name + ".", sf::Color::Red);
+	ItemUseResult result = ItemSystem::useItem(*item, *player, *target);
+
+	if (!result.success) {
+		messageLog.addMessage("Failed to use " + item->name + ": " + result.failureReason, sf::Color::Red);
 		return;
 	}
 
-	messageLog.addMessage(player->getName() + " uses " + item->name + " on " + target->getName() + ".", sf::Color::Black);
+	if (item->isConsumable)
+		player->getInventory().removeItem(item->id, 1);
+
+	for (const auto& event : result.effectEvents) {
+		std::string msg = player->getName() + " uses " + item->name;
+		switch (event.kind) {
+		case ItemEventKind::Heal:
+			if (event.attribute == Attribute::HP)
+				msg += " on " + target->getName() + ", restoring " + std::to_string(event.appliedAmount) + " HP!";
+			else if (event.attribute == Attribute::MP)
+				msg += " on " + target->getName() + ", restoring " + std::to_string(event.appliedAmount) + " MP!";
+			break;
+		case ItemEventKind::Damage:
+			msg += " on " + target->getName() + " for " + std::to_string(event.appliedAmount) + " damage!";
+			break;
+		case ItemEventKind::StatusHeal:
+			msg += ", curing " + target->getName() + " of a status!";
+			break;
+		case ItemEventKind::Buff:
+			msg += " on " + target->getName() + ".";
+			break;
+		default:
+			break;
+		}
+		messageLog.addMessage(msg, sf::Color::Green);
+	}
+
 	handleDeath(*target);
 }
 
@@ -378,7 +447,7 @@ void Combat::executeAction(QueuedAction& action)
 		break;
 
 	case ActionType::Item:
-		//performItem(action);
+		performItem(action);
 		break;
 
 	case ActionType::Defend:
@@ -478,6 +547,8 @@ void Combat::advanceActivePlayer() {
 	activePlayerIndex = 0;
 	menu.reset();
 	inSkillMenu = false;
+	inItemMenu = false;
+	itemMenu.reset();
 	queuedActionMenu.populate(actionQueue);
 	currentState = CombatState::ChoosingQueuedActions;
 }
@@ -731,4 +802,31 @@ void QueuedActionMenu::draw(sf::RenderTarget& target) {
 
 void Combat::resetEnemyIndex() {
 	activeEnemyIndex = 0;
+}
+
+ItemMenu::ItemMenu() {
+	if (!font.loadFromFile("assets/Roboto_Condensed-Black.ttf")) {
+		std::cerr << "Failed to load font!" << std::endl;
+	}
+}
+
+void ItemMenu::populate(const Inventory& inventory) {
+	optionTexts.clear();
+	selectedIndex = 0;
+
+	for (const auto& slot : inventory.getItems()) {
+		const ItemData* data = ItemDatabase::getItemByID(slot.itemID);
+		std::string label = data ? data->name + " x" + std::to_string(slot.quantity) : "Unknown";
+		sf::Text text(label, font, 12);
+		text.setPosition(menuX, menuY + optionTexts.size() * optionSpacing);
+		text.setFillColor(sf::Color::Black);
+		optionTexts.push_back(text);
+	}
+}
+
+void ItemMenu::draw(sf::RenderTarget& target) {
+	for (int i = 0; i < (int)optionTexts.size(); i++) {
+		optionTexts[i].setFillColor(i == selectedIndex ? sf::Color::White : sf::Color::Black);
+		target.draw(optionTexts[i]);
+	}
 }
