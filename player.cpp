@@ -1,6 +1,38 @@
 #include "player.h"
 #include "skillDatabase.h"
 
+namespace {
+	bool loadWalkFrontAnimation(Animation& animation, sf::Texture& texture) {
+		AnimationAsset asset;
+		if (!AnimationLoader::loadAssetFromFile("assets/animations.json", "player", asset)) {
+			return false;
+		}
+
+		if (!texture.loadFromFile(asset.texturePath)) {
+			return false;
+		}
+
+		const auto clipIt = asset.clips.find("walk_front");
+		if (clipIt == asset.clips.end()) {
+			return false;
+		}
+
+		animation.setAnimation(clipIt->second);
+		return true;
+	}
+
+	AnimationClip makeFallbackWalkFrontClip() {
+		SpriteSheetGridSpec spec;
+		spec.totalFrames = 10;
+		spec.columns = 4;
+		spec.frameWidth = 32;
+		spec.frameHeight = 32;
+		spec.frameDuration = 0.1f;
+		return buildClipFromGrid(spec, true);
+	}
+
+}
+
 Player::Player(MessageLog& m, std::string n, std::string textureName) : messageLog(m) {
 	name = n;
 	texture.loadFromFile("assets/" + textureName + ".png");
@@ -13,19 +45,10 @@ Player::Player(MessageLog& m, std::string n, std::string textureName) : messageL
 	attack = 25;
 
 
-	walkTexture.loadFromFile("assets/spikyWalkFront-Sheet.png");
-	std::vector<AnimationFrame> walkFrames;
-	int totalFrames = 10;
-	int cols = 4;
-	int frameW = 32, frameH = 32;
-	float frameDuration = 0.1f;
-
-	for (int i = 0; i < totalFrames; i++) {
-		int col = i % cols;
-		int row = i / cols;
-		walkFrames.push_back({ sf::IntRect(col * frameW, row * frameH, frameW, frameH), frameDuration });
+	if (!loadWalkFrontAnimation(walkAnimation, walkTexture)) {
+		walkTexture.loadFromFile("assets/spikyWalkFront-Sheet.png");
+		walkAnimation.setAnimation(makeFallbackWalkFrontClip());
 	}
-	walkAnimation.setAnimation(walkFrames);
 }
 
 void Player::update(float dt) {
@@ -126,6 +149,7 @@ void Player::setDiscipline(DisciplineID id) {
 	mp = maxMp;
 	attack = d.getBaseAttack();
 	magAttack = d.getBaseMagAttack();
+	unlockLevelSkills();
 	
 }
 
