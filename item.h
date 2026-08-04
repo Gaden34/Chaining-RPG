@@ -4,6 +4,15 @@
 
 class Character;
 
+enum class ItemID {
+	Invalid = -1,
+
+    Potion = 1,
+    Ether,
+	ThrowingKnife,
+    BatFang
+};
+
 enum class ItemType {
     Heal,
     StatusHeal,
@@ -52,7 +61,7 @@ struct ItemUseResult {
 
 
 struct ItemData {
-    int id = -1;
+    ItemID id;
     std::string name;
     std::string description;
 
@@ -67,7 +76,7 @@ struct ItemData {
 };
 
 struct InventorySlot {
-    int itemID;
+    ItemID itemID;
     int quantity;
 };
 
@@ -77,14 +86,14 @@ private:
 
 public:
     static bool loadItems(const std::string& filePath);
-    static const ItemData* getItemByID(int id);
+    static const ItemData* getItemByID(ItemID id);
     static const std::vector<ItemData>& getAllItems();
     static void clear();
 };
 
 class ItemSystem {
 private:
-    static const ItemData* getItemFromID(int targetID);
+    static const ItemData* getItemFromID(ItemID targetID);
 
 public:
     static ItemUseResult useItem(const ItemData& item, Character& user, Character& target);
@@ -99,8 +108,9 @@ private:
     std::vector<InventorySlot> slots;
 
 public:
-	bool addItem(int itemID, int amount = 1);
-	bool removeItem(int itemID, int amount = 1);
-    int getQuantity(int itemID) const;
+	Inventory(const std::vector<InventorySlot>& initialSlots = {}) : slots(initialSlots) {}
+	bool addItem(ItemID itemID, int amount = 1);
+	bool removeItem(ItemID itemID, int amount = 1);
+    int getQuantity(ItemID itemID) const;
     const std::vector<InventorySlot>& getItems() const { return slots; }
 };

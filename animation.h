@@ -31,15 +31,14 @@ struct AnimationAsset {
 };
 
 std::vector<AnimationFrame> buildGridFrames (const SpriteSheetGridSpec& spec);
-AnimationClip buildClipFromGrid(const SpriteSheetGredSpec& spec, bool loop);
+AnimationClip buildClipFromGrid(const SpriteSheetGridSpec& spec, bool loop);
 
 class Animation
 {
 private:
-	std::vector<AnimationFrame> frames;
+	const AnimationClip* clip = nullptr;
 	std::size_t currentFrame = 0;
 	float elapsedTime = 0.0f;
-	bool loop = true;
 	bool finished = false;
 
 
@@ -50,9 +49,9 @@ public:
 	void update(float dt);
 	void setAnimation(const AnimationClip& clip);
 	void setAnimation(const std::vector<AnimationFrame>& newFrames, bool shouldLoop = true);
-	void reset() { currentFrame = 0; elapsedTime = 0.0f; finished = frames.empty(); }
+	void reset() { currentFrame = 0; elapsedTime = 0.0f; finished = clip == nullptr || clip->frames.empty(); }
 	bool isFinished() const { return finished; }
-	bool isLooping() const { return loop; }
+	bool isLooping() const { return clip != nullptr && clip->loop; }
 	sf::IntRect getCurrentFrame() const;
 };
 

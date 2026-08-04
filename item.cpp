@@ -96,7 +96,7 @@ bool ItemDatabase::loadItems(const std::string& filePath) {
 
     for (const auto& itemJson : itemsJson) {
         ItemData item;
-        item.id = itemJson.value("id", -1);
+        item.id = static_cast<ItemID>(itemJson.value("id", -1));
         item.name = itemJson.value("name", "Unknown Item");
         item.description = itemJson.value("description", "");
         item.maxStackSize = itemJson.value("max_stack_size", 1);
@@ -110,7 +110,7 @@ bool ItemDatabase::loadItems(const std::string& filePath) {
             }
         }
 
-        if (item.id < 0) {
+        if (static_cast<int>(item.id) < 0) {
             std::cerr << "Skipping item with invalid id: " << item.name << std::endl;
             continue;
         }
@@ -121,7 +121,7 @@ bool ItemDatabase::loadItems(const std::string& filePath) {
     return true;
 }
 
-const ItemData* ItemDatabase::getItemByID(int id) {
+const ItemData* ItemDatabase::getItemByID(ItemID id) {
     for (const auto& item : m_items) {
         if (item.id == id) {
             return &item;
@@ -138,7 +138,7 @@ void ItemDatabase::clear() {
     m_items.clear();
 }
 
-const ItemData* ItemSystem::getItemFromID(int targetID) {
+const ItemData* ItemSystem::getItemFromID(ItemID targetID) {
     return ItemDatabase::getItemByID(targetID);
 }
 
@@ -240,7 +240,7 @@ void ItemSystem::handleDamageItem(const ItemEffect& effect, Character& user, Cha
     result.effectEvents.push_back(event);
 }
 
-bool Inventory::addItem(int itemID, int quantity) {
+bool Inventory::addItem(ItemID itemID, int quantity) {
     if (quantity <= 0) {
         return false;
     }
@@ -271,7 +271,7 @@ bool Inventory::addItem(int itemID, int quantity) {
     return false;
 }
 
-bool Inventory::removeItem(int itemID, int amount) {
+bool Inventory::removeItem(ItemID itemID, int amount) {
     if (amount <= 0) {
         return false;
     }
@@ -293,7 +293,7 @@ bool Inventory::removeItem(int itemID, int amount) {
     return false;
 }
 
-int Inventory::getQuantity(int itemID) const {
+int Inventory::getQuantity(ItemID itemID) const {
     for (const auto& slot : slots) {
         if (slot.itemID == itemID) {
             return slot.quantity;

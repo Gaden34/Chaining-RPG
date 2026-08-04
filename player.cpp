@@ -4,7 +4,7 @@
 namespace {
 	bool loadWalkFrontAnimation(Animation& animation, sf::Texture& texture) {
 		AnimationAsset asset;
-		if (!AnimationLoader::loadAssetFromFile("assets/animations.json", "player", asset)) {
+		if (!AnimationLoader::loadAssetFromFile("animations.json", "player", asset)) {
 			return false;
 		}
 

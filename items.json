@@ -6,8 +6,8 @@
       "description": "Restores a small amount of HP.",
       "max_stack_size": 99,
       "is_consumable": true,
-      "type": "Heal",
       "steal_chance": 0.9,
+      "type": "Heal",
       "effects": [
         {
           "target_attribute": "HP",
@@ -24,8 +24,8 @@
       "description": "Restores a small amount of MP.",
       "max_stack_size": 99,
       "is_consumable": true,
-      "type": "Heal",
       "steal_chance": 0.7,
+      "type": "Heal",
       "effects": [
         {
           "target_attribute": "MP",
@@ -42,8 +42,8 @@
       "description": "A knife that can be thrown at enemies.",
       "max_stack_size": 99,
       "is_consumable": true,
-      "type": "Damage",
       "steal_chance": 0.7,
+      "type": "Damage",
       "effects": [
         {
           "target_attribute": "None",
@@ -60,8 +60,8 @@
       "description": "A magic fang that can be thrown at enemies and recover a small amount of HP.",
       "max_stack_size": 99,
       "is_consumable": true,
-      "type": "Damage",
       "steal_chance": 0.8,
+      "type": "Damage",
       "effects": [
         {
           "target_attribute": "None",

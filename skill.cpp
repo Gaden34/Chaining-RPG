@@ -1,3 +1,4 @@
+#include <iostream>
 #include "skill.h"
 #include "character.h"
 #include "item.h"
@@ -25,7 +26,7 @@ SkillType Skill::getSkillTypeFromString(const std::string& type) {
 
 StealResult Skill::useSteal(Character& user, Character& target, std::mt19937& rng) {
     if (target.getInventory().getItems().empty()) {
-        return StealResult{StealResult::Result::NoItems, -1};
+        return StealResult{StealResult::Result::NoItems, ItemID::Invalid };
     }
 
     std::uniform_real_distribution<float> dist(0, 1);
@@ -35,12 +36,14 @@ StealResult Skill::useSteal(Character& user, Character& target, std::mt19937& rn
 			continue;
 		}
 		float chance = itemData->stealChance;
-		if (dist(rng) < chance) {
+        float roll = dist(rng);
+		std::cout << itemData->name << " steal chance: " << chance << ", roll: " << roll << std::endl;
+		if (roll < chance) {
 			user.getInventory().addItem(item.itemID, 1);
 			target.getInventory().removeItem(item.itemID, 1);
 			return StealResult{StealResult::Result::Success, item.itemID};
 		}
     }
 
-    return StealResult{StealResult::Result::Failed, -1};
+    return StealResult{StealResult::Result::Failed, ItemID::Invalid };
 }

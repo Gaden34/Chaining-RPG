@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <random>
+#include "item.h"
 
 class Character;
 
@@ -22,7 +23,7 @@ struct StealResult {
 	};
 
 	Result result = Result::Failed;
-	int stolenItemID = -1;
+	ItemID stolenItemID = ItemID::Invalid;
 };
 
 

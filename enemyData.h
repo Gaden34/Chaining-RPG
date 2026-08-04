@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "item.h"
 
 struct EnemyData {
 	std::string name;
@@ -15,6 +16,8 @@ struct EnemyData {
 	float moveSpeed;
 
 	std::string texturePath;
+
+	std::vector<InventorySlot> startingItems;
 };
 
 extern EnemyData knight;

@@ -140,5 +140,6 @@
     <None Include="packages.config" />
     <None Include="skills.json" />
     <None Include="items.json" />
+    <None Include="animations.json" />
   </ItemGroup>
 </Project>

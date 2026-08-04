@@ -1,5 +1,6 @@
+#include <iostream>
 #include "enemy.h"
-
+#include "item.h"
 
 
 Enemy::Enemy(const EnemyData& data) {
@@ -20,6 +21,16 @@ Enemy::Enemy(const EnemyData& data) {
 
 	texture.loadFromFile(data.texturePath);
 	sprite.setTexture(texture);
+
+	inventory = Inventory(data.startingItems);
+
+	std::cout << name << " inventory:\n";
+
+	for (const auto& slot : inventory.getItems())
+	{
+		std::cout << "  ID: " << static_cast<int>(slot.itemID)
+			<< " Qty: " << slot.quantity << '\n';
+	}
 }
 
 void Enemy::update(float dt) {

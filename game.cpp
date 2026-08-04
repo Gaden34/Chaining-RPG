@@ -3,12 +3,14 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include "item.h"
 
 
 
 Game::Game() : combat(party, messageLog, rng), combatTestSetup(party, messageLog), window(sf::VideoMode({ 1280, 720 }), "Nameless RPG"), rng(std::random_device{}()) {
 	gameTexture.create(640, 360);
 	SkillDatabase::loadSkills("skills.json");
+	ItemDatabase::loadItems("items.json");
 	party.emplace_back(messageLog, "Gaden", "spiky");
 	party.emplace_back(messageLog, "Kari", "bluey");
 	party[1].setDiscipline(DisciplineID::Combatant);

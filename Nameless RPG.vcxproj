@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\copilot-instructions.md" />
+    <None Include="animations.json" />
     <None Include="items.json" />
     <None Include="packages.config" />
     <None Include="skills.json" />

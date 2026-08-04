@@ -8,7 +8,11 @@ EnemyData knight{
 	5,
 	25,
 	100.f,
-	"assets/enemyknight.png"
+	"assets/enemyknight.png",
+	{
+		{ ItemID::ThrowingKnife, 1 },
+		{ ItemID::Potion, 1 }  
+	}
 };
 
 EnemyData bat{
@@ -19,5 +23,9 @@ EnemyData bat{
 	2,
 	18,
 	150.f,
-	"assets/batSprite.png"
+	"assets/batSprite.png",
+	{
+		{ ItemID::BatFang, 1 },
+		{ ItemID::Ether, 1 }
+	}
 };
