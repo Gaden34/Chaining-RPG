@@ -25,13 +25,15 @@ SkillType Skill::getSkillTypeFromString(const std::string& type) {
 }
 
 StealResult Skill::useSteal(Character& user, Character& target, std::mt19937& rng) {
-    if (target.getInventory().getItems().empty()) {
+    const auto& targetItems = target.getInventory().getItems();
+    if (targetItems.empty()) {
         return StealResult{StealResult::Result::NoItems, ItemID::Invalid };
     }
 
     std::uniform_real_distribution<float> dist(0, 1);
-    for (const auto& item : target.getInventory().getItems()) {
-		const ItemData* itemData = ItemDatabase::getItemByID(item.itemID);
+    for (const auto& slot : targetItems) {
+        const ItemID candidateId = slot.itemID;
+        const ItemData* itemData = ItemDatabase::getItemByID(candidateId);
 		if (!itemData) {
 			continue;
 		}
@@ -39,9 +41,9 @@ StealResult Skill::useSteal(Character& user, Character& target, std::mt19937& rn
         float roll = dist(rng);
 		std::cout << itemData->name << " steal chance: " << chance << ", roll: " << roll << std::endl;
 		if (roll < chance) {
-			user.getInventory().addItem(item.itemID, 1);
-			target.getInventory().removeItem(item.itemID, 1);
-			return StealResult{StealResult::Result::Success, item.itemID};
+            user.getInventory().addItem(candidateId, 1);
+            target.getInventory().removeItem(candidateId, 1);
+            return StealResult{StealResult::Result::Success, candidateId};
 		}
     }
 

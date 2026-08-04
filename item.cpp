@@ -193,10 +193,22 @@ void ItemSystem::handleHealingItem(const ItemEffect& effect, Character& user, Ch
     event.requestedAmount = effect.amount;
 
     if (effect.targetAttribute == Attribute::HP) {
+        if (target.getHp() >= target.getMaxHp()) {
+            if (result.failureReason.empty()) {
+                result.failureReason = target.getName() + " HP is already full.";
+            }
+            return;
+        }
         int before = target.getHp();
         target.setHp(target.getHp() + effect.amount);
         event.appliedAmount = target.getHp() - before;
     } else if (effect.targetAttribute == Attribute::MP) {
+        if (target.getMp() >= target.getMaxMp()) {
+            if (result.failureReason.empty()) {
+                result.failureReason = target.getName() + " MP is already full.";
+            }
+            return;
+        }
         int before = target.getMp();
         target.setMp(target.getMp() + effect.amount);
         event.appliedAmount = target.getMp() - before;

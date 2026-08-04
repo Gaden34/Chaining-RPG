@@ -420,7 +420,11 @@ void Combat::handleSteal(Skill* skill, Character* actor, Character* target) {
 	switch (result.result) {
 	case StealResult::Result::Success: {
 		const ItemData* stolenItem = ItemDatabase::getItemByID(result.stolenItemID);
-		messageLog.addMessage(actor->getName() + " successfully stole a " + stolenItem->name + " from " + target->getName() + "!", sf::Color::Black);
+		if (stolenItem) {
+			messageLog.addMessage(actor->getName() + " successfully stole a " + stolenItem->name + " from " + target->getName() + "!", sf::Color::Black);
+		} else {
+			messageLog.addMessage(actor->getName() + " successfully stole an unknown item from " + target->getName() + "!", sf::Color::Black);
+		}
 		break;
 	}
 	case StealResult::Result::Failed:

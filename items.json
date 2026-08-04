@@ -65,7 +65,7 @@
       "effects": [
         {
           "target_attribute": "None",
-          "amount": 0,
+          "amount": 10,
           "damage_power": 10,
           "cures_status": "None",
           "inflict_status": "None"
