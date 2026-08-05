@@ -117,7 +117,7 @@ bool ItemDatabase::loadItems(const std::string& filePath) {
 
         m_items.push_back(std::move(item));
     }
-
+    std::cout <<"LOADED ITEMS" << std::endl;
     return true;
 }
 

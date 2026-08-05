@@ -24,8 +24,8 @@ void Combat::update(float dt) {
 		handlePlayerTurn();
 		break;
 
-	case CombatState::SelectingEnemy:
-		targetEnemy();
+	case CombatState::SelectingTarget:
+		targetCharacter();
 		break;
 
 	case CombatState::ChoosingQueuedActions:
@@ -81,7 +81,7 @@ case CombatState::PlayerTurn:
 			menu.draw(target);
 		break;
 
-case CombatState::SelectingEnemy:
+case CombatState::SelectingTarget:
 	drawTargetPointer(target);
 	break;
 
@@ -172,14 +172,10 @@ void Combat::handlePlayerTurn() {
 					currentAction = {};
 					currentAction.type = ActionType::Item;
 					currentAction.actor = &party[activePlayerIndex];
-					currentAction.target = &party[activePlayerIndex];
 					currentAction.item = const_cast<ItemData*>(item);
-					actionQueue.push_back(currentAction);
-					currentAction = {};
 					inItemMenu = false;
 					itemMenu.reset();
-					advanceActivePlayer();
-					menu.setLastEnterPressed(true);
+					beginTargeting();
 				}
 			}
 		}
@@ -209,7 +205,7 @@ void Combat::handlePlayerTurn() {
 				currentAction.type = ActionType::Skill;
 				currentAction.actor = &party[activePlayerIndex];
 				currentAction.skill = party[activePlayerIndex].getSkillByIndex(index);
-				currentState = CombatState::SelectingEnemy;
+				beginTargeting();
 			}
 		}
 		if (escapePressed && !skillMenu.getLastEscapePressed()) {
@@ -234,7 +230,7 @@ void Combat::handlePlayerTurn() {
 				currentAction.type = ActionType::Attack;
 				currentAction.actor = &party[activePlayerIndex];
 				menu.setLastEnterPressed(true);
-				currentState = CombatState::SelectingEnemy;
+				beginTargeting();
 				break;
 			case CombatMenu::MenuOption::Skill:
 				skillMenu.populate(party[activePlayerIndex].getSkills());
@@ -258,20 +254,54 @@ void Combat::handlePlayerTurn() {
 	}
 }
 
-void Combat::targetEnemy() {
+void Combat::buildValidTargets() {
+	validTargets.clear();
+	for (auto& player : party) {
+		if (player.isAlive())
+			validTargets.push_back(&player);
+	}
+
+	for (auto& enemy : enemies) {
+		if (enemy.isAlive())
+			validTargets.push_back(&enemy);
+	}
+}
+
+void Combat::beginTargeting() {
+	buildValidTargets();
+	if (currentAction.type == ActionType::Attack || currentAction.type == ActionType::Skill) {
+			validTargetIndex = 0;
+			for (int i = 0; i < (int)validTargets.size(); ++i) {
+				if (dynamic_cast<Enemy*>(validTargets[i])) {
+					validTargetIndex = i;
+					break;
+				}
+			}
+			currentState = CombatState::SelectingTarget;
+	}
+	else if (currentAction.type == ActionType::Item) {
+		validTargetIndex = 0;
+		currentState = CombatState::SelectingTarget;
+	}	
+	else {
+		currentState = CombatState::ChoosingQueuedActions;
+	}
+}
+
+void Combat::targetCharacter() {
 	bool upPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
 	bool downPressed  = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
 	bool enterPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Enter);
 
 	if (upPressed && !lastUpPressed) {
-		activeEnemyIndex = (activeEnemyIndex - 1 + (int)enemies.size()) % (int)enemies.size();
+		validTargetIndex= (validTargetIndex - 1 + (int)validTargets.size()) % (int)validTargets.size();
 	} 
 	if (downPressed && !lastDownPressed) {
-		activeEnemyIndex = (activeEnemyIndex + 1) % (int)enemies.size();
+		validTargetIndex = (validTargetIndex + 1) % (int)validTargets.size();
 	}
 
 	if (enterPressed && !lastEnterPressed) {
-		currentAction.target = &enemies[activeEnemyIndex];
+		currentAction.target = validTargets[validTargetIndex];
 		actionQueue.push_back(currentAction);
 		currentAction = {};
 		advanceActivePlayer();
@@ -283,7 +313,7 @@ void Combat::targetEnemy() {
 }
 
 void Combat::drawTargetPointer(sf::RenderTarget& target) {
-	sf::FloatRect bounds = enemies[activeEnemyIndex].getGlobalBounds();
+	sf::FloatRect bounds = validTargets[validTargetIndex]->getGlobalBounds();
 	float x = bounds.left + bounds.width / 2.f - pointerSprite.getGlobalBounds().width / 2.f;
 	float y = bounds.top - pointerSprite.getGlobalBounds().height - 4.f;
 	pointerSprite.setPosition(x, y);
@@ -297,17 +327,17 @@ int Combat::randomRange(int min, int max) {
 
 void Combat::performAttack(QueuedAction& action) {
 	Player* player = static_cast<Player*>(action.actor);
-	Enemy* enemy = static_cast<Enemy*>(action.target);
+	Character* target = action.target;
 	float damage = static_cast<float>(player->getAttack());
 	damage = randomRange(damage * 0.95f, damage * 1.05f);
 	damage = damage * chain.getDamagePercent() / 100;
 	int finalDamage = static_cast<int>(std::round(damage));
-	enemy->takeDamage(finalDamage);
+	target->takeDamage(finalDamage);
 	chain.registerHit();
 	std::cout << "Chain count: " << chain.getChainCount() << std::endl;
-	messageLog.addMessage(player->getName() + " hits the " + TextUtils::lowerFirst(enemy->getName()) + " for " + std::to_string(finalDamage) + " damage!", sf::Color::Black);
-	
-	handleDeath(*enemy);
+	messageLog.addMessage(player->getName() + " hits the " + TextUtils::lowerFirst(target->getName()) + " for " + std::to_string(finalDamage) + " damage!", sf::Color::Black);
+
+	handleDeath(*target);
 	if (actionQueue.empty()) {
 		eraseDeadEnemies();
 		resetEnemyIndex();
@@ -316,16 +346,16 @@ void Combat::performAttack(QueuedAction& action) {
 
 void Combat::performSkill(QueuedAction& action) {
 	Player* player = static_cast<Player*>(action.actor);
-	Enemy* enemy = static_cast<Enemy*>(action.target);
+	Character* target = action.target;
 	Skill* skill = action.skill;
 	if (player->getMp() < skill->getMpCost()) {
 		messageLog.addMessage("Not enough MP!", sf::Color::Red);
 		return;
 	}
 	player->setMp(player->getMp() - skill->getMpCost());
-	calculateSkillDamage(skill, player, enemy);
-	handleSteal(skill, player, enemy);
-	handleDeath(*enemy);
+	calculateSkillDamage(skill, player, target);
+	handleSteal(skill, player, target);
+	handleDeath(*target);
 }
 
 void Combat::performItem(QueuedAction& action) {

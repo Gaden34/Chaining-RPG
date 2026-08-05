@@ -15,7 +15,7 @@ class Inventory;
 
 enum class CombatState {
 	PlayerTurn,
-	SelectingEnemy,
+	SelectingTarget,
 	ChoosingQueuedActions,
 	PlayerAnimation,
 	EnemyTurn,
@@ -133,11 +133,13 @@ private:
 	MessageLog& messageLog;
 	QueuedAction currentAction;
 	std::vector<QueuedAction> actionQueue;
+	std::vector<Character*> validTargets;
 	//Item* pendingItem = nullptr;
 
 	float animationTimer = 0.f;
 	int activePlayerIndex = 0;
 	int activeEnemyIndex = 0;
+	int validTargetIndex = 0;
 	std::vector<bool> playerActed;
 	std::vector<bool> enemyActed;
 	bool lastLeftPressed = false;
@@ -158,7 +160,9 @@ public:
 
 private:
 	void handlePlayerTurn();
-	void targetEnemy();
+	void buildValidTargets();
+	void beginTargeting();
+	void targetCharacter();
 	void drawTargetPointer(sf::RenderTarget& target);
 	int randomRange(int min, int max);
 	void performAttack(QueuedAction& action);

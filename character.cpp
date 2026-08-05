@@ -10,7 +10,8 @@ Character::Character(Character&& other)
 	  attack(other.attack),
 	  magAttack(other.magAttack),
 	  moveSpeed(other.moveSpeed),
-	  alive(other.alive) {
+	  alive(other.alive),
+	  inventory(std::move(other.inventory)) {
 	sprite.setTexture(texture);
 	sprite.setPosition(other.sprite.getPosition());
 }
@@ -27,6 +28,7 @@ Character& Character::operator=(Character&& other) {
 		magAttack = other.magAttack;
 		moveSpeed = other.moveSpeed;
 		alive = other.alive;
+		inventory = std::move(other.inventory);
 		sprite.setTexture(texture);
 		sprite.setPosition(other.sprite.getPosition());
 	}

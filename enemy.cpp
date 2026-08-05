@@ -4,6 +4,7 @@
 
 
 Enemy::Enemy(const EnemyData& data) {
+
 	name = data.name;
 
 	maxHp = data.maxHp;
@@ -19,10 +20,10 @@ Enemy::Enemy(const EnemyData& data) {
 
 	moveSpeed = data.moveSpeed;
 
+	inventory = Inventory(data.startingItems);
+
 	texture.loadFromFile(data.texturePath);
 	sprite.setTexture(texture);
-
-	inventory = Inventory(data.startingItems);
 
 	std::cout << name << " inventory:\n";
 
