@@ -10,6 +10,7 @@
 #include "skill.h"
 #include "messageLog.h"
 #include "item.h"
+#include "inputHandler.h"
 
 class Player : public Character {
 private:
@@ -30,6 +31,7 @@ public:
 	void update(float dt) override;
 	void draw(sf::RenderTarget& target) override;
 	void move(float dt) override;
+	void move(float dt, InputHandler& inputHandler);
 	int getExp();
 	void addExp(int amount);
 	int expNeededForNextLevel(int level);

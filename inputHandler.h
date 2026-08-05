@@ -4,6 +4,7 @@
 #include <array>
 #include <cstddef>
 #include <memory>
+#include "menu.h"
 
 class Command {
 private:
@@ -71,4 +72,40 @@ public:
 
     // Helper to apply default controls that match current project input.
     void setDefaultBindings();
+};
+
+class MenuLeftCommand : public Command {
+private:
+    Menu& menu;
+
+public:
+    explicit MenuLeftCommand(Menu& m) : menu(m) {}
+    void execute() override { menu.moveLeft(); }
+};
+
+class MenuRightCommand : public Command {
+private:
+    Menu& menu;
+
+public: 
+    explicit MenuRightCommand(Menu& m) : menu(m) {}
+    void execute() override { menu.moveRight(); }
+};
+
+class MenuUpCommand : public Command {
+private:
+    Menu& menu;
+
+public: 
+    explicit MenuUpCommand(Menu& m) : menu(m) {}
+    void execute() override { menu.moveUp(); }
+};
+
+class MenuDownCommand : public Command {
+private:
+    Menu& menu;
+
+public: 
+    explicit MenuDownCommand(Menu& m) : menu(m) {}
+    void execute() override { menu.moveDown(); }
 };
