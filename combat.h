@@ -11,6 +11,7 @@
 #include "messageLog.h"
 #include "menu.h"
 #include "chainSystem.h"
+#include "inputHandler.h"
 
 class Inventory;
 
@@ -144,27 +145,22 @@ private:
 	int validTargetIndex = 0;
 	std::vector<bool> playerActed;
 	std::vector<bool> enemyActed;
-	bool lastLeftPressed = false;
-	bool lastRightPressed = false;
-	bool lastUpPressed = false;
-	bool lastDownPressed = false;
-	bool lastEnterPressed = true;
 	sf::Font font;
 
 public:
 
 	Combat(std::vector<Player>& p, MessageLog& m, std::mt19937& rng);
-	void update(float dt);
+	void update(float dt, const InputHandler& input);
 	void draw(sf::RenderTarget& target);
 	void start();
 	//void start(const EnemyData& data) { start({ EnemySpawn{ &data, 1 } }); }
 	CombatState getState();
 
 private:
-	void handlePlayerTurn();
+	void handlePlayerTurn(const InputHandler& input);
 	void buildValidTargets();
 	void beginTargeting();
-	void targetCharacter();
+	void targetCharacter(const InputHandler& input);
 	void drawTargetPointer(sf::RenderTarget& target);
 	int randomRange(int min, int max);
 	void performAttack(QueuedAction& action);
@@ -174,7 +170,7 @@ private:
 	void handleSteal (Skill* skill, Character* actor, Character* target);
 	void executeAction(QueuedAction& action);
 	void executeNextAction();
-	void handleQueuedActionMenu();
+	void handleQueuedActionMenu(const InputHandler& input);
 	void handleEnemyTurn();
 	void updateAnimations(float dt);
 	void updatePlayerAnimation(float dt);

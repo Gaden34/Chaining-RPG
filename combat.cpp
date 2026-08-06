@@ -15,21 +15,21 @@ Combat::Combat(std::vector<Player>& p, MessageLog& m, std::mt19937& rng) : party
 
 }
 
-void Combat::update(float dt) {
+void Combat::update(float dt, const InputHandler& input) {
 
 	chain.update(dt);
 
 	switch (currentState) {
 	case CombatState::PlayerTurn:
-		handlePlayerTurn();
+		handlePlayerTurn(input);
 		break;
 
 	case CombatState::SelectingTarget:
-		targetCharacter();
+		targetCharacter(input);
 		break;
 
 	case CombatState::ChoosingQueuedActions:
-		handleQueuedActionMenu();
+		handleQueuedActionMenu(input);
 		break;
 
 	case CombatState::PlayerAnimation:
@@ -134,37 +134,35 @@ CombatState Combat::getState() {
 	return currentState;
 }
 
-void Combat::handlePlayerTurn() {
+void Combat::handlePlayerTurn(const InputHandler& input) {
 	if (currentState != CombatState::PlayerTurn) return;
 
-	bool upPressed     = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
-	bool downPressed   = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
-	bool enterPressed  = sf::Keyboard::isKeyPressed(sf::Keyboard::Enter);
-	bool escapePressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Escape);
-	bool leftPressed   = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
-	bool rightPressed  = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
+	const bool leftJustPressed = input.wasPressed(InputAction::MenuLeft);
+	const bool rightJustPressed = input.wasPressed(InputAction::MenuRight);
+	const bool upJustPressed = input.wasPressed(InputAction::MenuUp);
+	const bool downJustPressed = input.wasPressed(InputAction::MenuDown);
+	const bool confirmJustPressed = input.wasPressed(InputAction::Confirm);
+	const bool cancelJustPressed = input.wasPressed(InputAction::Cancel);
 
-	if (!inSkillMenu) {
-		if (leftPressed && !lastLeftPressed) {
+	if (!inSkillMenu && !inItemMenu) {
+		if (leftJustPressed) {
 			activePlayerIndex = (activePlayerIndex - 1 + (int)party.size()) % (int)party.size();
 			menu.reset();
 		}
-		if (rightPressed && !lastRightPressed) {
+		if (rightJustPressed) {
 			activePlayerIndex = (activePlayerIndex + 1) % (int)party.size();
 			menu.reset();
 		}
 	}
-	lastLeftPressed  = leftPressed;
-	lastRightPressed = rightPressed;
 
 	if (playerActed[activePlayerIndex]) return;
 
 	if (inItemMenu) {
-		if (upPressed && !itemMenu.getLastUpPressed())
+		if (upJustPressed)
 			itemMenu.moveUp();
-		if (downPressed && !itemMenu.getLastDownPressed())
+		if (downJustPressed)
 			itemMenu.moveDown();
-		if (enterPressed && !itemMenu.getLastEnterPressed()) {
+		if (confirmJustPressed) {
 			const auto& slots = party[activePlayerIndex].getInventory().getItems();
 			int index = itemMenu.getSelectedIndex();
 			if (!slots.empty() && index >= 0 && index < (int)slots.size()) {
@@ -184,21 +182,17 @@ void Combat::handlePlayerTurn() {
 				}
 			}
 		}
-		if (escapePressed && !itemMenu.getLastEscapePressed()) {
+		if (cancelJustPressed) {
 			inItemMenu = false;
 			itemMenu.reset();
 		}
-		itemMenu.setLastUpPressed(upPressed);
-		itemMenu.setLastDownPressed(downPressed);
-		itemMenu.setLastEnterPressed(enterPressed);
-		itemMenu.setLastEscapePressed(escapePressed);
 	}
 	else if (inSkillMenu) {
-		if (upPressed && !skillMenu.getLastUpPressed())
+		if (upJustPressed)
 			skillMenu.handleInput(sf::Keyboard::Up);
-		if (downPressed && !skillMenu.getLastDownPressed())
+		if (downJustPressed)
 			skillMenu.handleInput(sf::Keyboard::Down);
-		if (enterPressed && !skillMenu.getLastEnterPressed()) {
+		if (confirmJustPressed) {
 			int index = skillMenu.getSelectedIndex();
 			if (index == -1) {
 				inSkillMenu = false;
@@ -213,21 +207,17 @@ void Combat::handlePlayerTurn() {
 				beginTargeting();
 			}
 		}
-		if (escapePressed && !skillMenu.getLastEscapePressed()) {
+		if (cancelJustPressed) {
 			inSkillMenu = false;
 			skillMenu.reset();
 		}
-		skillMenu.setLastUpPressed(upPressed);
-		skillMenu.setLastDownPressed(downPressed);
-		skillMenu.setLastEnterPressed(enterPressed);
-		skillMenu.setLastEscapePressed(escapePressed);
 	}
 	else {
-		if (upPressed && !menu.getLastUpPressed())
+		if (upJustPressed)
 			menu.moveUp();
-		if (downPressed && !menu.getLastDownPressed())
+		if (downJustPressed)
 			menu.moveDown();
-		if (enterPressed && !menu.getLastEnterPressed()) {
+		if (confirmJustPressed) {
 			CombatMenu::MenuOption selectedOption = menu.getSelectedOption();
 			switch (selectedOption) {
 			case CombatMenu::MenuOption::Attack:
@@ -253,9 +243,6 @@ void Combat::handlePlayerTurn() {
 				break;
 			}
 		}
-		menu.setLastUpPressed(upPressed);
-		menu.setLastDownPressed(downPressed);
-		menu.setLastEnterPressed(enterPressed);
 	}
 }
 
@@ -293,19 +280,15 @@ void Combat::beginTargeting() {
 	}
 }
 
-void Combat::targetCharacter() {
-	bool upPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
-	bool downPressed  = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
-	bool enterPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Enter);
-
-	if (upPressed && !lastUpPressed) {
+void Combat::targetCharacter(const InputHandler& input) {
+	if (input.wasPressed(InputAction::MenuUp)) {
 		validTargetIndex= (validTargetIndex - 1 + (int)validTargets.size()) % (int)validTargets.size();
 	} 
-	if (downPressed && !lastDownPressed) {
+	if (input.wasPressed(InputAction::MenuDown)) {
 		validTargetIndex = (validTargetIndex + 1) % (int)validTargets.size();
 	}
 
-	if (enterPressed && !lastEnterPressed) {
+	if (input.wasPressed(InputAction::Confirm)) {
 		currentAction.target = validTargets[validTargetIndex];
 		if (currentAction.type == ActionType::Item && currentAction.item != nullptr) {
 			reserveConsumableItem(*currentAction.item);
@@ -315,9 +298,6 @@ void Combat::targetCharacter() {
 		advanceActivePlayer();
 		menu.setLastEnterPressed(true);
 	}
-	lastUpPressed = upPressed;
-	lastDownPressed = downPressed;
-	lastEnterPressed = enterPressed;
 }
 
 void Combat::drawTargetPointer(sf::RenderTarget& target) {
@@ -533,15 +513,15 @@ void Combat::executeNextAction() {
 	currentState = CombatState::PlayerAnimation;
 }
 
-void Combat::handleQueuedActionMenu() {
+void Combat::handleQueuedActionMenu(const InputHandler& input) {
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !queuedActionMenu.getLastUpPressed()) {
+	if (input.wasPressed(InputAction::MenuUp)) {
 		queuedActionMenu.moveUp();
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !queuedActionMenu.getLastDownPressed()) {
+	if (input.wasPressed(InputAction::MenuDown)) {
 		queuedActionMenu.moveDown();
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && !queuedActionMenu.getLastEnterPressed()) {
+	if (input.wasPressed(InputAction::Confirm)) {
 		int selectedIndex = queuedActionMenu.getSelectedIndex();
 		if (selectedIndex >= 0 && selectedIndex < actionQueue.size()) {
 			if (!actionQueue[selectedIndex].target->isAlive()) {
@@ -572,10 +552,6 @@ void Combat::handleQueuedActionMenu() {
 		currentState = CombatState::PlayerAnimation;
 		queuedActionMenu.reset();
 	}
-
-	queuedActionMenu.setLastUpPressed(sf::Keyboard::isKeyPressed(sf::Keyboard::Up));
-	queuedActionMenu.setLastDownPressed(sf::Keyboard::isKeyPressed(sf::Keyboard::Down));
-	queuedActionMenu.setLastEnterPressed(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter));
 }
 
 

@@ -110,6 +110,8 @@ void Game::drawExploring() {
 
 
 void Game::update(float dt) {
+	inputHandler.update();
+
 	switch (currentState)
 	{
 	case GameState::StartMenu:
@@ -126,7 +128,7 @@ void Game::update(float dt) {
 		break;
 
 	case GameState::Combat:
-		combat.update(dt);
+		combat.update(dt, inputHandler);
 		if (combat.getState() == CombatState::Victory) {
 			currentState = GameState::Exploring;
 		}
