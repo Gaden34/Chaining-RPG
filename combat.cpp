@@ -100,6 +100,7 @@ void Combat::start() {
 	playerActed.assign(party.size(), false);
 	enemyActed.clear();
 	actionQueue.clear();
+	queuedConsumableCounts.clear();
 	currentAction = {};
 	menu.reset();
 	inSkillMenu = false;
@@ -169,6 +170,9 @@ void Combat::handlePlayerTurn() {
 			if (!slots.empty() && index >= 0 && index < (int)slots.size()) {
 				const ItemData* item = ItemDatabase::getItemByID(slots[index].itemID);
 				if (item) {
+					if (!canQueueConsumableItem(*item, party[activePlayerIndex].getInventory())) {
+						messageLog.addMessage("No more " + item->name + " left to queue.", sf::Color::Red);
+					} else {
 					currentAction = {};
 					currentAction.type = ActionType::Item;
 					currentAction.actor = &party[activePlayerIndex];
@@ -176,6 +180,7 @@ void Combat::handlePlayerTurn() {
 					inItemMenu = false;
 					itemMenu.reset();
 					beginTargeting();
+					}
 				}
 			}
 		}
@@ -302,6 +307,9 @@ void Combat::targetCharacter() {
 
 	if (enterPressed && !lastEnterPressed) {
 		currentAction.target = validTargets[validTargetIndex];
+		if (currentAction.type == ActionType::Item && currentAction.item != nullptr) {
+			reserveConsumableItem(*currentAction.item);
+		}
 		actionQueue.push_back(currentAction);
 		currentAction = {};
 		advanceActivePlayer();
@@ -362,6 +370,10 @@ void Combat::performItem(QueuedAction& action) {
 	Player* player = static_cast<Player*>(action.actor);
 	Character* target = action.target;
 	const ItemData* item = action.item;
+
+	if (item && item->isConsumable) {
+		releaseConsumableItemReservation(*item);
+	}
 
 	ItemUseResult result = ItemSystem::useItem(*item, *player, *target);
 
@@ -495,6 +507,7 @@ void Combat::executeAction(QueuedAction& action)
 
 void Combat::executeNextAction() {
 	if (actionQueue.empty()) {
+		queuedConsumableCounts.clear();
 		currentState = CombatState::EnemyTurn;
 		return;
 	}
@@ -513,6 +526,7 @@ void Combat::executeNextAction() {
 
 	if (currentState == CombatState::Victory || currentState == CombatState::Defeat) {
 		actionQueue.clear();
+		queuedConsumableCounts.clear();
 		return;
 	}
 
@@ -546,11 +560,13 @@ void Combat::handleQueuedActionMenu() {
 
 	if (currentState == CombatState::Victory || currentState == CombatState::Defeat) {
 		actionQueue.clear();
+		queuedConsumableCounts.clear();
 		queuedActionMenu.reset();
 		return;
 	}
 
 	if (actionQueue.empty()) {
+		queuedConsumableCounts.clear();
 		eraseDeadEnemies();
 		resetEnemyIndex();
 		currentState = CombatState::PlayerAnimation;
@@ -836,6 +852,44 @@ void QueuedActionMenu::draw(sf::RenderTarget& target) {
 
 void Combat::resetEnemyIndex() {
 	activeEnemyIndex = 0;
+}
+
+int Combat::getQueuedConsumableCount(ItemID itemID) const {
+	auto it = queuedConsumableCounts.find(itemID);
+	if (it == queuedConsumableCounts.end()) {
+		return 0;
+	}
+	return it->second;
+}
+
+bool Combat::canQueueConsumableItem(const ItemData& item, const Inventory& inventory) const {
+	if (!item.isConsumable) {
+		return true;
+	}
+	const int ownedCount = inventory.getQuantity(item.id);
+	const int queuedCount = getQueuedConsumableCount(item.id);
+	return ownedCount - queuedCount > 0;
+}
+
+void Combat::reserveConsumableItem(const ItemData& item) {
+	if (!item.isConsumable) {
+		return;
+	}
+	queuedConsumableCounts[item.id]++;
+}
+
+void Combat::releaseConsumableItemReservation(const ItemData& item) {
+	if (!item.isConsumable) {
+		return;
+	}
+	auto it = queuedConsumableCounts.find(item.id);
+	if (it == queuedConsumableCounts.end()) {
+		return;
+	}
+	it->second--;
+	if (it->second <= 0) {
+		queuedConsumableCounts.erase(it);
+	}
 }
 
 ItemMenu::ItemMenu() {

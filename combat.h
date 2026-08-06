@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <map>
 #include <random>
 #include <string>
 #include <initializer_list>
@@ -133,6 +134,7 @@ private:
 	MessageLog& messageLog;
 	QueuedAction currentAction;
 	std::vector<QueuedAction> actionQueue;
+	std::map<ItemID, int> queuedConsumableCounts;
 	std::vector<Character*> validTargets;
 	//Item* pendingItem = nullptr;
 
@@ -183,4 +185,8 @@ private:
 	void checkCombatEnd();
 	void advanceActivePlayer();
 	void resetEnemyIndex();
+	int getQueuedConsumableCount(ItemID itemID) const;
+	bool canQueueConsumableItem(const ItemData& item, const Inventory& inventory) const;
+	void reserveConsumableItem(const ItemData& item);
+	void releaseConsumableItemReservation(const ItemData& item);
 };
