@@ -33,7 +33,7 @@ namespace {
 
 }
 
-Player::Player(MessageLog& m, std::string n, std::string textureName) : messageLog(m) {
+Player::Player(MessageLog& m, std::string n, std::string textureName, Inventory& inv) : messageLog(m), partyInventory(inv) {
 	name = n;
 	texture.loadFromFile("assets/" + textureName + ".png");
 	sprite.setTexture(texture);
@@ -50,6 +50,7 @@ Player::Player(MessageLog& m, std::string n, std::string textureName) : messageL
 		walkAnimation.setAnimation(makeFallbackWalkFrontClip());
 	}
 }
+
 
 void Player::update(float dt) {
 	move(dt);

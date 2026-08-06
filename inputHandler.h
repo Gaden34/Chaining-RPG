@@ -74,7 +74,7 @@ public:
     void setDefaultBindings();
 };
 
-class MenuLeftCommand : public Command {
+/*class MenuLeftCommand : public Command {
 private:
     Menu& menu;
 
@@ -90,7 +90,7 @@ private:
 public: 
     explicit MenuRightCommand(Menu& m) : menu(m) {}
     void execute() override { menu.moveRight(); }
-};
+};*/
 
 class MenuUpCommand : public Command {
 private:

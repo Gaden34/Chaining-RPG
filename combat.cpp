@@ -421,7 +421,7 @@ void Combat::calculateSkillDamage(Skill* skill, Character* actor, Character* tar
 		}
 
 		case SkillType::Steal: {
-			damage = damage * (100.0f + actor->getAttack()) / 100.0f;
+			damage = static_cast<float>(actor->getAttack());
 			break;
 		}
 		default:

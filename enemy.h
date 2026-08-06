@@ -1,10 +1,12 @@
 #pragma once
 #include "character.h"
 #include "enemyData.h"
+#include "item.h"
 
 class Enemy : public Character {
 private:
 	int expValue;
+	Inventory inventory;
 
 public: 
 	Enemy(const EnemyData& data);
@@ -12,4 +14,5 @@ public:
 	void draw(sf::RenderTarget& target) override;
 	void move(float dt) override;
 	int getExpValue();
+	Inventory& getInventory() override { return inventory; }
 };

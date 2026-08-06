@@ -14,6 +14,7 @@
 #include "discipline.h"
 #include "disciplines.h"
 #include "combatTestSetup.h"
+#include "item.h"
 
 enum class GameState {
 	StartMenu,
@@ -52,6 +53,7 @@ private:
 	CreationStep creationStep = CreationStep::Name;
 	float encounterTimer = 0.f;
 	std::mt19937 rng;
+	Inventory partyInventory;
 
 public: 
 	Game();

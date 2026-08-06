@@ -20,8 +20,6 @@ protected:
 	float moveSpeed;
 	bool alive = true;
 
-	Inventory inventory;
-
 public:
 	Character() = default;
 	virtual ~Character() = default;
@@ -29,6 +27,7 @@ public:
 	Character& operator=(const Character&) = delete;
 	Character(Character&&);
 	Character& operator=(Character&&);
+	virtual Inventory& getInventory() = 0;
 	virtual void update(float dt) = 0;
 	virtual void draw(sf::RenderTarget& target) = 0;
 	virtual void move(float dt) = 0;
@@ -47,7 +46,6 @@ public:
 	float getMoveSpeed() const { return moveSpeed; }
 	void takeDamage(int amount);
 	bool isAlive() const { return alive; }
-	Inventory& getInventory() { return inventory; }
 
 	
 };

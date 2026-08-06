@@ -22,9 +22,10 @@ private:
 	std::vector<std::unique_ptr<Skill>> skills;
 	Animation walkAnimation;
 	sf::Texture walkTexture;
+	Inventory& partyInventory;
 
 public:
-	Player(MessageLog& m, std::string n, std::string textureName);
+	Player(MessageLog& m, std::string n, std::string textureName, Inventory& inv);
 	Player(const Player&) = delete;
 	Player& operator=(const Player&) = delete;
 	Player(Player&&) = default;
@@ -49,4 +50,5 @@ public:
 	Skill* getSkillByIndex(int index);
 	void unlockLevelSkills();
 	bool hasSkill(const std::string& skillName) const;
+	Inventory& getInventory() override { return partyInventory; }
 };

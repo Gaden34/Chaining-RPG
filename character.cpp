@@ -1,17 +1,18 @@
 #include "character.h"
 
-Character::Character(Character&& other)
+Character::Character(Character&& other) 
 	: texture(std::move(other.texture)),
-	  name(std::move(other.name)),
-	  hp(other.hp),
-	  mp(other.mp),
-	  maxHp(other.maxHp),
-	  maxMp(other.maxMp),
-	  attack(other.attack),
-	  magAttack(other.magAttack),
-	  moveSpeed(other.moveSpeed),
-	  alive(other.alive),
-	  inventory(std::move(other.inventory)) {
+	name(std::move(other.name)),
+	hp(other.hp),
+	mp(other.mp),
+	maxHp(other.maxHp),
+	maxMp(other.maxMp),
+	attack(other.attack),
+	magAttack(other.magAttack),
+	moveSpeed(other.moveSpeed),
+	alive(other.alive)//,
+	//inventory(std::move(other.inventory))
+{
 	sprite.setTexture(texture);
 	sprite.setPosition(other.sprite.getPosition());
 }
@@ -28,7 +29,7 @@ Character& Character::operator=(Character&& other) {
 		magAttack = other.magAttack;
 		moveSpeed = other.moveSpeed;
 		alive = other.alive;
-		inventory = std::move(other.inventory);
+		//inventory = std::move(other.inventory);
 		sprite.setTexture(texture);
 		sprite.setPosition(other.sprite.getPosition());
 	}
@@ -52,4 +53,3 @@ void Character::takeDamage(int amount) {
 
 	if (hp <= 0) alive = false;
 }
-
