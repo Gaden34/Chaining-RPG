@@ -76,6 +76,13 @@ sf::IntRect Animation::getCurrentFrame() const {
 	return clip->frames[currentFrame].rect;
 }
 
+void Animation::setFrame(size_t frameIndex) {
+	if (clip == nullptr || clip->frames.empty() || frameIndex >= clip->frames.size()) return;
+	currentFrame = frameIndex;
+	elapsedTime = 0.0f;
+	finished = false;
+}
+
 namespace {
 	bool parseGridSpec(const json& node, SpriteSheetGridSpec& outSpec) {
         if (!node.is_object()) {

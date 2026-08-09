@@ -49,6 +49,7 @@ Player::Player(MessageLog& m, std::string n, std::string textureName, Inventory&
 		walkTexture.loadFromFile("assets/spikyWalkFront-Sheet.png");
 		walkAnimation.setAnimation(makeFallbackWalkFrontClip());
 	}
+	
 }
 
 
@@ -59,14 +60,20 @@ void Player::update(float dt) {
 	}
 }
 
-void Player::draw(sf::RenderTarget& target) {
+void Player::drawExploring(sf::RenderTarget& target) {
+	sprite.setTexture(walkTexture);
+	
 	if (isMoving) {
-		sprite.setTexture(walkTexture);
 		sprite.setTextureRect(walkAnimation.getCurrentFrame());
 		}
 
 	target.draw(sprite);
 
+}
+
+void Player::drawCombat(sf::RenderTarget& target) {
+	sprite.setTexture(texture, true);
+	target.draw(sprite);
 }
 
 void Player::move(float dt) {

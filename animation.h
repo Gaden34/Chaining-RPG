@@ -53,6 +53,7 @@ public:
 	bool isFinished() const { return finished; }
 	bool isLooping() const { return clip != nullptr && clip->loop; }
 	sf::IntRect getCurrentFrame() const;
+	void setFrame(std::size_t frameIndex);
 };
 
 class AnimationLoader {

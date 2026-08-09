@@ -56,6 +56,8 @@ private:
 	std::mt19937 rng;
 	Inventory partyInventory;
 	InputHandler inputHandler;
+	sf::View camera;
+	sf::Vector2f playerExploringPosition = {40.f, 20.f};
 
 public: 
 	Game();
@@ -83,6 +85,7 @@ public:
 	void checkForEncounter(float dt);
 	void startCombat();
 	void run();
+	void setCamera();
 
 };
 

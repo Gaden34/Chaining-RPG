@@ -47,5 +47,6 @@ public:
 	void takeDamage(int amount);
 	bool isAlive() const { return alive; }
 
+
 	
 };

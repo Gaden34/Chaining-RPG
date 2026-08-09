@@ -15,6 +15,7 @@ Game::Game() : combat(party, messageLog, rng), combatTestSetup(party, messageLog
 	party.emplace_back(messageLog, "Kari", "bluey", partyInventory);
 	party[1].setDiscipline(DisciplineID::Combatant);
 	window.setFramerateLimit(60);
+	camera = sf::View(sf::FloatRect(0.f, 0.f, static_cast<float>(VirtualWidth), static_cast<float>(VirtualHeight)));
 
 	currentState = GameState::StartMenu;
 }
@@ -93,18 +94,19 @@ void StartMenu::draw(sf::RenderTarget& target) {
 void Game::drawCharacterCreation() {
 	map.setTexture("characterCreation");
 	map.draw(gameTexture);
-	party[0].draw(gameTexture);
+	party[0].drawCombat(gameTexture);
 	messageLog.draw(gameTexture);
 
 
 }
 
 void Game::drawExploring() {
-	map.setTexture("betterGrassMap");
-	map.draw(gameTexture);
-	party[0].draw(gameTexture);
-	messageLog.draw(gameTexture);
 
+	gameTexture.setView(camera);
+	map.draw(gameTexture);
+	party[0].drawExploring(gameTexture);
+	gameTexture.setView(gameTexture.getDefaultView());
+	messageLog.draw(gameTexture);
 
 }
 
@@ -125,12 +127,13 @@ void Game::update(float dt) {
 	case GameState::Exploring:
 		party[0].update(dt);
 		checkForEncounter(dt);
+		setCamera();
 		break;
 
 	case GameState::Combat:
 		combat.update(dt, inputHandler);
 		if (combat.getState() == CombatState::Victory) {
-			currentState = GameState::Exploring;
+			startExploring();
 		}
 		break;
 
@@ -281,7 +284,22 @@ void Game::handleCreationInput(sf::Event event) {
 void Game::startExploring() {
 	currentState = GameState::Exploring;
 
-	party[0].setPosition(80.f, 60.f);
+	map.setTexture("betterGrassMap");
+	party[0].setPosition(playerExploringPosition.x, playerExploringPosition.y);
+	party[0].getWalkAnimation().setFrame(1); 
+
+	auto mapSize = map.getSize();
+
+	std::cout << "Map: "
+		<< mapSize.x << " x " << mapSize.y << '\n';
+
+	std::cout << "Player: "
+		<< party[0].getGlobalBounds().getPosition().x << ", "
+		<< party[0].getGlobalBounds().getPosition().y << '\n';
+
+	std::cout << "Camera: "
+		<< camera.getCenter().x << ", "
+		<< camera.getCenter().y << '\n';
 }
 
 void Game::checkForEncounter(float dt) {
@@ -290,6 +308,7 @@ void Game::checkForEncounter(float dt) {
 
 	if (encounterTimer >= 3.0f && party[0].getIsMoving()) {
 		if (rollEncounter(rng) == 1) {
+			playerExploringPosition = party[0].getGlobalBounds().getPosition();
 			combat.start();
 			messageLog.addMessage("You've encountered a knight!", sf::Color::White);
 			currentState = GameState::Combat;
@@ -305,4 +324,15 @@ void Game::run() {
 		update(dt);
 		draw();
 	}
+}
+
+void Game::setCamera() {
+	sf::Vector2u mapSize = map.getSize();
+	float halfWidth = camera.getSize().x / 2.f;
+	float halfHeight = camera.getSize().y / 2.f;
+	float cameraX = party[0].getGlobalBounds().getPosition().x + party[0].getGlobalBounds().width / 2.f;
+	float cameraY = party[0].getGlobalBounds().getPosition().y + party[0].getGlobalBounds().height / 2.f;
+	cameraX = std::clamp(cameraX, halfWidth, static_cast<float>(mapSize.x) - halfWidth);
+	cameraY = std::clamp(cameraY, halfHeight, static_cast<float>(mapSize.y) - halfHeight);
+	camera.setCenter(cameraX, cameraY);
 }

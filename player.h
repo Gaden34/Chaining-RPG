@@ -30,7 +30,9 @@ public:
 	Player& operator=(const Player&) = delete;
 	Player(Player&&) = default;
 	void update(float dt) override;
-	void draw(sf::RenderTarget& target) override;
+	void draw(sf::RenderTarget& target) override { drawExploring(target); }
+	void drawExploring(sf::RenderTarget& target);
+	void drawCombat(sf::RenderTarget& target);
 	void move(float dt) override;
 	void move(float dt, InputHandler& inputHandler);
 	int getExp();
@@ -51,4 +53,5 @@ public:
 	void unlockLevelSkills();
 	bool hasSkill(const std::string& skillName) const;
 	Inventory& getInventory() override { return partyInventory; }
+	Animation& getWalkAnimation() { return walkAnimation; }
 };

@@ -57,7 +57,7 @@ void Combat::draw(sf::RenderTarget& target) {
 	target.draw(background);
 
 	for (auto& player : party) {
-		player.draw(target);
+		player.drawCombat(target);
 	}
 	for (auto& enemy : enemies) {
 		enemy.draw(target);
