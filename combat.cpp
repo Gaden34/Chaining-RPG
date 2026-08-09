@@ -7,7 +7,7 @@
 
 Combat::Combat(std::vector<Player>& p, MessageLog& m, std::mt19937& rng) : party(p), messageLog(m), rng(rng) {
 	currentState = CombatState::PlayerTurn;
-	backgroundTexture.loadFromFile("assets/battleSimulator.png");
+	backgroundTexture.loadFromFile("assets/battleBG.png");
 	background.setTexture(backgroundTexture);
 	font.loadFromFile("assets/Roboto_Condensed-Black.ttf");
 	pointerTexture.loadFromFile("assets/targetPointer.png");

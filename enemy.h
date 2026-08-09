@@ -12,7 +12,7 @@ public:
 	Enemy(const EnemyData& data);
 	void update(float dt) override;
 	void draw(sf::RenderTarget& target) override;
-	void move(float dt) override;
+	void move(float dt, const Map& map) override;
 	int getExpValue();
 	Inventory& getInventory() override { return inventory; }
 };

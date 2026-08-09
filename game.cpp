@@ -125,8 +125,8 @@ void Game::update(float dt) {
 		break;
 
 	case GameState::Exploring:
-		party[0].update(dt);
-		checkForEncounter(dt);
+		party[0].update(dt, map);
+		//checkForEncounter(dt);
 		setCamera();
 		break;
 
@@ -285,10 +285,14 @@ void Game::startExploring() {
 	currentState = GameState::Exploring;
 
 	map.setTexture("betterGrassMap");
+	map.setCollisionMap("betterGrassCollisionMap");
 	party[0].setPosition(playerExploringPosition.x, playerExploringPosition.y);
 	party[0].getWalkAnimation().setFrame(1); 
 
 	auto mapSize = map.getSize();
+
+	std::cout << map.isBlocked(20, 20) << std::endl;
+	std::cout << map.isBlocked(20, 180) << std::endl;
 }
 
 void Game::checkForEncounter(float dt) {

@@ -53,8 +53,8 @@ Player::Player(MessageLog& m, std::string n, std::string textureName, Inventory&
 }
 
 
-void Player::update(float dt) {
-	move(dt);
+void Player::update(float dt, const Map& map) {
+	move(dt, map);
 	if (isMoving) {
 		walkAnimation.update(dt);
 	}
@@ -76,27 +76,42 @@ void Player::drawCombat(sf::RenderTarget& target) {
 	target.draw(sprite);
 }
 
-void Player::move(float dt) {
+void Player::move(float dt, const Map& map) {
 	isMoving = false;
 
+	sf::Vector2f movement(0.f, 0.f);
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		sprite.move(-moveSpeed * dt, 0.f);
+		movement.x -= moveSpeed * dt;
 		isMoving = true;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-		sprite.move(moveSpeed * dt, 0.f);
+		movement.x += moveSpeed * dt;
 		isMoving = true;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-		sprite.move(0.f, -moveSpeed * dt);
+		movement.y -= moveSpeed * dt;
 		isMoving = true;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-		sprite.move(0.f, moveSpeed * dt);
+		movement.y += moveSpeed * dt;
 		isMoving = true;
+	}
+
+	// Check for collisions before moving
+	sf::Vector2f newPosition = sprite.getPosition() + movement;
+
+	sf::FloatRect collisionBox = getCollisionBox(newPosition);
+
+	bool blocked = map.isBlocked(static_cast<int>(collisionBox.left), static_cast<int>(collisionBox.top)) ||
+		map.isBlocked(static_cast<int>(collisionBox.left + collisionBox.width), static_cast<int>(collisionBox.top)) ||
+		map.isBlocked(static_cast<int>(collisionBox.left), static_cast<int>(collisionBox.top + collisionBox.height)) ||
+		map.isBlocked(static_cast<int>(collisionBox.left + collisionBox.width), static_cast<int>(collisionBox.top + collisionBox.height));
+	if (!blocked) {
+		sprite.move(movement);
 	}
 }
 
@@ -205,4 +220,8 @@ bool Player::hasSkill(const std::string& skillName) const {
 		}
 	}
 	return false;
+}
+
+sf::FloatRect Player::getCollisionBox(sf::Vector2f position) const {
+	return sf::FloatRect(position.x + 10.f, position.y + 28.f, 12.f, 4.f);
 }

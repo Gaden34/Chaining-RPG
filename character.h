@@ -3,6 +3,7 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include "item.h"
+#include "map.h"
 
 
 class Character {
@@ -30,7 +31,7 @@ public:
 	virtual Inventory& getInventory() = 0;
 	virtual void update(float dt) = 0;
 	virtual void draw(sf::RenderTarget& target) = 0;
-	virtual void move(float dt) = 0;
+	virtual void move(float dt, const Map& map) = 0;
 
 	std::string getName() const { return name; }
 	void setPosition(float x, float y) { sprite.setPosition(x, y); }

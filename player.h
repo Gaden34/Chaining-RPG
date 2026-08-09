@@ -11,6 +11,7 @@
 #include "messageLog.h"
 #include "item.h"
 #include "inputHandler.h"
+#include "map.h"
 
 class Player : public Character {
 private:
@@ -29,11 +30,12 @@ public:
 	Player(const Player&) = delete;
 	Player& operator=(const Player&) = delete;
 	Player(Player&&) = default;
-	void update(float dt) override;
+	void update(float dt) override {}
+	void update(float dt, const Map& map);
 	void draw(sf::RenderTarget& target) override { drawExploring(target); }
 	void drawExploring(sf::RenderTarget& target);
 	void drawCombat(sf::RenderTarget& target);
-	void move(float dt) override;
+	void move(float dt, const Map& map) override;
 	void move(float dt, InputHandler& inputHandler);
 	int getExp();
 	void addExp(int amount);
@@ -54,4 +56,5 @@ public:
 	bool hasSkill(const std::string& skillName) const;
 	Inventory& getInventory() override { return partyInventory; }
 	Animation& getWalkAnimation() { return walkAnimation; }
+	sf::FloatRect getCollisionBox(sf::Vector2f position) const;
 };

@@ -42,7 +42,7 @@ void Enemy::draw(sf::RenderTarget& target) {
 	if (alive) target.draw(sprite);
 }
 
-void Enemy::move(float dt) {
+void Enemy::move(float dt, const Map& map) {
 
 }
 
