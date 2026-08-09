@@ -289,17 +289,6 @@ void Game::startExploring() {
 	party[0].getWalkAnimation().setFrame(1); 
 
 	auto mapSize = map.getSize();
-
-	std::cout << "Map: "
-		<< mapSize.x << " x " << mapSize.y << '\n';
-
-	std::cout << "Player: "
-		<< party[0].getGlobalBounds().getPosition().x << ", "
-		<< party[0].getGlobalBounds().getPosition().y << '\n';
-
-	std::cout << "Camera: "
-		<< camera.getCenter().x << ", "
-		<< camera.getCenter().y << '\n';
 }
 
 void Game::checkForEncounter(float dt) {
