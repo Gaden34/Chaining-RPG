@@ -45,6 +45,7 @@ public:
 	int getAttack() const { return attack; }
 	int getMagAttack() const { return magAttack; }
 	float getMoveSpeed() const { return moveSpeed; }
+	sf::Sprite& getSprite() { return sprite; }
 	void takeDamage(int amount);
 	bool isAlive() const { return alive; }
 

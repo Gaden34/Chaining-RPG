@@ -125,10 +125,16 @@ void Game::update(float dt) {
 		break;
 
 	case GameState::Exploring:
+	{
 		party[0].update(dt, map);
 		//checkForEncounter(dt);
 		setCamera();
+		MapTransition* transition = map.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()));
+		if (transition) {
+			std::cout << "Entered transition: " << transition->destination << std::endl;
+		}
 		break;
+	}
 
 	case GameState::Combat:
 		combat.update(dt, inputHandler);
@@ -286,8 +292,10 @@ void Game::startExploring() {
 
 	map.setTexture("betterGrassMap");
 	map.setCollisionMap("betterGrassCollisionMap");
+	map.getTransitions().push_back({ { 97.f, 287.f, 32.f, 16.f }, "House1", { 97.f, 287.f } });
+
 	party[0].setPosition(playerExploringPosition.x, playerExploringPosition.y);
-	party[0].getWalkAnimation().setFrame(1); 
+	party[0].getWalkAnimation().setFrame(1);
 
 	auto mapSize = map.getSize();
 

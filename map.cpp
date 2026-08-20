@@ -32,3 +32,12 @@ bool Map::isBlocked(int x, int y) const {
 
 	std::cout << "Collision map loaded: " << collisionMap.getSize().x << "x" << collisionMap.getSize().y << std::endl;
 }
+
+MapTransition* Map::getTransitionAtPosition(const sf::FloatRect& bounds) {
+	for (auto& transition : transitions) {
+		if (bounds.intersects(transition.trigger)) {
+			return &transition;
+		}
+	}
+	return nullptr;
+}

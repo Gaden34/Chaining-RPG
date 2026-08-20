@@ -1,5 +1,13 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <string>
+
+
+struct MapTransition {
+	sf::FloatRect trigger;
+	std::string destination;
+	sf::Vector2f spawnPosition;
+};
 
 
 class Map {
@@ -7,6 +15,8 @@ private:
 	sf::Texture texture;
 	sf::Sprite sprite;
 	sf::Image collisionMap;
+
+	std::vector<MapTransition> transitions;
 	
 
 public:
@@ -17,5 +27,7 @@ public:
 	void setCollisionMap(std::string t);
 	bool isBlocked(int x, int y) const;
 	sf::Image& getCollisionMap() { return collisionMap; }
+	std::vector<MapTransition>& getTransitions() { return transitions; }
+	MapTransition* getTransitionAtPosition(const sf::FloatRect& bounds);
 
 };
