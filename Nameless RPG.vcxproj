@@ -26,6 +26,7 @@
     <ClCompile Include="discipline.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemyData.cpp" />
+    <ClCompile Include="exploration.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="inputHandler.cpp" />
     <ClCompile Include="item.cpp" />
@@ -50,6 +51,7 @@
     <ClInclude Include="enemy.h" />
     <ClInclude Include="enemyData.h" />
     <ClInclude Include="enums.h" />
+    <ClInclude Include="exploration.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="inputHandler.h" />
     <ClInclude Include="item.h" />

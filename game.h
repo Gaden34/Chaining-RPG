@@ -16,6 +16,7 @@
 #include "combatTestSetup.h"
 #include "item.h"
 #include "inputHandler.h"
+#include "exploration.h"
 
 enum class GameState {
 	StartMenu,
@@ -43,21 +44,19 @@ class Game {
 private:
 	std::vector<Player> party;
 	Combat combat;
-	Map map;
+	Map characterCreationMap;
 	MessageLog messageLog;
 	StartMenu startMenu;
 	CombatTestSetup combatTestSetup;
+	Exploration exploration;
 	sf::RenderWindow window;
 	sf::RenderTexture gameTexture;
 	sf::Clock clock;
 	GameState currentState = GameState::CharacterCreation;
 	CreationStep creationStep = CreationStep::Name;
-	float encounterTimer = 0.f;
 	std::mt19937 rng;
 	Inventory partyInventory;
 	InputHandler inputHandler;
-	sf::View camera;
-	sf::Vector2f playerExploringPosition = {40.f, 20.f};
 
 public: 
 	Game();
@@ -66,7 +65,6 @@ public:
 	void draw();
 	void drawStartMenu();
 	void drawCharacterCreation();
-	void drawExploring();
 	void drawCombat();
 	void handleStartMenu();
 	void handleEvents();
@@ -82,12 +80,7 @@ public:
 	void handleNameSelection();
 	void handleClassSelection(sf::Event event);
 	void startExploring();
-	void checkForEncounter(float dt);
 	void startCombat();
 	void run();
-	void setCamera();
 
 };
-
-constexpr unsigned VirtualWidth = 640;
-constexpr unsigned VirtualHeight = 360;

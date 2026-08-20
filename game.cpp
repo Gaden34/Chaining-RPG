@@ -7,7 +7,7 @@
 
 
 
-Game::Game() : combat(party, messageLog, rng), combatTestSetup(party, messageLog), window(sf::VideoMode({ 1280, 720 }), "Nameless RPG"), rng(std::random_device{}()) {
+Game::Game() : combat(party, messageLog, rng), combatTestSetup(party, messageLog), exploration(rng, messageLog), window(sf::VideoMode({ 1280, 720 }), "Nameless RPG"), rng(std::random_device{}()) {
 	gameTexture.create(640, 360);
 	SkillDatabase::loadSkills("skills.json");
 	ItemDatabase::loadItems("items.json");
@@ -15,7 +15,6 @@ Game::Game() : combat(party, messageLog, rng), combatTestSetup(party, messageLog
 	party.emplace_back(messageLog, "Kari", "bluey", partyInventory);
 	party[1].setDiscipline(DisciplineID::Combatant);
 	window.setFramerateLimit(60);
-	camera = sf::View(sf::FloatRect(0.f, 0.f, static_cast<float>(VirtualWidth), static_cast<float>(VirtualHeight)));
 
 	currentState = GameState::StartMenu;
 }
@@ -34,7 +33,8 @@ void Game::draw() {
 		break;
 
 	case GameState::Exploring:
-		drawExploring();
+		exploration.draw(gameTexture, party[0]);
+		messageLog.draw(gameTexture);
 		break;
 
 	case GameState::Combat:
@@ -92,21 +92,11 @@ void StartMenu::draw(sf::RenderTarget& target) {
 }
 
 void Game::drawCharacterCreation() {
-	map.setTexture("characterCreation");
-	map.draw(gameTexture);
+	characterCreationMap.setTexture("characterCreation");
+	characterCreationMap.draw(gameTexture);
 	party[0].drawCombat(gameTexture);
 	messageLog.draw(gameTexture);
 
-
-}
-
-void Game::drawExploring() {
-
-	gameTexture.setView(camera);
-	map.draw(gameTexture);
-	party[0].drawExploring(gameTexture);
-	gameTexture.setView(gameTexture.getDefaultView());
-	messageLog.draw(gameTexture);
 
 }
 
@@ -126,10 +116,13 @@ void Game::update(float dt) {
 
 	case GameState::Exploring:
 	{
-		party[0].update(dt, map);
-		//checkForEncounter(dt);
-		setCamera();
-		MapTransition* transition = map.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()));
+		exploration.update(dt, party[0]);
+		if (exploration.checkForEncounter(dt, party[0])) {
+			combat.start();
+			messageLog.addMessage("You've encountered a knight!", sf::Color::White);
+			currentState = GameState::Combat;
+		}
+		MapTransition* transition = exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()));
 		if (transition) {
 			std::cout << "Entered transition: " << transition->destination << std::endl;
 		}
@@ -289,33 +282,7 @@ void Game::handleCreationInput(sf::Event event) {
 
 void Game::startExploring() {
 	currentState = GameState::Exploring;
-
-	map.setTexture("betterGrassMap");
-	map.setCollisionMap("betterGrassCollisionMap");
-	map.getTransitions().push_back({ { 97.f, 287.f, 32.f, 16.f }, "House1", { 97.f, 287.f } });
-
-	party[0].setPosition(playerExploringPosition.x, playerExploringPosition.y);
-	party[0].getWalkAnimation().setFrame(1);
-
-	auto mapSize = map.getSize();
-
-	std::cout << map.isBlocked(20, 20) << std::endl;
-	std::cout << map.isBlocked(20, 180) << std::endl;
-}
-
-void Game::checkForEncounter(float dt) {
-	std::uniform_int_distribution<int> rollEncounter(1, 100);
-	if (party[0].getIsMoving()) encounterTimer += dt;
-
-	if (encounterTimer >= 3.0f && party[0].getIsMoving()) {
-		if (rollEncounter(rng) == 1) {
-			playerExploringPosition = party[0].getGlobalBounds().getPosition();
-			combat.start();
-			messageLog.addMessage("You've encountered a knight!", sf::Color::White);
-			currentState = GameState::Combat;
-			encounterTimer = 0.f;
-		}
-	}
+	exploration.start(party[0]);
 }
 
 void Game::run() {
@@ -325,15 +292,4 @@ void Game::run() {
 		update(dt);
 		draw();
 	}
-}
-
-void Game::setCamera() {
-	sf::Vector2u mapSize = map.getSize();
-	float halfWidth = camera.getSize().x / 2.f;
-	float halfHeight = camera.getSize().y / 2.f;
-	float cameraX = party[0].getGlobalBounds().getPosition().x + party[0].getGlobalBounds().width / 2.f;
-	float cameraY = party[0].getGlobalBounds().getPosition().y + party[0].getGlobalBounds().height / 2.f;
-	cameraX = std::clamp(cameraX, halfWidth, static_cast<float>(mapSize.x) - halfWidth);
-	cameraY = std::clamp(cameraY, halfHeight, static_cast<float>(mapSize.y) - halfHeight);
-	camera.setCenter(cameraX, cameraY);
 }
