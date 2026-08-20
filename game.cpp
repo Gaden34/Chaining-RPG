@@ -115,20 +115,9 @@ void Game::update(float dt) {
 		break;
 
 	case GameState::Exploring:
-	{
-		exploration.update(dt, party[0]);
-		if (exploration.checkForEncounter(dt, party[0])) {
-			combat.start();
-			messageLog.addMessage("You've encountered a knight!", sf::Color::White);
-			currentState = GameState::Combat;
-		}
-		MapTransition* transition = exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()));
-		if (transition) {
-			std::cout << "Entered transition: " << transition->destination << std::endl;
-		}
+		updateExploration(dt);
 		break;
-	}
-
+	
 	case GameState::Combat:
 		combat.update(dt, inputHandler);
 		if (combat.getState() == CombatState::Victory) {
@@ -160,6 +149,19 @@ void Game::updateCharacterCreation(float dt) {
 		break;
 	}
 	
+}
+
+void Game::updateExploration(float dt) {
+	exploration.update(dt, party[0]);
+	if (exploration.checkForEncounter(dt, party[0])) {
+		startCombat();
+	}
+	MapTransition* transition = exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()));
+		if (transition) {
+			std::cout << "Entered transition: " << transition->destination << std::endl;
+			map.setTexture(transition->destination);
+			party[0].setPosition(transition->spawnPosition);
+		}
 }
 
 void Game::startCharacterCreation() {
@@ -280,9 +282,17 @@ void Game::handleCreationInput(sf::Event event) {
 	}
 }
 
+
 void Game::startExploring() {
 	currentState = GameState::Exploring;
 	exploration.start(party[0]);
+}
+
+void Game::startCombat() {
+
+		currentState = GameState::Combat;
+		combat.start();
+
 }
 
 void Game::run() {

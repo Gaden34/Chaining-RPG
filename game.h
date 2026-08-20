@@ -73,6 +73,7 @@ public:
 	void update(float dt);
 	void updateStartMenu(float dt);
 	void updateCombat(float dt);
+	void updateExploration(float dt);
 	void updateCharacterCreation(float dt);
 	void startCharacterCreation();
 	void startClassSelection();
