@@ -57,6 +57,7 @@ private:
 	std::mt19937 rng;
 	Inventory partyInventory;
 	InputHandler inputHandler;
+	bool transitionLocked = false;
 
 public: 
 	Game();

@@ -153,15 +153,23 @@ void Game::updateCharacterCreation(float dt) {
 
 void Game::updateExploration(float dt) {
 	exploration.update(dt, party[0]);
-	if (exploration.checkForEncounter(dt, party[0])) {
+	/*if (exploration.checkForEncounter(dt, party[0])) {
 		startCombat();
-	}
+	}*/
+
+	if (!transitionLocked) {
 	MapTransition* transition = exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()));
-		if (transition) {
-			std::cout << "Entered transition: " << transition->destination << std::endl;
-			map.setTexture(transition->destination);
-			party[0].setPosition(transition->spawnPosition);
+	if (transition) {
+		transitionLocked = true;
+		exploration.getMap().setTexture(transition->destination);
+		exploration.getMap().setCollisionMap(transition->collisionMap);
+		//party[0].setPosition(transition->spawnPosition.x, transition->spawnPosition.y);
 		}
+	}
+
+	if (transitionLocked && !exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()))) {
+		transitionLocked = false;
+	}
 }
 
 void Game::startCharacterCreation() {

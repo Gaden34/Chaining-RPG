@@ -6,6 +6,7 @@
 struct MapTransition {
 	sf::FloatRect trigger;
 	std::string destination;
+	std::string collisionMap;
 	sf::Vector2f spawnPosition;
 };
 
