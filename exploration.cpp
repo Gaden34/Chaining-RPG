@@ -8,9 +8,9 @@ Exploration::Exploration(std::mt19937& rng, MessageLog& messageLog)
 }
 
 void Exploration::start(Player& player) {
-	map.setTexture("betterGrassMap");
-	map.setCollisionMap("betterGrassCollisionMap");
-	map.getTransitions().push_back({ { 97.f, 287.f, 32.f, 16.f }, "betterGrassMapHouse1", "betterGrassHouseCollisionMap",{ 97.f, 287.f }});
+	map.setTexture("BurumiaMap");
+	map.setCollisionMap("BurumiaCollisionMap");
+	map.getTransitions() = Map::loadTransitionsFromJson("BurumiaMap", "maps.json");
 
 	player.setPosition(playerPosition.x, playerPosition.y);
 	player.getWalkAnimation().setFrame(1);

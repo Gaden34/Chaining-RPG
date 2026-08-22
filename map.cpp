@@ -1,5 +1,9 @@
+#include <nlohmann/json.hpp>
 #include <iostream>
+#include <fstream>
 #include "map.h"
+
+using json = nlohmann::json;
 
 
 Map::Map() {
@@ -40,4 +44,53 @@ MapTransition* Map::getTransitionAtPosition(const sf::FloatRect& bounds) {
 		}
 	}
 	return nullptr;
+}
+
+std::vector<MapTransition> Map::loadTransitionsFromJson(const std::string& mapId, const std::string& filePath) {
+	std::ifstream file(filePath);
+	if (!file.is_open()) {
+		std::cerr << "Failed to open maps JSON: " << filePath << std::endl;
+		return {};
+	}
+
+	json data;
+	try { 
+		file >> data; 
+	}
+	catch (const std::exception& e) {
+		std::cerr << "Failed to parse maps JSON: " << e.what() << std::endl;
+		return {};
+	}
+
+	for (const auto& mapJson : data["maps"]) {
+		if (mapJson.value("id", "") != mapId)
+			continue;
+		
+		std::vector<MapTransition> transitions;
+		for (const auto& t : mapJson["transitions"]) {
+			MapTransition transition;
+			const auto& trig = t["trigger"];
+			transition.trigger = sf::FloatRect(
+				trig.value("x", 0.f),
+				trig.value("y", 0.f),
+				trig.value("w", 0.f),
+				trig.value("h", 0.f)
+			);
+			transition.targetMap.texturePath = t.value("targetMap", "");
+			transition.targetMap.collisionMapPath = t.value("targetCollisionMap", "");
+
+			if (t.contains("spawnPosition")) {
+				transition.spawnPosition = sf::Vector2f(
+					t["spawnPosition"].value("x", 0.f),
+					t["spawnPosition"].value("y", 0.f)
+				);
+			}
+
+			transitions.push_back(transition);
+		}
+		return transitions;
+	}
+
+	std::cerr << "Map id '" << mapId << "' not found in " << filePath << std::endl;
+	return {};
 }

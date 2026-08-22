@@ -147,5 +147,6 @@
     <None Include="skills.json" />
     <None Include="items.json" />
     <None Include="animations.json" />
+    <None Include="maps.json" />
   </ItemGroup>
 </Project>

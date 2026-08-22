@@ -1,13 +1,17 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <optional>
 
+struct MapData {
+	std::string texturePath;
+	std::string collisionMapPath;
+};
 
 struct MapTransition {
 	sf::FloatRect trigger;
-	std::string destination;
-	std::string collisionMap;
-	sf::Vector2f spawnPosition;
+	MapData targetMap;
+	std::optional<sf::Vector2f> spawnPosition;
 };
 
 
@@ -30,5 +34,6 @@ public:
 	sf::Image& getCollisionMap() { return collisionMap; }
 	std::vector<MapTransition>& getTransitions() { return transitions; }
 	MapTransition* getTransitionAtPosition(const sf::FloatRect& bounds);
+	static std::vector<MapTransition> loadTransitionsFromJson(const std::string& mapId, const std::string& filePath);
 
 };

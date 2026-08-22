@@ -158,26 +158,29 @@ void Game::updateExploration(float dt) {
 	}*/
 
 	if (!transitionLocked) {
-	MapTransition* transition = exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()));
-	if (transition) {
-		transitionLocked = true;
-		exploration.getMap().setTexture(transition->destination);
-		exploration.getMap().setCollisionMap(transition->collisionMap);
-		//party[0].setPosition(transition->spawnPosition.x, transition->spawnPosition.y);
+		MapTransition* transition = exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()));
+		if (transition) {
+			transitionLocked = true;
+			exploration.getMap().setTexture(transition->targetMap.texturePath);
+			exploration.getMap().setCollisionMap(transition->targetMap.collisionMapPath);
+
+			exploration.getMap().getTransitions() = Map::loadTransitionsFromJson(transition->targetMap.texturePath, "maps.json");
+
+			if (transition->spawnPosition.has_value()) party[0].setPosition(transition->spawnPosition->x, transition->spawnPosition->y);
+		}
+
+		if (transitionLocked && !exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()))) {
+			transitionLocked = false;
+			}
 		}
 	}
 
-	if (transitionLocked && !exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()))) {
-		transitionLocked = false;
+	void Game::startCharacterCreation() {
+		currentState = GameState::CharacterCreation;
+		creationStep = CreationStep::Name;
+
+		party[0].setPosition(320.f, 180.f);
 	}
-}
-
-void Game::startCharacterCreation() {
-	currentState = GameState::CharacterCreation;
-	creationStep = CreationStep::Name;
-
-	party[0].setPosition(320.f, 180.f);
-}
 
 
 void Game::startClassSelection() {
