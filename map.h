@@ -3,6 +3,14 @@
 #include <string>
 #include <optional>
 
+enum class TransitionDirection
+{
+	Up,
+	Down,
+	Left,
+	Right
+};
+
 struct MapData {
 	std::string texturePath;
 	std::string collisionMapPath;
@@ -12,6 +20,7 @@ struct MapTransition {
 	sf::FloatRect trigger;
 	MapData targetMap;
 	std::optional<sf::Vector2f> spawnPosition;
+	TransitionDirection direction;
 };
 
 

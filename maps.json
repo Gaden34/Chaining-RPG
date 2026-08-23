@@ -6,8 +6,23 @@
       "collisionMap": "BurumiaCollisionMap",
       "transitions": [
         {
-          "trigger": { "x": 97.0, "y": 287.0, "w": 32.0, "h": 4.0 },
+          "trigger": {
+            "x": 86.0,
+            "y": 284.0,
+            "w": 24.0,
+            "h": 4.0
+          },
           "targetMap": "BurumiaMapHouse1",
+          "targetCollisionMap": "BurumiaHouseCollisionMap"
+        },
+        {
+          "trigger": {
+            "x": 325.0,
+            "y": 107.0,
+            "w": 24.0,
+            "h": 4.0
+          },
+          "targetMap": "BurumiaMapHouse2",
           "targetCollisionMap": "BurumiaHouseCollisionMap"
         }
       ]
@@ -18,7 +33,29 @@
       "collisionMap": "BurumiaHouseCollisionMap",
       "transitions": [
         {
-          "trigger": { "x": 97.0, "y": 287.0, "w": 32.0, "h": 4.0 },
+          "trigger": {
+            "x": 86.0,
+            "y": 284.0,
+            "w": 24.0,
+            "h": 4.0
+          },
+          "targetMap": "BurumiaMap",
+          "targetCollisionMap": "BurumiaCollisionMap"
+        }
+      ]
+    },
+    {
+      "id": "BurumiaMapHouse2",
+      "texture": "BurumiaMapHouse2",
+      "collisionMap": "BurumiaHouseCollisionMap",
+      "transitions": [
+        {
+          "trigger": {
+            "x": 325.0,
+            "y": 107.0,
+            "w": 24.0,
+            "h": 4.0
+          },
           "targetMap": "BurumiaMap",
           "targetCollisionMap": "BurumiaCollisionMap"
         }
@@ -26,3 +63,5 @@
     }
   ]
 }
+
+  
