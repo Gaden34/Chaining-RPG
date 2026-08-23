@@ -163,17 +163,16 @@ void Game::updateExploration(float dt) {
 			transitionLocked = true;
 			exploration.getMap().setTexture(transition->targetMap.texturePath);
 			exploration.getMap().setCollisionMap(transition->targetMap.collisionMapPath);
+			if (transition->spawnPosition.has_value()) party[0].setPosition(transition->spawnPosition->x, transition->spawnPosition->y);
 
 			exploration.getMap().getTransitions() = Map::loadTransitionsFromJson(transition->targetMap.texturePath, "maps.json");
-
-			if (transition->spawnPosition.has_value()) party[0].setPosition(transition->spawnPosition->x, transition->spawnPosition->y);
 		}
+	}
 
 		if (transitionLocked && !exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()))) {
 			transitionLocked = false;
 			}
 		}
-	}
 
 	void Game::startCharacterCreation() {
 		currentState = GameState::CharacterCreation;

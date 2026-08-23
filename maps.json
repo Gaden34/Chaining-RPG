@@ -6,7 +6,7 @@
       "collisionMap": "BurumiaCollisionMap",
       "transitions": [
         {
-          "trigger": { "x": 97.0, "y": 287.0, "w": 32.0, "h": 16.0 },
+          "trigger": { "x": 97.0, "y": 287.0, "w": 32.0, "h": 4.0 },
           "targetMap": "BurumiaMapHouse1",
           "targetCollisionMap": "BurumiaHouseCollisionMap"
         }
@@ -18,7 +18,7 @@
       "collisionMap": "BurumiaHouseCollisionMap",
       "transitions": [
         {
-          "trigger": { "x": 97.0, "y": 287.0, "w": 32.0, "h": 16.0 },
+          "trigger": { "x": 97.0, "y": 287.0, "w": 32.0, "h": 4.0 },
           "targetMap": "BurumiaMap",
           "targetCollisionMap": "BurumiaCollisionMap"
         }
