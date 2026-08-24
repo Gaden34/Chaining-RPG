@@ -115,6 +115,61 @@ void Player::move(float dt, const Map& map) {
 	}
 }
 
+void Player::move(float dt, InputHandler& inputHandler, const Map& map) {
+	isMoving = false;
+
+	sf::Vector2f movement(0.f, 0.f);
+
+	if (inputHandler.isKeyPressed(sf::Keyboard::A)) {
+		movement.x -= moveSpeed * dt;
+		isMoving = true;
+	}
+
+	if (inputHandler.isKeyPressed(sf::Keyboard::D)) {
+		movement.x += moveSpeed * dt;
+		isMoving = true;
+	}
+
+	if (inputHandler.isKeyPressed(sf::Keyboard::W)) {
+		movement.y -= moveSpeed * dt;
+		isMoving = true;
+	}
+
+	if (inputHandler.isKeyPressed(sf::Keyboard::S)) {
+		movement.y += moveSpeed * dt;
+		isMoving = true;
+	}
+
+	// Check for collisions before moving
+	sf::Vector2f newPosition = sprite.getPosition() + movement;
+
+	sf::FloatRect collisionBox = getCollisionBox(newPosition);
+
+	bool blocked = map.isBlocked(static_cast<int>(collisionBox.left), static_cast<int>(collisionBox.top)) ||
+		map.isBlocked(static_cast<int>(collisionBox.left + collisionBox.width), static_cast<int>(collisionBox.top)) ||
+		map.isBlocked(static_cast<int>(collisionBox.left), static_cast<int>(collisionBox.top + collisionBox.height)) ||
+		map.isBlocked(static_cast<int>(collisionBox.left + collisionBox.width), static_cast<int>(collisionBox.top + collisionBox.height));
+	if (!blocked) {
+		sprite.move(movement);
+	}
+}
+
+void Player::resolveAxis(std::optional<TransitionDirection>& axis, InputHandler& input, InputAction negAction, TransitionDirection negDir, InputAction posAction, TransitionDirection posDir) {
+	bool negDown = input.isDown(negAction);
+	bool posDown = input.isDown(posAction);
+
+	if (input.wasPressed(negAction)) axis = negDir;
+	if (input.wasPressed(posAction)) axis = posDir;
+	
+	if (axis == negDir && !negDown) axis = posDown ? std::optional(posDir) : std::nullopt;
+	if (axis == posDir && !posDown) axis = negDown ? std::optional(negDir) : std::nullopt;
+
+	if (!axis) {
+		if (negDown) axis = negDir;
+		else if (posDown) axis = posDir;
+	}
+}
+
 int Player::getExp() {
 	return experience;
 }

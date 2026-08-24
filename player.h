@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <optional>
 #include "animation.h"
 #include "character.h"
 #include "discipline.h"
@@ -24,6 +25,8 @@ private:
 	Animation walkAnimation;
 	sf::Texture walkTexture;
 	Inventory& partyInventory;
+	std::optional<TransitionDirection> horizontalDirection;
+	std::optional<TransitionDirection> verticalDirection;
 
 public:
 	Player(MessageLog& m, std::string n, std::string textureName, Inventory& inv);
@@ -36,7 +39,8 @@ public:
 	void drawExploring(sf::RenderTarget& target);
 	void drawCombat(sf::RenderTarget& target);
 	void move(float dt, const Map& map) override;
-	void move(float dt, InputHandler& inputHandler);
+	void move(float dt, InputHandler& inputHandler, const Map& map);
+	void resolveAxis(std::optional<TransitionDirection>& axis, InputHandler& input, InputAction negAction, TransitionDirection negDir, InputAction posAction, TransitionDirection posDir);
 	int getExp();
 	void addExp(int amount);
 	int expNeededForNextLevel(int level);
