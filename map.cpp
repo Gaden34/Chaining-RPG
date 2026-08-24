@@ -39,11 +39,32 @@ bool Map::isBlocked(int x, int y) const {
 
 MapTransition* Map::getTransitionAtPosition(const sf::FloatRect& bounds) {
 	for (auto& transition : transitions) {
-		if (bounds.intersects(transition.trigger)) {
+		if (canTriggerTransition(bounds, transition)) {
 			return &transition;
 		}
 	}
 	return nullptr;
+}
+
+bool Map::canTriggerTransition(const sf::FloatRect& feet, const MapTransition& transition) const {
+	if (!feet.intersects(transition.trigger))
+		return false;
+	sf::FloatRect topLeft(feet.left, feet.top, 1.f, 1.f);
+	sf::FloatRect topRight(feet.left + feet.width - 1.f, feet.top, 1.f, 1.f);
+	sf::FloatRect bottomLeft(feet.left, feet.top + feet.height - 1.f, 1.f, 1.f);
+	sf::FloatRect bottomRight(feet.left + feet.width - 1.f, feet.top + feet.height - 1.f, 1.f, 1.f);
+
+	switch (transition.direction) {
+	case TransitionDirection::Up:
+		return topLeft.intersects(transition.trigger) && topRight.intersects(transition.trigger);
+	case TransitionDirection::Down:
+		return bottomLeft.intersects(transition.trigger) && bottomRight.intersects(transition.trigger);
+	case TransitionDirection::Left:
+		return topLeft.intersects(transition.trigger) && bottomLeft.intersects(transition.trigger);
+	case TransitionDirection::Right:
+		return topRight.intersects(transition.trigger) && bottomRight.intersects(transition.trigger);
+	}
+	return false;
 }
 
 std::vector<MapTransition> Map::loadTransitionsFromJson(const std::string& mapId, const std::string& filePath) {
