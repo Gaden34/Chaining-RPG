@@ -19,8 +19,8 @@ struct MapData {
 struct MapTransition {
 	sf::FloatRect trigger;
 	MapData targetMap;
-	std::optional<sf::Vector2f> spawnPosition;
 	TransitionDirection direction;
+	std::optional<sf::Vector2f> spawnPosition;
 };
 
 
@@ -43,6 +43,9 @@ public:
 	sf::Image& getCollisionMap() { return collisionMap; }
 	std::vector<MapTransition>& getTransitions() { return transitions; }
 	MapTransition* getTransitionAtPosition(const sf::FloatRect& bounds);
+	bool canTriggerTransition(const sf::FloatRect& feet, const MapTransition& transition) const;
 	static std::vector<MapTransition> loadTransitionsFromJson(const std::string& mapId, const std::string& filePath);
 
 };
+
+TransitionDirection stringToDirection(const std::string& str);

@@ -13,7 +13,8 @@
             "h": 4.0
           },
           "targetMap": "BurumiaMapHouse1",
-          "targetCollisionMap": "BurumiaHouseCollisionMap"
+          "targetCollisionMap": "BurumiaHouseCollisionMap",
+          "direction": "Up"
         },
         {
           "trigger": {
@@ -23,7 +24,30 @@
             "h": 4.0
           },
           "targetMap": "BurumiaMapHouse2",
-          "targetCollisionMap": "BurumiaHouseCollisionMap"
+          "targetCollisionMap": "BurumiaHouseCollisionMap",
+          "direction": "Up"
+        },
+        {
+          "trigger": {
+            "x": 646.0,
+            "y": 107.0,
+            "w": 24.0,
+            "h": 4.0
+          },
+          "targetMap": "BurumiaMapHouse3",
+          "targetCollisionMap": "BurumiaHouseCollisionMap",
+          "direction": "Up"
+        },
+        {
+          "trigger": {
+            "x": 822.0,
+            "y": 281.0,
+            "w": 24.0,
+            "h": 4.0
+          },
+          "targetMap": "BurumiaMapHouse4",
+          "targetCollisionMap": "BurumiaHouseCollisionMap",
+          "direction": "Up"
         }
       ]
     },
@@ -40,7 +64,8 @@
             "h": 4.0
           },
           "targetMap": "BurumiaMap",
-          "targetCollisionMap": "BurumiaCollisionMap"
+          "targetCollisionMap": "BurumiaCollisionMap",
+          "direction": "Down"
         }
       ]
     },
@@ -57,7 +82,44 @@
             "h": 4.0
           },
           "targetMap": "BurumiaMap",
-          "targetCollisionMap": "BurumiaCollisionMap"
+          "targetCollisionMap": "BurumiaCollisionMap",
+          "direction": "Down"
+        }
+      ]
+    },
+    {
+      "id": "BurumiaMapHouse3",
+      "texture": "BurumiaMapHouse3",
+      "collisionMap": "BurumiaHouseCollisionMap",
+      "transitions": [
+        {
+          "trigger": {
+            "x": 646.0,
+            "y": 107.0,
+            "w": 24.0,
+            "h": 4.0
+          },
+          "targetMap": "BurumiaMap",
+          "targetCollisionMap": "BurumiaCollisionMap",
+          "direction": "Down"
+        }
+      ]
+    },
+    {
+      "id": "BurumiaMapHouse4",
+      "texture": "BurumiaMapHouse4",
+      "collisionMap": "BurumiaHouseCollisionMap",
+      "transitions": [
+        {
+          "trigger": {
+            "x": 822.0,
+            "y": 281.0,
+            "w": 24.0,
+            "h": 4.0
+          },
+          "targetMap": "BurumiaMap",
+          "targetCollisionMap": "BurumiaCollisionMap",
+          "direction": "Down"
         }
       ]
     }

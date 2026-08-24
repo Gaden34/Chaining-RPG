@@ -78,6 +78,7 @@ std::vector<MapTransition> Map::loadTransitionsFromJson(const std::string& mapId
 			);
 			transition.targetMap.texturePath = t.value("targetMap", "");
 			transition.targetMap.collisionMapPath = t.value("targetCollisionMap", "");
+			transition.direction = stringToDirection(t.value("direction", ""));
 
 			if (t.contains("spawnPosition")) {
 				transition.spawnPosition = sf::Vector2f(
@@ -93,4 +94,12 @@ std::vector<MapTransition> Map::loadTransitionsFromJson(const std::string& mapId
 
 	std::cerr << "Map id '" << mapId << "' not found in " << filePath << std::endl;
 	return {};
+}
+
+TransitionDirection stringToDirection(const std::string& str) {
+	if (str == "Up") return TransitionDirection::Up;
+	if (str == "Down") return TransitionDirection::Down;
+	if (str == "Left") return TransitionDirection::Left;
+	if (str == "Right") return TransitionDirection::Right;
+	return TransitionDirection::Up; // Default value
 }
