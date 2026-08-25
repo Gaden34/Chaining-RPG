@@ -44,6 +44,7 @@ public:
 	std::vector<MapTransition>& getTransitions() { return transitions; }
 	MapTransition* getTransitionAtPosition(const sf::FloatRect& bounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical);
 	bool canTriggerTransition(const sf::FloatRect& feet, const MapTransition& transition, TransitionDirection direction) const;
+	bool isPartiallyEnteringTransition(const sf::FloatRect& feet, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical) const;
 	static std::vector<MapTransition> loadTransitionsFromJson(const std::string& mapId, const std::string& filePath);
 
 };

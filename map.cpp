@@ -76,6 +76,21 @@ bool Map::canTriggerTransition(const sf::FloatRect& feet, const MapTransition& t
 	return false;
 }
 
+bool Map::isPartiallyEnteringTransition(const sf::FloatRect& feet, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical) const {
+	for (const auto& transition : transitions) {
+
+		if (!feet.intersects(transition.trigger)) continue;
+		
+		if (horizontal && canTriggerTransition(feet, transition, *horizontal)) {
+			return true;
+		}
+		if (vertical && canTriggerTransition(feet, transition, *vertical)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 std::vector<MapTransition> Map::loadTransitionsFromJson(const std::string& mapId, const std::string& filePath) {
 	std::ifstream file(filePath);
 	if (!file.is_open()) {
