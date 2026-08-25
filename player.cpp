@@ -33,6 +33,18 @@ namespace {
 
 }
 
+namespace 
+{ 
+const AxisInput horizontalAxisInput{
+		InputAction::MoveLeft, TransitionDirection::Left,
+		InputAction::MoveRight, TransitionDirection::Right
+	};
+const AxisInput verticalAxisInput = {
+	InputAction::MoveUp, TransitionDirection::Up,
+	InputAction::MoveDown, TransitionDirection::Down
+	}; 
+}
+
 Player::Player(MessageLog& m, std::string n, std::string textureName, Inventory& inv) : messageLog(m), partyInventory(inv) {
 	name = n;
 	texture.loadFromFile("assets/" + textureName + ".png");
@@ -53,8 +65,8 @@ Player::Player(MessageLog& m, std::string n, std::string textureName, Inventory&
 }
 
 
-void Player::update(float dt, const Map& map) {
-	move(dt, map);
+void Player::update(float dt, InputHandler& inputHandler, const Map& map) {
+	move(dt, inputHandler, map);
 	if (isMoving) {
 		walkAnimation.update(dt);
 	}
@@ -118,25 +130,29 @@ void Player::move(float dt, const Map& map) {
 void Player::move(float dt, InputHandler& inputHandler, const Map& map) {
 	isMoving = false;
 
+
+	resolveAxis(horizontalDirection, inputHandler, horizontalAxisInput);
+	resolveAxis(verticalDirection, inputHandler, verticalAxisInput);
+
 	sf::Vector2f movement(0.f, 0.f);
 
-	if (inputHandler.isKeyPressed(sf::Keyboard::A)) {
+	if (horizontalDirection == TransitionDirection::Left) {
 		movement.x -= moveSpeed * dt;
-		isMoving = true;
 	}
 
-	if (inputHandler.isKeyPressed(sf::Keyboard::D)) {
+	else if (horizontalDirection == TransitionDirection::Right) {
 		movement.x += moveSpeed * dt;
-		isMoving = true;
 	}
 
-	if (inputHandler.isKeyPressed(sf::Keyboard::W)) {
+	if (verticalDirection == TransitionDirection::Up) {
 		movement.y -= moveSpeed * dt;
-		isMoving = true;
 	}
 
-	if (inputHandler.isKeyPressed(sf::Keyboard::S)) {
+	else if (verticalDirection == TransitionDirection::Down) {
 		movement.y += moveSpeed * dt;
+	}
+
+	if (horizontalDirection || verticalDirection) {
 		isMoving = true;
 	}
 
@@ -154,19 +170,19 @@ void Player::move(float dt, InputHandler& inputHandler, const Map& map) {
 	}
 }
 
-void Player::resolveAxis(std::optional<TransitionDirection>& axis, InputHandler& input, InputAction negAction, TransitionDirection negDir, InputAction posAction, TransitionDirection posDir) {
-	bool negDown = input.isDown(negAction);
-	bool posDown = input.isDown(posAction);
+void Player::resolveAxis(std::optional<TransitionDirection>& axis, InputHandler& input, const AxisInput& axisInput) {
+	bool negDown = input.isDown(axisInput.negativeAction);
+	bool posDown = input.isDown(axisInput.positiveAction);
 
-	if (input.wasPressed(negAction)) axis = negDir;
-	if (input.wasPressed(posAction)) axis = posDir;
+	if (input.wasPressed(axisInput.negativeAction)) axis = axisInput.negativeDirection;
+	if (input.wasPressed(axisInput.positiveAction)) axis = axisInput.positiveDirection;
 	
-	if (axis == negDir && !negDown) axis = posDown ? std::optional(posDir) : std::nullopt;
-	if (axis == posDir && !posDown) axis = negDown ? std::optional(negDir) : std::nullopt;
+	if (axis == axisInput.negativeDirection && !negDown) axis = posDown ? std::optional(axisInput.positiveDirection) : std::nullopt;
+	if (axis == axisInput.positiveDirection && !posDown) axis = negDown ? std::optional(axisInput.negativeDirection) : std::nullopt;
 
 	if (!axis) {
-		if (negDown) axis = negDir;
-		else if (posDown) axis = posDir;
+		if (negDown) axis = axisInput.negativeDirection;
+		else if (posDown) axis = axisInput.positiveDirection;
 	}
 }
 

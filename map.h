@@ -42,8 +42,8 @@ public:
 	bool isBlocked(int x, int y) const;
 	sf::Image& getCollisionMap() { return collisionMap; }
 	std::vector<MapTransition>& getTransitions() { return transitions; }
-	MapTransition* getTransitionAtPosition(const sf::FloatRect& bounds);
-	bool canTriggerTransition(const sf::FloatRect& feet, const MapTransition& transition) const;
+	MapTransition* getTransitionAtPosition(const sf::FloatRect& bounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical);
+	bool canTriggerTransition(const sf::FloatRect& feet, const MapTransition& transition, TransitionDirection direction) const;
 	static std::vector<MapTransition> loadTransitionsFromJson(const std::string& mapId, const std::string& filePath);
 
 };

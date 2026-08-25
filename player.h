@@ -14,6 +14,13 @@
 #include "inputHandler.h"
 #include "map.h"
 
+struct AxisInput {
+	InputAction negativeAction;
+	TransitionDirection negativeDirection;
+	InputAction positiveAction;
+	TransitionDirection positiveDirection;
+};
+
 class Player : public Character {
 private:
 	int level = 1;
@@ -34,13 +41,15 @@ public:
 	Player& operator=(const Player&) = delete;
 	Player(Player&&) = default;
 	void update(float dt) override {}
-	void update(float dt, const Map& map);
+	void update(float dt, InputHandler& inputHandler, const Map& map);
 	void draw(sf::RenderTarget& target) override { drawExploring(target); }
 	void drawExploring(sf::RenderTarget& target);
 	void drawCombat(sf::RenderTarget& target);
 	void move(float dt, const Map& map) override;
 	void move(float dt, InputHandler& inputHandler, const Map& map);
-	void resolveAxis(std::optional<TransitionDirection>& axis, InputHandler& input, InputAction negAction, TransitionDirection negDir, InputAction posAction, TransitionDirection posDir);
+	void resolveAxis(std::optional<TransitionDirection>& axis, InputHandler& input, const AxisInput& axisInput);
+	std::optional<TransitionDirection> getHorizontalDirection() const { return horizontalDirection; }
+	std::optional<TransitionDirection> getVerticalDirection() const { return verticalDirection; }
 	int getExp();
 	void addExp(int amount);
 	int expNeededForNextLevel(int level);

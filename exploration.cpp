@@ -16,8 +16,8 @@ void Exploration::start(Player& player) {
 	player.getWalkAnimation().setFrame(1);
 }
 
-void Exploration::update(float dt, Player& player) {
-	player.update(dt, map);
+void Exploration::update(float dt, InputHandler& inputHandler, Player& player) {
+	player.update(dt, inputHandler, map);
 	setCamera(player);
 }
 
@@ -42,8 +42,8 @@ bool Exploration::checkForEncounter(float dt, Player& player) {
 	return false;
 }
 
-MapTransition* Exploration::getTransitionAtPosition(const sf::FloatRect& box) {
-	return map.getTransitionAtPosition(box);
+MapTransition* Exploration::getTransitionAtPosition(const sf::FloatRect& box, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical) {
+	return map.getTransitionAtPosition(box, horizontal, vertical);
 }
 
 void Exploration::setCamera(Player& player) {
