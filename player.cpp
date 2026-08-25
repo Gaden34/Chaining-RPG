@@ -164,7 +164,8 @@ void Player::move(float dt, InputHandler& inputHandler, const Map& map) {
 	bool blocked = map.isBlocked(static_cast<int>(collisionBox.left), static_cast<int>(collisionBox.top)) ||
 		map.isBlocked(static_cast<int>(collisionBox.left + collisionBox.width), static_cast<int>(collisionBox.top)) ||
 		map.isBlocked(static_cast<int>(collisionBox.left), static_cast<int>(collisionBox.top + collisionBox.height)) ||
-		map.isBlocked(static_cast<int>(collisionBox.left + collisionBox.width), static_cast<int>(collisionBox.top + collisionBox.height));
+		map.isBlocked(static_cast<int>(collisionBox.left + collisionBox.width), static_cast<int>(collisionBox.top + collisionBox.height)) ||
+		map.canTriggerTransition(collisionBox, *map.getTransitionAtPosition(collisionBox, horizontalDirection, verticalDirection), horizontalDirection ? *horizontalDirection : verticalDirection ? *verticalDirection : TransitionDirection::Down);
 	if (!blocked) {
 		sprite.move(movement);
 	}
