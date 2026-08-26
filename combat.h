@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <random>
 #include <string>
 #include <initializer_list>
@@ -12,6 +13,7 @@
 #include "menu.h"
 #include "chainSystem.h"
 #include "inputHandler.h"
+#include "animation.h"
 
 class Inventory;
 
@@ -50,6 +52,17 @@ struct ActiveAnimation {
 	float duration = 0.f;
 	float elapsedTime = 0.f;
 	bool isActive = false;
+};
+
+// A one-off visual effect (e.g. a spell dropping onto its target) played over the target's sprite.
+struct CombatVisualEffect {
+	Animation animation;
+	sf::Sprite sprite;
+	sf::Vector2f startPosition;
+	sf::Vector2f targetPosition;
+	float dropDuration = 0.5f;
+	float elapsedTime = 0.f;
+	bool active = false;
 };
 
 struct EnemySpawn {
@@ -124,6 +137,9 @@ private:
 	std::vector<Player>& party;
 	std::vector<Enemy> enemies;
 	std::vector<ActiveAnimation> activeAnimations;
+	std::unordered_map<std::string, sf::Texture> effectTextures;
+	std::unordered_map<std::string, AnimationAsset> effectAssets;
+	CombatVisualEffect skillEffect;
 	std::mt19937& rng;
 	CombatMenu menu;
 	SkillMenu skillMenu;
@@ -175,6 +191,10 @@ private:
 	void updateAnimations(float dt);
 	void updatePlayerAnimation(float dt);
 	void updateEnemyAnimation(float dt);
+	bool loadEffectAnimation(const std::string& animationName);
+	void triggerSkillEffect(const std::string& animationName, Character& target);
+	void updateSkillEffect(float dt);
+	void drawSkillEffect(sf::RenderTarget& target);
 	std::vector<EnemySpawn> makeRandomEncounter();
 	void handleDeath(Character& character);
 	void eraseDeadEnemies();

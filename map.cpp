@@ -50,7 +50,7 @@ MapTransition* Map::getTransitionAtPosition(const sf::FloatRect& currentBounds, 
 }
 
 bool Map::canTriggerTransition(const sf::FloatRect& currentFeet, const sf::FloatRect& previousFeet, const MapTransition& transition, TransitionDirection direction) const {
-	//if (!previousFeet.intersects(transition.trigger) || currentFeet.intersects(transition.trigger)) return false;
+	if (!previousFeet.intersects(transition.trigger)) return false;
 
 	if (transition.direction != direction) return false;
 

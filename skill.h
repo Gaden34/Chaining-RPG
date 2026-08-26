@@ -36,14 +36,16 @@ private:
 	SkillType type;
 	int baseDamage;
 	std::vector<int> hits;
+	std::string animationName;
 
 public:
-	Skill(const std::string& name, const std::string& description, int mpCost, SkillType type, int baseDamage, const std::vector<int>& hits = {});
+	Skill(const std::string& name, const std::string& description, int mpCost, SkillType type, int baseDamage, const std::vector<int>& hits = {}, const std::string& animationName = "");
 	std::vector<int> getHits() const;
 	const std::string& getName() const { return name; }
 	int getDamage() const { return baseDamage; }
 	int getMpCost() const { return mpCost; }
 	SkillType getType() const { return type; }
+	const std::string& getAnimationName() const { return animationName; }
 	static SkillType getSkillTypeFromString(const std::string& type);
 	StealResult useSteal(Character& user, Character& target, std::mt19937& rng);
 };

@@ -18,6 +18,7 @@ Combat::Combat(std::vector<Player>& p, MessageLog& m, std::mt19937& rng) : party
 void Combat::update(float dt, const InputHandler& input) {
 
 	chain.update(dt);
+	updateSkillEffect(dt);
 
 	switch (currentState) {
 	case CombatState::PlayerTurn:
@@ -62,6 +63,8 @@ void Combat::draw(sf::RenderTarget& target) {
 	for (auto& enemy : enemies) {
 		enemy.draw(target);
 	}
+
+	drawSkillEffect(target);
 
 	messageLog.draw(target);
 
@@ -341,6 +344,9 @@ void Combat::performSkill(QueuedAction& action) {
 		return;
 	}
 	player->setMp(player->getMp() - skill->getMpCost());
+	if (!skill->getAnimationName().empty()) {
+		triggerSkillEffect(skill->getAnimationName(), *target);
+	}
 	calculateSkillDamage(skill, player, target);
 	handleSteal(skill, player, target);
 	handleDeath(*target);
@@ -608,6 +614,79 @@ void Combat::updateAnimations(float dt) {
 			[](const ActiveAnimation& a) { return a.elapsedTime >= a.duration; }),
 		activeAnimations.end());
 	
+}
+
+bool Combat::loadEffectAnimation(const std::string& animationName) {
+	if (effectAssets.count(animationName)) {
+		return true;
+	}
+
+	AnimationAsset asset;
+	if (!AnimationLoader::loadAssetFromFile("animations.json", animationName, asset)) {
+		return false;
+	}
+
+	sf::Texture texture;
+	if (!texture.loadFromFile(asset.texturePath)) {
+		return false;
+	}
+
+	effectTextures[animationName] = std::move(texture);
+	effectAssets[animationName] = std::move(asset);
+	return true;
+}
+
+void Combat::triggerSkillEffect(const std::string& animationName, Character& target) {
+	if (!loadEffectAnimation(animationName)) {
+		return;
+	}
+
+	const AnimationAsset& asset = effectAssets[animationName];
+	const auto clipIt = asset.clips.find("cast");
+	if (clipIt == asset.clips.end()) {
+		return;
+	}
+
+	skillEffect.animation.setAnimation(clipIt->second);
+	skillEffect.sprite.setTexture(effectTextures[animationName], true);
+	skillEffect.sprite.setTextureRect(skillEffect.animation.getCurrentFrame());
+
+	const sf::FloatRect frameBounds(skillEffect.animation.getCurrentFrame());
+	skillEffect.sprite.setOrigin(frameBounds.width / 2.f, frameBounds.height / 2.f);
+
+	const sf::FloatRect targetBounds = target.getGlobalBounds();
+	skillEffect.targetPosition = { targetBounds.left + targetBounds.width / 2.f, targetBounds.top + targetBounds.height / 2.f };
+	skillEffect.startPosition = { skillEffect.targetPosition.x, skillEffect.targetPosition.y - 200.f };
+
+	skillEffect.dropDuration = 0.5f;
+	skillEffect.elapsedTime = 0.f;
+	skillEffect.active = true;
+	skillEffect.sprite.setPosition(skillEffect.startPosition);
+}
+
+void Combat::updateSkillEffect(float dt) {
+	if (!skillEffect.active) {
+		return;
+	}
+
+	skillEffect.animation.update(dt);
+	skillEffect.sprite.setTextureRect(skillEffect.animation.getCurrentFrame());
+
+	skillEffect.elapsedTime += dt;
+	const float t = std::min(skillEffect.elapsedTime / skillEffect.dropDuration, 1.0f);
+	skillEffect.sprite.setPosition(
+		skillEffect.startPosition.x + (skillEffect.targetPosition.x - skillEffect.startPosition.x) * t,
+		skillEffect.startPosition.y + (skillEffect.targetPosition.y - skillEffect.startPosition.y) * t);
+
+	if (t >= 1.0f) {
+		skillEffect.active = false;
+	}
+}
+
+void Combat::drawSkillEffect(sf::RenderTarget& target) {
+	if (skillEffect.active) {
+		target.draw(skillEffect.sprite);
+	}
 }
 
 void Combat::updatePlayerAnimation(float dt) {
