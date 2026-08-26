@@ -42,8 +42,8 @@ bool Exploration::checkForEncounter(float dt, Player& player) {
 	return false;
 }
 
-MapTransition* Exploration::getTransitionAtPosition(const sf::FloatRect& box, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical) {
-	return map.getTransitionAtPosition(box, horizontal, vertical);
+MapTransition* Exploration::getTransitionAtPosition(const sf::FloatRect& currentBounds, const sf::FloatRect& previousBounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical) {
+	return map.getTransitionAtPosition(currentBounds, previousBounds, horizontal, vertical);
 }
 
 void Exploration::setCamera(Player& player) {

@@ -29,7 +29,7 @@ public:
 	// Returns true if a random encounter was triggered this frame.
 	bool checkForEncounter(float dt, Player& player);
 
-	MapTransition* getTransitionAtPosition(const sf::FloatRect& box, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical);
+	MapTransition* getTransitionAtPosition(const sf::FloatRect& currentBounds, const sf::FloatRect& previousBounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical);
 
 	void savePlayerPosition(const sf::Vector2f& pos) { playerPosition = pos; }
 	Map& getMap() { return map; }

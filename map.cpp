@@ -37,27 +37,28 @@ bool Map::isBlocked(int x, int y) const {
 	std::cout << "Collision map loaded: " << collisionMap.getSize().x << "x" << collisionMap.getSize().y << std::endl;
 }
 
-MapTransition* Map::getTransitionAtPosition(const sf::FloatRect& bounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical) {
+MapTransition* Map::getTransitionAtPosition(const sf::FloatRect& currentBounds, const sf::FloatRect& previousBounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical) {
 	for (auto& transition : transitions) {
-		if (horizontal && canTriggerTransition(bounds, transition, *horizontal)) {
+		if (horizontal && canTriggerTransition(currentBounds, previousBounds, transition, *horizontal)) {
 			return &transition;
 		}
-		if (vertical && canTriggerTransition(bounds, transition, *vertical)) {
+		if (vertical && canTriggerTransition(currentBounds, previousBounds, transition, *vertical)) {
 			return &transition;
 		}
 	}
 	return nullptr;
 }
 
-bool Map::canTriggerTransition(const sf::FloatRect& feet, const MapTransition& transition, TransitionDirection direction) const {
-	if (!feet.intersects(transition.trigger)) return false;
+bool Map::canTriggerTransition(const sf::FloatRect& currentFeet, const sf::FloatRect& previousFeet, const MapTransition& transition, TransitionDirection direction) const {
+	//if (!previousFeet.intersects(transition.trigger) || currentFeet.intersects(transition.trigger)) return false;
 
 	if (transition.direction != direction) return false;
 
-	sf::FloatRect topLeft(feet.left, feet.top, 1.f, 1.f);
-	sf::FloatRect topRight(feet.left + feet.width - 1.f, feet.top, 1.f, 1.f);
-	sf::FloatRect bottomLeft(feet.left, feet.top + feet.height - 1.f, 1.f, 1.f);
-	sf::FloatRect bottomRight(feet.left + feet.width - 1.f, feet.top + feet.height - 1.f, 1.f, 1.f);
+
+	sf::FloatRect topLeft(previousFeet.left, previousFeet.top, 1.f, 1.f);
+	sf::FloatRect topRight(previousFeet.left + previousFeet.width - 1.f, previousFeet.top, 1.f, 1.f);
+	sf::FloatRect bottomLeft(previousFeet.left, previousFeet.top + previousFeet.height - 1.f, 1.f, 1.f);
+	sf::FloatRect bottomRight(previousFeet.left + previousFeet.width - 1.f, previousFeet.top + previousFeet.height - 1.f, 1.f, 1.f);
 
 	switch (transition.direction) {
 	case TransitionDirection::Up:
@@ -76,20 +77,6 @@ bool Map::canTriggerTransition(const sf::FloatRect& feet, const MapTransition& t
 	return false;
 }
 
-bool Map::isPartiallyEnteringTransition(const sf::FloatRect& feet, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical) const {
-	for (const auto& transition : transitions) {
-
-		if (!feet.intersects(transition.trigger)) continue;
-		
-		if (horizontal && canTriggerTransition(feet, transition, *horizontal)) {
-			return true;
-		}
-		if (vertical && canTriggerTransition(feet, transition, *vertical)) {
-			return true;
-		}
-	}
-	return false;
-}
 
 std::vector<MapTransition> Map::loadTransitionsFromJson(const std::string& mapId, const std::string& filePath) {
 	std::ifstream file(filePath);

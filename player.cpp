@@ -88,46 +88,11 @@ void Player::drawCombat(sf::RenderTarget& target) {
 	target.draw(sprite);
 }
 
-void Player::move(float dt, const Map& map) {
-	isMoving = false;
 
-	sf::Vector2f movement(0.f, 0.f);
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		movement.x -= moveSpeed * dt;
-		isMoving = true;
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-		movement.x += moveSpeed * dt;
-		isMoving = true;
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-		movement.y -= moveSpeed * dt;
-		isMoving = true;
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-		movement.y += moveSpeed * dt;
-		isMoving = true;
-	}
-
-	// Check for collisions before moving
-	sf::Vector2f newPosition = sprite.getPosition() + movement;
-
-	sf::FloatRect collisionBox = getCollisionBox(newPosition);
-
-	bool blocked = map.isBlocked(static_cast<int>(collisionBox.left), static_cast<int>(collisionBox.top)) ||
-		map.isBlocked(static_cast<int>(collisionBox.left + collisionBox.width), static_cast<int>(collisionBox.top)) ||
-		map.isBlocked(static_cast<int>(collisionBox.left), static_cast<int>(collisionBox.top + collisionBox.height)) ||
-		map.isBlocked(static_cast<int>(collisionBox.left + collisionBox.width), static_cast<int>(collisionBox.top + collisionBox.height));
-	if (!blocked) {
-		sprite.move(movement);
-	}
-}
 
 void Player::move(float dt, InputHandler& inputHandler, const Map& map) {
+
+	previousCollisionBox = getCollisionBox(sprite.getPosition());
 	isMoving = false;
 
 
@@ -159,13 +124,12 @@ void Player::move(float dt, InputHandler& inputHandler, const Map& map) {
 	// Check for collisions before moving
 	sf::Vector2f newPosition = sprite.getPosition() + movement;
 
-	sf::FloatRect collisionBox = getCollisionBox(newPosition);
+	sf::FloatRect currentCollisionBox = getCollisionBox(newPosition);
 
-	bool blocked = map.isBlocked(static_cast<int>(collisionBox.left), static_cast<int>(collisionBox.top)) ||
-		map.isBlocked(static_cast<int>(collisionBox.left + collisionBox.width), static_cast<int>(collisionBox.top)) ||
-		map.isBlocked(static_cast<int>(collisionBox.left), static_cast<int>(collisionBox.top + collisionBox.height)) ||
-		map.isBlocked(static_cast<int>(collisionBox.left + collisionBox.width), static_cast<int>(collisionBox.top + collisionBox.height)) ||
-		map.isPartiallyEnteringTransition(collisionBox, horizontalDirection, verticalDirection);
+	bool blocked = map.isBlocked(static_cast<int>(currentCollisionBox.left), static_cast<int>(currentCollisionBox.top)) ||
+		map.isBlocked(static_cast<int>(currentCollisionBox.left + currentCollisionBox.width), static_cast<int>(currentCollisionBox.top)) ||
+		map.isBlocked(static_cast<int>(currentCollisionBox.left), static_cast<int>(currentCollisionBox.top + currentCollisionBox.height)) ||
+		map.isBlocked(static_cast<int>(currentCollisionBox.left + currentCollisionBox.width), static_cast<int>(currentCollisionBox.top + currentCollisionBox.height));
 	if (!blocked) {
 		sprite.move(movement);
 	}

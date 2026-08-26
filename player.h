@@ -34,6 +34,7 @@ private:
 	Inventory& partyInventory;
 	std::optional<TransitionDirection> horizontalDirection;
 	std::optional<TransitionDirection> verticalDirection;
+	sf::FloatRect previousCollisionBox;
 
 public:
 	Player(MessageLog& m, std::string n, std::string textureName, Inventory& inv);
@@ -45,7 +46,7 @@ public:
 	void draw(sf::RenderTarget& target) override { drawExploring(target); }
 	void drawExploring(sf::RenderTarget& target);
 	void drawCombat(sf::RenderTarget& target);
-	void move(float dt, const Map& map) override;
+	void move(float dt, const Map& map) override {}
 	void move(float dt, InputHandler& inputHandler, const Map& map);
 	void resolveAxis(std::optional<TransitionDirection>& axis, InputHandler& input, const AxisInput& axisInput);
 	std::optional<TransitionDirection> getHorizontalDirection() const { return horizontalDirection; }
@@ -70,4 +71,5 @@ public:
 	Inventory& getInventory() override { return partyInventory; }
 	Animation& getWalkAnimation() { return walkAnimation; }
 	sf::FloatRect getCollisionBox(sf::Vector2f position) const;
+	sf::FloatRect getPreviousCollisionBox() const { return previousCollisionBox; }
 };
