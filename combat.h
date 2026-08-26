@@ -62,7 +62,7 @@ struct CombatVisualEffect {
 	sf::Vector2f targetPosition;
 	float dropDuration = 0.5f;
 	float elapsedTime = 0.f;
-	bool active = false;
+	float delay = 0.f; // holds the effect back so multi-hit skills stagger their drops
 };
 
 struct EnemySpawn {
@@ -139,7 +139,7 @@ private:
 	std::vector<ActiveAnimation> activeAnimations;
 	std::unordered_map<std::string, sf::Texture> effectTextures;
 	std::unordered_map<std::string, AnimationAsset> effectAssets;
-	CombatVisualEffect skillEffect;
+	std::vector<CombatVisualEffect> skillEffects;
 	std::mt19937& rng;
 	CombatMenu menu;
 	SkillMenu skillMenu;
@@ -192,7 +192,7 @@ private:
 	void updatePlayerAnimation(float dt);
 	void updateEnemyAnimation(float dt);
 	bool loadEffectAnimation(const std::string& animationName);
-	void triggerSkillEffect(const std::string& animationName, Character& target);
+	void triggerSkillEffect(const std::string& animationName, Character& target, int instanceCount = 1);
 	void updateSkillEffect(float dt);
 	void drawSkillEffect(sf::RenderTarget& target);
 	std::vector<EnemySpawn> makeRandomEncounter();

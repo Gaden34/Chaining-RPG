@@ -15,19 +15,6 @@
   },
 
     "Mage": {
-      "1": [
-        {
-          "name": "Fireball",
-          "description": "Drop a fireball onto the enemy from above. - Targets: 1 - Hits: 1.",
-          "mp_cost": 6,
-          "type": "Magic",
-          "base_damage": 30,
-          "hits": [ 1 ],
-          "chain_window": 0.2,
-          "chain_damage_pct": 25.0,
-          "animation": "fireball"
-        }
-      ],
       "2": [
         {
           "name": "Lightning Bolt",
@@ -49,7 +36,8 @@
         "base_damage": 10,
         "hits":  [ 1, 2, 3, 4, 5 ],
         "chain_window": 0.2,
-        "chain_damage_pct": 25.0
+        "chain_damage_pct": 25.0,
+        "animation": "fireball"
         }
       ] 
     },

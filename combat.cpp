@@ -345,7 +345,7 @@ void Combat::performSkill(QueuedAction& action) {
 	}
 	player->setMp(player->getMp() - skill->getMpCost());
 	if (!skill->getAnimationName().empty()) {
-		triggerSkillEffect(skill->getAnimationName(), *target);
+		triggerSkillEffect(skill->getAnimationName(), *target, static_cast<int>(skill->getHits().size()));
 	}
 	calculateSkillDamage(skill, player, target);
 	handleSteal(skill, player, target);
@@ -636,7 +636,7 @@ bool Combat::loadEffectAnimation(const std::string& animationName) {
 	return true;
 }
 
-void Combat::triggerSkillEffect(const std::string& animationName, Character& target) {
+void Combat::triggerSkillEffect(const std::string& animationName, Character& target, int instanceCount) {
 	if (!loadEffectAnimation(animationName)) {
 		return;
 	}
@@ -647,45 +647,61 @@ void Combat::triggerSkillEffect(const std::string& animationName, Character& tar
 		return;
 	}
 
-	skillEffect.animation.setAnimation(clipIt->second);
-	skillEffect.sprite.setTexture(effectTextures[animationName], true);
-	skillEffect.sprite.setTextureRect(skillEffect.animation.getCurrentFrame());
-
-	const sf::FloatRect frameBounds(skillEffect.animation.getCurrentFrame());
-	skillEffect.sprite.setOrigin(frameBounds.width / 2.f, frameBounds.height / 2.f);
-
 	const sf::FloatRect targetBounds = target.getGlobalBounds();
-	skillEffect.targetPosition = { targetBounds.left + targetBounds.width / 2.f, targetBounds.top + targetBounds.height / 2.f };
-	skillEffect.startPosition = { skillEffect.targetPosition.x, skillEffect.targetPosition.y - 200.f };
+	const sf::Vector2f targetCenter(targetBounds.left + targetBounds.width / 2.f, targetBounds.top + targetBounds.height / 2.f);
 
-	skillEffect.dropDuration = 0.5f;
-	skillEffect.elapsedTime = 0.f;
-	skillEffect.active = true;
-	skillEffect.sprite.setPosition(skillEffect.startPosition);
+	const float staggerInterval = 0.12f; // rapid succession delay between each drop
+	const int spreadRadius = 16; // horizontal jitter so multiple drops don't stack in a straight line
+
+	for (int i = 0; i < instanceCount; ++i) {
+		CombatVisualEffect effect;
+		effect.animation.setAnimation(clipIt->second);
+		effect.sprite.setTexture(effectTextures[animationName], true);
+		effect.sprite.setTextureRect(effect.animation.getCurrentFrame());
+
+		const sf::FloatRect frameBounds(effect.animation.getCurrentFrame());
+		effect.sprite.setOrigin(frameBounds.width / 2.f, frameBounds.height / 2.f);
+
+		const float offsetX = instanceCount > 1 ? static_cast<float>(randomRange(-spreadRadius, spreadRadius)) : 0.f;
+		effect.targetPosition = { targetCenter.x + offsetX, targetCenter.y };
+		effect.startPosition = { effect.targetPosition.x, effect.targetPosition.y - 200.f };
+		effect.dropDuration = 0.5f;
+		effect.elapsedTime = 0.f;
+		effect.delay = i * staggerInterval;
+		effect.sprite.setPosition(effect.startPosition);
+
+		skillEffects.push_back(std::move(effect));
+	}
 }
 
 void Combat::updateSkillEffect(float dt) {
-	if (!skillEffect.active) {
-		return;
+	for (auto& effect : skillEffects) {
+		if (effect.delay > 0.f) {
+			effect.delay -= dt;
+			continue;
+		}
+
+		effect.animation.update(dt);
+		effect.sprite.setTextureRect(effect.animation.getCurrentFrame());
+
+		effect.elapsedTime += dt;
+		const float t = std::min(effect.elapsedTime / effect.dropDuration, 1.0f);
+		effect.sprite.setPosition(
+			effect.startPosition.x + (effect.targetPosition.x - effect.startPosition.x) * t,
+			effect.startPosition.y + (effect.targetPosition.y - effect.startPosition.y) * t);
 	}
 
-	skillEffect.animation.update(dt);
-	skillEffect.sprite.setTextureRect(skillEffect.animation.getCurrentFrame());
-
-	skillEffect.elapsedTime += dt;
-	const float t = std::min(skillEffect.elapsedTime / skillEffect.dropDuration, 1.0f);
-	skillEffect.sprite.setPosition(
-		skillEffect.startPosition.x + (skillEffect.targetPosition.x - skillEffect.startPosition.x) * t,
-		skillEffect.startPosition.y + (skillEffect.targetPosition.y - skillEffect.startPosition.y) * t);
-
-	if (t >= 1.0f) {
-		skillEffect.active = false;
-	}
+	skillEffects.erase(
+		std::remove_if(skillEffects.begin(), skillEffects.end(),
+			[](const CombatVisualEffect& e) { return e.delay <= 0.f && e.elapsedTime >= e.dropDuration; }),
+		skillEffects.end());
 }
 
 void Combat::drawSkillEffect(sf::RenderTarget& target) {
-	if (skillEffect.active) {
-		target.draw(skillEffect.sprite);
+	for (auto& effect : skillEffects) {
+		if (effect.delay <= 0.f) {
+			target.draw(effect.sprite);
+		}
 	}
 }
 
