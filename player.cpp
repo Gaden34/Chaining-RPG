@@ -259,5 +259,5 @@ bool Player::hasSkill(const std::string& skillName) const {
 }
 
 sf::FloatRect Player::getCollisionBox(sf::Vector2f position) const {
-	return sf::FloatRect(position.x + 12.f, position.y + 28.f, 9.f, 4.f);
+	return sf::FloatRect(position.x + 12.f, position.y + 28.f, 9.f, 2.f);
 }

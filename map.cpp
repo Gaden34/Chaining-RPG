@@ -55,24 +55,26 @@ bool Map::canTriggerTransition(const sf::FloatRect& currentFeet, const sf::Float
 	if (transition.direction != direction) return false;
 
 
-	sf::FloatRect topLeft(previousFeet.left, previousFeet.top, 1.f, 1.f);
-	sf::FloatRect topRight(previousFeet.left + previousFeet.width - 1.f, previousFeet.top, 1.f, 1.f);
-	sf::FloatRect bottomLeft(previousFeet.left, previousFeet.top + previousFeet.height - 1.f, 1.f, 1.f);
-	sf::FloatRect bottomRight(previousFeet.left + previousFeet.width - 1.f, previousFeet.top + previousFeet.height - 1.f, 1.f, 1.f);
+	CollisionBoxCorners currentCorners = getCollisionBoxCorners(currentFeet);
+	CollisionBoxCorners previousCorners = getCollisionBoxCorners(previousFeet);
 
 	switch (transition.direction) {
 	case TransitionDirection::Up:
 		if (transition.direction != direction) return false;
-		return topLeft.intersects(transition.trigger) && topRight.intersects(transition.trigger);
+		if (!currentCorners.topLeft.intersects(transition.trigger) || !currentCorners.topRight.intersects(transition.trigger)) return false;
+		return previousCorners.topLeft.intersects(transition.trigger) && previousCorners.topRight.intersects(transition.trigger);
 	case TransitionDirection::Down:
 		if (transition.direction != direction) return false;
-		return bottomLeft.intersects(transition.trigger) && bottomRight.intersects(transition.trigger);
+		if (!currentCorners.bottomLeft.intersects(transition.trigger) || !currentCorners.bottomRight.intersects(transition.trigger)) return false;
+		return previousCorners.bottomLeft.intersects(transition.trigger) && previousCorners.bottomRight.intersects(transition.trigger);
 	case TransitionDirection::Left:
 		if (transition.direction != direction) return false;
-		return topLeft.intersects(transition.trigger) && bottomLeft.intersects(transition.trigger);
+		if (!currentCorners.topLeft.intersects(transition.trigger) || !currentCorners.bottomLeft.intersects(transition.trigger)) return false;
+		return previousCorners.topLeft.intersects(transition.trigger) && previousCorners.bottomLeft.intersects(transition.trigger);
 	case TransitionDirection::Right:
 		if (transition.direction != direction) return false;
-		return topRight.intersects(transition.trigger) && bottomRight.intersects(transition.trigger);
+		if (!currentCorners.topRight.intersects(transition.trigger) || !currentCorners.bottomRight.intersects(transition.trigger)) return false;
+		return previousCorners.topRight.intersects(transition.trigger) && previousCorners.bottomRight.intersects(transition.trigger);
 	}
 	return false;
 }
@@ -134,4 +136,13 @@ TransitionDirection stringToDirection(const std::string& str) {
 	if (str == "Left") return TransitionDirection::Left;
 	if (str == "Right") return TransitionDirection::Right;
 	return TransitionDirection::Up; // Default value
+}
+
+CollisionBoxCorners getCollisionBoxCorners(const sf::FloatRect& rect) {
+	CollisionBoxCorners corners;
+	corners.topLeft = sf::FloatRect(rect.left, rect.top, 1.f, 1.f);
+	corners.topRight = sf::FloatRect(rect.left + rect.width, rect.top, 1.f, 1.f);
+	corners.bottomLeft = sf::FloatRect(rect.left, rect.top + rect.height, 1.f, 1.f);
+	corners.bottomRight = sf::FloatRect(rect.left + rect.width, rect.top + rect.height, 1.f, 1.f);
+	return corners;
 }

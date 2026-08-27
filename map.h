@@ -11,6 +11,7 @@ enum class TransitionDirection
 	Right
 };
 
+
 struct MapData {
 	std::string texturePath;
 	std::string collisionMapPath;
@@ -21,6 +22,13 @@ struct MapTransition {
 	MapData targetMap;
 	TransitionDirection direction;
 	std::optional<sf::Vector2f> spawnPosition;
+};
+
+struct CollisionBoxCorners {
+	sf::FloatRect topLeft;
+	sf::FloatRect topRight;
+	sf::FloatRect bottomLeft;
+	sf::FloatRect bottomRight;
 };
 
 
@@ -49,3 +57,4 @@ public:
 };
 
 TransitionDirection stringToDirection(const std::string& str);
+CollisionBoxCorners getCollisionBoxCorners(const sf::FloatRect& rect);
