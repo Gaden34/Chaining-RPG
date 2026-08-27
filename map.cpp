@@ -61,19 +61,19 @@ bool Map::canTriggerTransition(const sf::FloatRect& currentFeet, const sf::Float
 	switch (transition.direction) {
 	case TransitionDirection::Up:
 		if (transition.direction != direction) return false;
-		if (!currentCorners.topLeft.intersects(transition.trigger) || !currentCorners.topRight.intersects(transition.trigger)) return false;
+		if (currentCorners.topLeft.intersects(transition.trigger) || currentCorners.topRight.intersects(transition.trigger)) return false;
 		return previousCorners.topLeft.intersects(transition.trigger) && previousCorners.topRight.intersects(transition.trigger);
 	case TransitionDirection::Down:
 		if (transition.direction != direction) return false;
-		if (!currentCorners.bottomLeft.intersects(transition.trigger) || !currentCorners.bottomRight.intersects(transition.trigger)) return false;
+		if (currentCorners.bottomLeft.intersects(transition.trigger) || currentCorners.bottomRight.intersects(transition.trigger)) return false;
 		return previousCorners.bottomLeft.intersects(transition.trigger) && previousCorners.bottomRight.intersects(transition.trigger);
 	case TransitionDirection::Left:
 		if (transition.direction != direction) return false;
-		if (!currentCorners.topLeft.intersects(transition.trigger) || !currentCorners.bottomLeft.intersects(transition.trigger)) return false;
+		if (currentCorners.topLeft.intersects(transition.trigger) || currentCorners.bottomLeft.intersects(transition.trigger)) return false;
 		return previousCorners.topLeft.intersects(transition.trigger) && previousCorners.bottomLeft.intersects(transition.trigger);
 	case TransitionDirection::Right:
 		if (transition.direction != direction) return false;
-		if (!currentCorners.topRight.intersects(transition.trigger) || !currentCorners.bottomRight.intersects(transition.trigger)) return false;
+		if (currentCorners.topRight.intersects(transition.trigger) || currentCorners.bottomRight.intersects(transition.trigger)) return false;
 		return previousCorners.topRight.intersects(transition.trigger) && previousCorners.bottomRight.intersects(transition.trigger);
 	}
 	return false;
