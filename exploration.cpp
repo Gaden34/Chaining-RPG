@@ -56,3 +56,13 @@ void Exploration::setCamera(Player& player) {
 	cameraY = std::clamp(cameraY, halfHeight, static_cast<float>(mapSize.y) - halfHeight);
 	camera.setCenter(cameraX, cameraY);
 }
+
+FieldMenu::FieldMenu() {
+	std::vector<std::string> options = { "Status", "Discipline", "Equipment", "Inventory" };
+
+	for (size_t i = 0; i < options.size(); ++i) {
+		const auto& option = options[i];
+		sf::Text text(option, font, 12);
+		text.setPosition(menuX, menuY + (i * optionsSpacing));
+	}
+}

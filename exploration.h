@@ -4,9 +4,22 @@
 #include "map.h"
 #include "player.h"
 #include "messageLog.h"
+#include "menu.h"
 
 constexpr unsigned VirtualWidth = 640;
 constexpr unsigned VirtualHeight = 360;
+
+class FieldMenu : public Menu {
+private:
+	const float menuX = 200.f;
+	const float menuY = 100.f;
+	const float optionsSpacing = 12.f;
+
+
+public:
+	FieldMenu();
+	void draw(sf::RenderTarget& target);
+}
 
 class Exploration {
 private:
@@ -16,6 +29,7 @@ private:
 	sf::Vector2f playerPosition = { 40.f, 20.f };
 	std::mt19937& rng;
 	MessageLog& messageLog;
+	FieldMenu fieldMenu;
 
 	void setCamera(Player& player);
 
