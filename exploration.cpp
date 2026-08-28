@@ -79,11 +79,24 @@ FieldMenu::FieldMenu() {
 }
 
 void FieldMenu::draw(sf::RenderTarget& target) {
-	for (const auto& text : optionTexts) {
-		target.draw(text);
+	for (size_t i = 0; i < optionTexts.size(); ++i) {
+		if (i == selectedIndex) {
+			optionTexts[i].setFillColor(sf::Color::White);
+		} else {
+			optionTexts[i].setFillColor(sf::Color::Black);
+		}
+		target.draw(optionTexts[i]);
 	}
 }
 
 void FieldMenu::handleInput(InputHandler& inputHandler) {
-	
+	if (inputHandler.wasPressed(InputAction::Up)) {
+		moveUp();
+	}
+	if (inputHandler.wasPressed(InputAction::Down)) {
+		moveDown();
+	}
+	if (inputHandler.wasPressed(InputAction::Select)) {
+		select();
+	}
 }

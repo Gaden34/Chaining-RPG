@@ -9,7 +9,19 @@
 constexpr unsigned VirtualWidth = 640;
 constexpr unsigned VirtualHeight = 360;
 
+
+
 class FieldMenu : public Menu {
+public:
+	enum class Option {
+		Status,
+		Discipline,
+		Equipment,
+		Inventory,
+		Exit,
+		Count
+	};
+
 private:
 	const float menuX = 200.f;
 	const float menuY = 100.f;
@@ -20,7 +32,7 @@ public:
 	FieldMenu();
 	void draw(sf::RenderTarget& target);
 	void handleInput(InputHandler& inputHandler);
-}
+};
 
 class Exploration {
 private:
