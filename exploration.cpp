@@ -57,12 +57,33 @@ void Exploration::setCamera(Player& player) {
 	camera.setCenter(cameraX, cameraY);
 }
 
+void Exploration::openFieldMenu(InputHandler& inputHandler) {
+	if (inputHandler.wasPressed(InputAction::Cancel) && !inFieldMenu) {
+		inFieldMenu = true;
+	} 
+	else if (inputHandler.wasPressed(InputAction::Cancel) && inFieldMenu) {
+		inFieldMenu = false;
+	}
+}
+
 FieldMenu::FieldMenu() {
-	std::vector<std::string> options = { "Status", "Discipline", "Equipment", "Inventory" };
+	std::vector<std::string> options = { "Status", "Discipline", "Equipment", "Inventory", "Exit" };
 
 	for (size_t i = 0; i < options.size(); ++i) {
 		const auto& option = options[i];
 		sf::Text text(option, font, 12);
 		text.setPosition(menuX, menuY + (i * optionsSpacing));
+		text.setFillColor(sf::Color::Black);
+		optionTexts.push_back(text);
 	}
+}
+
+void FieldMenu::draw(sf::RenderTarget& target) {
+	for (const auto& text : optionTexts) {
+		target.draw(text);
+	}
+}
+
+void FieldMenu::handleInput(InputHandler& inputHandler) {
+	
 }

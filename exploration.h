@@ -19,6 +19,7 @@ private:
 public:
 	FieldMenu();
 	void draw(sf::RenderTarget& target);
+	void handleInput(InputHandler& inputHandler);
 }
 
 class Exploration {
@@ -30,6 +31,7 @@ private:
 	std::mt19937& rng;
 	MessageLog& messageLog;
 	FieldMenu fieldMenu;
+	bool inFieldMenu = false;
 
 	void setCamera(Player& player);
 
@@ -41,6 +43,7 @@ public:
 	void draw(sf::RenderTarget& target, Player& player);
 
 	// Returns true if a random encounter was triggered this frame.
+	void openFieldMenu(InputHandler& inputHandler);
 	bool checkForEncounter(float dt, Player& player);
 
 	MapTransition* getTransitionAtPosition(const sf::FloatRect& currentBounds, const sf::FloatRect& previousBounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical);
