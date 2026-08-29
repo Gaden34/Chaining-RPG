@@ -6,9 +6,10 @@
 #include "messageLog.h"
 #include "menu.h"
 
+
 constexpr unsigned VirtualWidth = 640;
 constexpr unsigned VirtualHeight = 360;
-
+class InputHandler;
 
 
 class FieldMenu : public Menu {

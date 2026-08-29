@@ -1,4 +1,5 @@
 #include "exploration.h"
+#include "inputHandler.h"
 #include <algorithm>
 #include <iostream>
 
@@ -90,13 +91,13 @@ void FieldMenu::draw(sf::RenderTarget& target) {
 }
 
 void FieldMenu::handleInput(InputHandler& inputHandler) {
-	if (inputHandler.wasPressed(InputAction::Up)) {
+	if (inputHandler.wasPressed(InputAction::MenuUp)) {
 		moveUp();
 	}
-	if (inputHandler.wasPressed(InputAction::Down)) {
+	if (inputHandler.wasPressed(InputAction::MenuDown)) {
 		moveDown();
 	}
-	if (inputHandler.wasPressed(InputAction::Select)) {
-		select();
+	if (inputHandler.wasPressed(InputAction::Confirm)) {
+		getSelectedIndex();
 	}
 }
