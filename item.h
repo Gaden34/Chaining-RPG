@@ -10,7 +10,8 @@ enum class ItemID {
     Potion = 1,
     Ether,
 	ThrowingKnife,
-    BatFang
+    BatFang,
+    MandaroCrown
 };
 
 enum class ItemType {
@@ -66,6 +67,7 @@ struct ItemData {
     std::string description;
 
     int maxStackSize = 1;
+    int sellValue = 0;
     bool isConsumable = true;
     float stealChance = 0.0f;
 

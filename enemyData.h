@@ -22,3 +22,4 @@ struct EnemyData {
 
 extern EnemyData knight;
 extern EnemyData bat;
+extern EnemyData mandaro;

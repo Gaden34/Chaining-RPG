@@ -140,19 +140,12 @@ CombatState Combat::getState() {
 void Combat::handlePlayerTurn(const InputHandler& input) {
 	if (currentState != CombatState::PlayerTurn) return;
 
-	const bool leftJustPressed = input.wasPressed(InputAction::MenuLeft);
-	const bool rightJustPressed = input.wasPressed(InputAction::MenuRight);
-	const bool upJustPressed = input.wasPressed(InputAction::MenuUp);
-	const bool downJustPressed = input.wasPressed(InputAction::MenuDown);
-	const bool confirmJustPressed = input.wasPressed(InputAction::Confirm);
-	const bool cancelJustPressed = input.wasPressed(InputAction::Cancel);
-
 	if (!inSkillMenu && !inItemMenu) {
-		if (leftJustPressed) {
+		if (input.wasPressed(InputAction::MenuLeft)) {
 			activePlayerIndex = (activePlayerIndex - 1 + (int)party.size()) % (int)party.size();
 			menu.reset();
 		}
-		if (rightJustPressed) {
+		if (input.wasPressed(InputAction::MenuRight)) {
 			activePlayerIndex = (activePlayerIndex + 1) % (int)party.size();
 			menu.reset();
 		}
@@ -161,11 +154,11 @@ void Combat::handlePlayerTurn(const InputHandler& input) {
 	if (playerActed[activePlayerIndex]) return;
 
 	if (inItemMenu) {
-		if (upJustPressed)
+		if (input.wasPressed(InputAction::MenuUp))
 			itemMenu.moveUp();
-		if (downJustPressed)
+		if (input.wasPressed(InputAction::MenuDown))
 			itemMenu.moveDown();
-		if (confirmJustPressed) {
+		if (input.wasPressed(InputAction::Confirm)) {
 			const auto& slots = party[activePlayerIndex].getInventory().getItems();
 			int index = itemMenu.getSelectedIndex();
 			if (!slots.empty() && index >= 0 && index < (int)slots.size()) {
@@ -178,24 +171,22 @@ void Combat::handlePlayerTurn(const InputHandler& input) {
 					currentAction.type = ActionType::Item;
 					currentAction.actor = &party[activePlayerIndex];
 					currentAction.item = const_cast<ItemData*>(item);
-					inItemMenu = false;
-					itemMenu.reset();
 					beginTargeting();
 					}
 				}
 			}
 		}
-		if (cancelJustPressed) {
+		if (input.wasPressed(InputAction::Cancel)) {
 			inItemMenu = false;
 			itemMenu.reset();
 		}
 	}
 	else if (inSkillMenu) {
-		if (upJustPressed)
+		if (input.wasPressed(InputAction::MenuUp))
 			skillMenu.handleInput(sf::Keyboard::Up);
-		if (downJustPressed)
+		if (input.wasPressed(InputAction::MenuDown))
 			skillMenu.handleInput(sf::Keyboard::Down);
-		if (confirmJustPressed) {
+		if (input.wasPressed(InputAction::Confirm)) {
 			int index = skillMenu.getSelectedIndex();
 			if (index == -1) {
 				inSkillMenu = false;
@@ -210,17 +201,17 @@ void Combat::handlePlayerTurn(const InputHandler& input) {
 				beginTargeting();
 			}
 		}
-		if (cancelJustPressed) {
+		if (input.wasPressed(InputAction::Cancel)) {
 			inSkillMenu = false;
 			skillMenu.reset();
 		}
 	}
 	else {
-		if (upJustPressed)
+		if (input.wasPressed(InputAction::MenuUp))
 			menu.moveUp();
-		if (downJustPressed)
+		if (input.wasPressed(InputAction::MenuDown))
 			menu.moveDown();
-		if (confirmJustPressed) {
+		if (input.wasPressed(InputAction::Confirm)) {
 			CombatMenu::MenuOption selectedOption = menu.getSelectedOption();
 			switch (selectedOption) {
 			case CombatMenu::MenuOption::Attack:
@@ -290,7 +281,6 @@ void Combat::targetCharacter(const InputHandler& input) {
 	if (input.wasPressed(InputAction::MenuDown)) {
 		validTargetIndex = (validTargetIndex + 1) % (int)validTargets.size();
 	}
-
 	if (input.wasPressed(InputAction::Confirm)) {
 		currentAction.target = validTargets[validTargetIndex];
 		if (currentAction.type == ActionType::Item && currentAction.item != nullptr) {
@@ -300,6 +290,16 @@ void Combat::targetCharacter(const InputHandler& input) {
 		currentAction = {};
 		advanceActivePlayer();
 		menu.setLastEnterPressed(true);
+	}
+	if (input.wasPressed(InputAction::Cancel)) {
+		if (inItemMenu) {
+			releaseConsumableItemReservation(*currentAction.item);
+		} else {
+			menu.setLastEscapePressed(true);
+		}
+		currentAction = {};
+		currentState = CombatState::PlayerTurn;
+		menu.setLastEscapePressed(true);
 	}
 }
 
@@ -491,34 +491,6 @@ void Combat::executeAction(QueuedAction& action)
 	}
 }
 
-void Combat::executeNextAction() {
-	if (actionQueue.empty()) {
-		queuedConsumableCounts.clear();
-		currentState = CombatState::EnemyTurn;
-		return;
-	}
-
-	QueuedAction action = actionQueue.front();
-	if (!action.target->isAlive()) {
-		for (auto& enemy : enemies) {
-			if (enemy.isAlive()) {
-				action.target = &enemy;
-				break;
-			}
-		}
-	}
-	actionQueue.erase(actionQueue.begin());
-	executeAction(action);
-
-	if (currentState == CombatState::Victory || currentState == CombatState::Defeat) {
-		actionQueue.clear();
-		queuedConsumableCounts.clear();
-		return;
-	}
-
-	currentState = CombatState::PlayerAnimation;
-}
-
 void Combat::handleQueuedActionMenu(const InputHandler& input) {
 
 	if (input.wasPressed(InputAction::MenuUp)) {
@@ -570,6 +542,8 @@ void Combat::advanceActivePlayer() {
 			activePlayerIndex = next;
 			menu.reset();
 			inSkillMenu = false;
+			inItemMenu = false;
+			itemMenu.reset();
 			currentState = CombatState::PlayerTurn;
 			return;
 		}
@@ -744,7 +718,7 @@ std::vector<EnemySpawn> Combat::makeRandomEncounter() {
 			encounter.push_back({ &bat, 1 });
 			break;
 		case 2:
-			encounter.push_back({ &bat, 1 });
+			encounter.push_back({ &mandaro, 1 });
 			break;
 		default:
 			break;

@@ -29,3 +29,18 @@ EnemyData bat{
 		{ ItemID::Ether, 1 }
 	}
 };
+
+EnemyData mandaro{
+	"Mandaro",
+	65,
+	12,
+	10,
+	8,
+	35,
+	120.f,
+	"assets/MandaroSprite.png",
+	{
+		{ ItemID::MandaroCrown, 2 },
+		{ ItemID::Ether, 1 }
+	}
+};

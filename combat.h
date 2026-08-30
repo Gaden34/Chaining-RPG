@@ -185,7 +185,6 @@ private:
 	void calculateSkillDamage(Skill* skill, Character* actor, Character* target);
 	void handleSteal (Skill* skill, Character* actor, Character* target);
 	void executeAction(QueuedAction& action);
-	void executeNextAction();
 	void handleQueuedActionMenu(const InputHandler& input);
 	void handleEnemyTurn();
 	void updateAnimations(float dt);

@@ -5,6 +5,7 @@
       "name": "Potion",
       "description": "Restores a small amount of HP.",
       "max_stack_size": 99,
+      "sell_value": 50,
       "is_consumable": true,
       "steal_chance": 0.8,
       "type": "Heal",
@@ -23,6 +24,7 @@
       "name": "Ether",
       "description": "Restores a small amount of MP.",
       "max_stack_size": 99,
+      "sell_value": 80,
       "is_consumable": true,
       "steal_chance": 0.75,
       "type": "Heal",
@@ -41,6 +43,7 @@
       "name": "Throwing Knife",
       "description": "A knife that can be thrown at enemies.",
       "max_stack_size": 99,
+      "sell_value": 35,
       "is_consumable": true,
       "steal_chance": 0.6,
       "type": "Damage",
@@ -59,6 +62,7 @@
       "name": "Bat Fang",
       "description": "A magic fang that can be thrown at enemies and recover a small amount of HP.",
       "max_stack_size": 99,
+      "sell_value": 65,
       "is_consumable": true,
       "steal_chance": 0.6,
       "type": "Damage",
@@ -66,6 +70,25 @@
         {
           "target_attribute": "HP",
           "amount": 10,
+          "damage_power": 10,
+          "cures_status": "None",
+          "inflict_status": "None"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Mandaro Crown",
+      "description": "Sells for a high price. Can be thrown at enemies.",
+      "max_stack_size": 99,
+      "sell_value": 250,
+      "is_consumable": true,
+      "steal_chance": 0.2,
+      "type": "Damage",
+      "effects": [
+        {
+          "target_attribute": "HP",
+          "amount": 0,
           "damage_power": 10,
           "cures_status": "None",
           "inflict_status": "None"

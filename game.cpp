@@ -153,9 +153,9 @@ void Game::updateCharacterCreation(float dt) {
 
 void Game::updateExploration(float dt) {
 	exploration.update(dt, inputHandler, party[0]);
-	/*if (exploration.checkForEncounter(dt, party[0])) {
+	if (exploration.checkForEncounter(dt, party[0])) {
 		startCombat();
-	}*/
+	}
 
 		MapTransition* transition = exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()), party[0].getPreviousCollisionBox(),
 			party[0].getHorizontalDirection(), party[0].getVerticalDirection());
