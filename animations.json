@@ -15,18 +15,18 @@
 		}
 	},
 	"fireball": {
-		"texture": "assets/fireball-Sheet.png",
+		"texture": "assets/Fireball-Sheet.png",
 		"animations": {
 			"cast": {
-				"totalFrames": 4,
-				"columns": 4,
-				"frameWidth": 32,
-				"frameHeight": 32,
-				"frameDuration": 0.08,
-				"startX": 0,
-				"startY": 0,
-				"loop": true
-			}
+					"totalFrames": 4,
+					"columns": 4,
+					"frameWidth": 8,
+					"frameHeight": 8,
+					"frameDuration": 0.08,
+					"startX": 0,
+					"startY": 0,
+					"loop": true
+				}
 		}
 	}
 }

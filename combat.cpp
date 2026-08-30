@@ -105,6 +105,7 @@ void Combat::start() {
 	actionQueue.clear();
 	queuedConsumableCounts.clear();
 	currentAction = {};
+	skillEffects.clear();
 	menu.reset();
 	inSkillMenu = false;
 	inItemMenu = false;
@@ -638,7 +639,7 @@ void Combat::triggerSkillEffect(const std::string& animationName, Character& tar
 
 		const float offsetX = instanceCount > 1 ? static_cast<float>(randomRange(-spreadRadius, spreadRadius)) : 0.f;
 		effect.targetPosition = { targetCenter.x + offsetX, targetCenter.y };
-		effect.startPosition = { effect.targetPosition.x, effect.targetPosition.y - 200.f };
+		effect.startPosition = { effect.targetPosition.x - 200.f, effect.targetPosition.y - 200.f };
 		effect.dropDuration = 0.5f;
 		effect.elapsedTime = 0.f;
 		effect.delay = i * staggerInterval;
