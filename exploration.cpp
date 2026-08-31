@@ -20,6 +20,29 @@ void Exploration::start(Player& player) {
 void Exploration::update(float dt, InputHandler& inputHandler, Player& player) {
 	player.update(dt, inputHandler, map);
 	setCamera(player);
+
+	if (inItemMenu) {
+		if (inputHandler.wasPressed(InputAction::MenuUp))
+			itemMenu.moveUp();
+		if (inputHandler.wasPressed(InputAction::MenuDown))
+			itemMenu.moveDown();
+		if (inputHandler.wasPressed(InputAction::Cancel)) {
+			inItemMenu = false;
+			itemMenu.reset();
+		}
+		return;
+	}
+
+	openFieldMenu(inputHandler);
+
+	if (inFieldMenu) {
+		fieldMenu.handleInput(inputHandler);
+		if (inputHandler.wasPressed(InputAction::Confirm) &&
+			fieldMenu.getSelectedIndex() == static_cast<int>(FieldMenu::Option::Inventory)) {
+			itemMenu.populate(player.getInventory());
+			inItemMenu = true;
+		}
+	}
 }
 
 void Exploration::draw(sf::RenderTarget& target, Player& player) {
@@ -27,6 +50,13 @@ void Exploration::draw(sf::RenderTarget& target, Player& player) {
 	map.draw(target);
 	player.drawExploring(target);
 	target.setView(target.getDefaultView());
+
+	if (inFieldMenu) {
+		if (inItemMenu)
+			itemMenu.draw(target);
+		else
+			fieldMenu.draw(target);
+	}
 }
 
 bool Exploration::checkForEncounter(float dt, Player& player) {
@@ -90,7 +120,7 @@ void FieldMenu::draw(sf::RenderTarget& target) {
 	}
 }
 
-void FieldMenu::handleInput(InputHandler& inputHandler) {
+void FieldMenu::handleFieldMenu(InputHandler& inputHandler) {
 	if (inputHandler.wasPressed(InputAction::MenuUp)) {
 		moveUp();
 	}
@@ -98,6 +128,6 @@ void FieldMenu::handleInput(InputHandler& inputHandler) {
 		moveDown();
 	}
 	if (inputHandler.wasPressed(InputAction::Confirm)) {
-		getSelectedIndex();
+		FieldMenu::Option selected = static_cast<FieldMenu::Option>(getSelectedIndex());
 	}
 }

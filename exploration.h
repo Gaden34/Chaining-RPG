@@ -32,7 +32,7 @@ private:
 public:
 	FieldMenu();
 	void draw(sf::RenderTarget& target);
-	void handleInput(InputHandler& inputHandler);
+	void handleFieldMenu(InputHandler& inputHandler);
 };
 
 class Exploration {
@@ -44,7 +44,9 @@ private:
 	std::mt19937& rng;
 	MessageLog& messageLog;
 	FieldMenu fieldMenu;
+	ItemMenu itemMenu;
 	bool inFieldMenu = false;
+	bool inItemMenu = false;
 
 	void setCamera(Player& player);
 

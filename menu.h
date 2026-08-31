@@ -3,6 +3,8 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
+class Inventory;
+
 class Menu {
 private:
    
@@ -53,4 +55,17 @@ public:
     void setLastEnterPressed(bool pressed) { lastEnterPressed = pressed; }
     void setLastEscapePressed(bool pressed) { lastEscapePressed = pressed; }
 
+};
+
+// Shared inventory list menu, reused by Combat and Exploration.
+class ItemMenu : public Menu {
+private:
+	const float menuX = 352.f;
+	const float menuY = 300.f;
+	const float optionSpacing = 12.f;
+
+public:
+	ItemMenu();
+	void populate(const Inventory& inventory);
+	void draw(sf::RenderTarget& target);
 };

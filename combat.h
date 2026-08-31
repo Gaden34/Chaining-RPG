@@ -108,18 +108,6 @@ public:
 	int getSelectedIndex() const;
 };
 
-class ItemMenu : public Menu {
-private:
-	const float menuX = 352.f;
-	const float menuY = 300.f;
-	const float optionSpacing = 12.f;
-
-public:
-	ItemMenu();
-	void populate(const Inventory& inventory);
-	void draw(sf::RenderTarget& target);
-};
-
 class QueuedActionMenu : public Menu {
 private:
 	const float menuX = 320.f;
