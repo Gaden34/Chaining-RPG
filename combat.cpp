@@ -346,11 +346,17 @@ void Combat::performSkill(QueuedAction& action) {
 	}
 	player->setMp(player->getMp() - skill->getMpCost());
 	if (!skill->getAnimationName().empty()) {
-		triggerSkillEffect(skill->getAnimationName(), *target, static_cast<int>(skill->getHits().size()));
+		int effectID = triggerSkillEffect(skill->getAnimationName(), *target, static_cast<int>(skill->getHits().size()));
+
+		if (effectID != -1) {
+			pendingSkillActions.push_back({ action, effectID });
+		}
 	}
-	calculateSkillDamage(skill, player, target);
-	handleSteal(skill, player, target);
-	handleDeath(*target);
+	else {
+		calculateSkillDamage(skill, player, target);
+		handleSteal(skill, player, target);
+		handleDeath(*target);
+	}
 }
 
 void Combat::performItem(QueuedAction& action) {
@@ -611,25 +617,27 @@ bool Combat::loadEffectAnimation(const std::string& animationName) {
 	return true;
 }
 
-void Combat::triggerSkillEffect(const std::string& animationName, Character& target, int instanceCount) {
+int Combat::triggerSkillEffect(const std::string& animationName, Character& target, int instanceCount) {
 	if (!loadEffectAnimation(animationName)) {
-		return;
+		return -1;
 	}
 
 	const AnimationAsset& asset = effectAssets[animationName];
 	const auto clipIt = asset.clips.find("cast");
 	if (clipIt == asset.clips.end()) {
-		return;
+		return -1;
 	}
 
+	const int effectID = nextEffectID++;
 	const sf::FloatRect targetBounds = target.getGlobalBounds();
 	const sf::Vector2f targetCenter(targetBounds.left + targetBounds.width / 2.f, targetBounds.top + targetBounds.height / 2.f);
 
 	const float staggerInterval = 0.12f; // rapid succession delay between each drop
-	const int spreadRadius = 16; // horizontal jitter so multiple drops don't stack in a straight line
+	const int spreadRadius = 8; // horizontal jitter so multiple drops don't stack in a straight line
 
 	for (int i = 0; i < instanceCount; ++i) {
 		CombatVisualEffect effect;
+		effect.effectID = effectID;
 		effect.animation.setAnimation(clipIt->second);
 		effect.sprite.setTexture(effectTextures[animationName], true);
 		effect.sprite.setTextureRect(effect.animation.getCurrentFrame());
@@ -640,13 +648,24 @@ void Combat::triggerSkillEffect(const std::string& animationName, Character& tar
 		const float offsetX = instanceCount > 1 ? static_cast<float>(randomRange(-spreadRadius, spreadRadius)) : 0.f;
 		effect.targetPosition = { targetCenter.x + offsetX, targetCenter.y };
 		effect.startPosition = { effect.targetPosition.x - 200.f, effect.targetPosition.y - 200.f };
-		effect.dropDuration = 0.5f;
+		effect.dropDuration = 0.7f;
 		effect.elapsedTime = 0.f;
 		effect.delay = i * staggerInterval;
 		effect.sprite.setPosition(effect.startPosition);
 
 		skillEffects.push_back(std::move(effect));
 	}
+
+	return effectID;
+}
+
+bool Combat::isEffectFinished(int effectID) const {
+	for (const auto& effect : skillEffects) {
+		if (effect.effectID == effectID) {
+			return false;
+		}
+	}
+	return true;
 }
 
 void Combat::updateSkillEffect(float dt) {

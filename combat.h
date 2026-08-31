@@ -45,6 +45,11 @@ struct QueuedAction {
 	ItemData* item = nullptr;
 };
 
+struct PendingSkillAction {
+	QueuedAction action;
+	int effectID = -1;
+};
+
 struct ActiveAnimation {
 	Character* character = nullptr;
 	sf::Vector2f startPosition;
@@ -56,6 +61,7 @@ struct ActiveAnimation {
 
 // A one-off visual effect (e.g. a spell dropping onto its target) played over the target's sprite.
 struct CombatVisualEffect {
+	int effectID = -1;
 	Animation animation;
 	sf::Sprite sprite;
 	sf::Vector2f startPosition;
@@ -137,9 +143,11 @@ private:
 	std::vector<Player>& party;
 	std::vector<Enemy> enemies;
 	std::vector<ActiveAnimation> activeAnimations;
+	std::vector<PendingSkillAction> pendingSkillActions;
 	std::unordered_map<std::string, sf::Texture> effectTextures;
 	std::unordered_map<std::string, AnimationAsset> effectAssets;
 	std::vector<CombatVisualEffect> skillEffects;
+	int nextEffectID = 0;
 	std::mt19937& rng;
 	CombatMenu menu;
 	SkillMenu skillMenu;
@@ -191,7 +199,8 @@ private:
 	void updatePlayerAnimation(float dt);
 	void updateEnemyAnimation(float dt);
 	bool loadEffectAnimation(const std::string& animationName);
-	void triggerSkillEffect(const std::string& animationName, Character& target, int instanceCount = 1);
+	int triggerSkillEffect(const std::string& animationName, Character& target, int instanceCount = 1);
+	bool isEffectFinished(int effectID) const;
 	void updateSkillEffect(float dt);
 	void drawSkillEffect(sf::RenderTarget& target);
 	std::vector<EnemySpawn> makeRandomEncounter();
