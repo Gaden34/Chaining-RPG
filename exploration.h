@@ -32,7 +32,7 @@ private:
 public:
 	FieldMenu();
 	void draw(sf::RenderTarget& target);
-	void handleFieldMenu(InputHandler& inputHandler);
+	FieldMenu::Option getSelectedOption() const { return fieldMenu.getSelectedOption(); }
 };
 
 class Exploration {
@@ -59,6 +59,7 @@ public:
 
 	// Returns true if a random encounter was triggered this frame.
 	void openFieldMenu(InputHandler& inputHandler);
+	void handleFieldMenu(InputHandler& inputHandler);
 	bool checkForEncounter(float dt, Player& player);
 
 	MapTransition* getTransitionAtPosition(const sf::FloatRect& currentBounds, const sf::FloatRect& previousBounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical);

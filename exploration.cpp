@@ -36,12 +36,7 @@ void Exploration::update(float dt, InputHandler& inputHandler, Player& player) {
 	openFieldMenu(inputHandler);
 
 	if (inFieldMenu) {
-		fieldMenu.handleInput(inputHandler);
-		if (inputHandler.wasPressed(InputAction::Confirm) &&
-			fieldMenu.getSelectedIndex() == static_cast<int>(FieldMenu::Option::Inventory)) {
-			itemMenu.populate(player.getInventory());
-			inItemMenu = true;
-		}
+		fieldMenu.handleFieldMenu(inputHandler);
 	}
 }
 
@@ -97,6 +92,37 @@ void Exploration::openFieldMenu(InputHandler& inputHandler) {
 	}
 }
 
+void Exploration::handleFieldMenu(InputHandler& inputHandler) {
+	if (inputHandler.wasPressed(InputAction::MenuUp)) {
+		fieldMenu.moveUp();
+	}
+	if (inputHandler.wasPressed(InputAction::MenuDown)) {
+		fieldMenu.moveDown();
+	}
+	if (inputHandler.wasPressed(InputAction::Confirm)) {
+		FieldMenu::Option selected = fieldMenu.getSelectedOption();
+	
+
+	switch (selected) {
+		case FieldMenu::Option::Status:
+			// Handle Status option
+			break;
+		case FieldMenu::Option::Discipline:
+			// Handle Discipline option
+			break;
+		case FieldMenu::Option::Equipment:
+			// Handle Equipment option
+			break;
+		case FieldMenu::Option::Inventory:
+			inItemMenu = true;
+			break;
+		case FieldMenu::Option::Exit:
+			// Handle Exit option
+			break;
+	}
+}
+}
+
 FieldMenu::FieldMenu() {
 	std::vector<std::string> options = { "Status", "Discipline", "Equipment", "Inventory", "Exit" };
 
@@ -120,14 +146,3 @@ void FieldMenu::draw(sf::RenderTarget& target) {
 	}
 }
 
-void FieldMenu::handleFieldMenu(InputHandler& inputHandler) {
-	if (inputHandler.wasPressed(InputAction::MenuUp)) {
-		moveUp();
-	}
-	if (inputHandler.wasPressed(InputAction::MenuDown)) {
-		moveDown();
-	}
-	if (inputHandler.wasPressed(InputAction::Confirm)) {
-		FieldMenu::Option selected = static_cast<FieldMenu::Option>(getSelectedIndex());
-	}
-}
