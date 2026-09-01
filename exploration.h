@@ -5,6 +5,7 @@
 #include "player.h"
 #include "messageLog.h"
 #include "menu.h"
+#include "statusScreen.h"
 
 
 constexpr unsigned VirtualWidth = 640;
@@ -45,6 +46,7 @@ private:
 	MessageLog& messageLog;
 	FieldMenu fieldMenu;
 	ItemMenu itemMenu;
+	StatusScreen statusScreen;
 	bool inFieldMenu = false;
 	bool inItemMenu = false;
 
