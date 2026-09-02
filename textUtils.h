@@ -5,6 +5,9 @@
 struct RenderText {
 	sf::Text text;
 	sf::Vector2f position;
+
+	RenderText(const std::string& str, const sf::Font& font, unsigned int characterSize, const sf::Vector2f& pos)
+		: text(str, font, characterSize), position(pos) {}
 };
 
 namespace TextUtils {

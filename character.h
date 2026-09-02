@@ -18,6 +18,8 @@ protected:
 	int maxMp;
 	int attack;
 	int magAttack;
+	int defense;
+	int magDefense;
 	float moveSpeed;
 	bool alive = true;
 
@@ -44,6 +46,8 @@ public:
 	int getMaxMp() const { return maxMp; }
 	int getAttack() const { return attack; }
 	int getMagAttack() const { return magAttack; }
+	int getDefense() const { return defense; }
+	int getMagDefense() const { return magDefense; }
 	float getMoveSpeed() const { return moveSpeed; }
 	sf::Sprite& getSprite() { return sprite; }
 	void takeDamage(int amount);
