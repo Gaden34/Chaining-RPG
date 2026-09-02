@@ -14,6 +14,10 @@ void StatusScreen::draw(sf::RenderTarget& target, Player& player) const {
 }
 
 std::vector<RenderText>& StatusScreen::buildStatTexts(Player& player) {
+	if (!player.getStatsOutdated() && !statTexts.empty()) {
+		return statTexts;
+	}
+
 	statTexts.clear();
 	RenderText nameText(player.getName(), font, 14, sf::Vector2f(50.f, 50.f));
 	statTexts.push_back(nameText);
@@ -33,8 +37,7 @@ std::vector<RenderText>& StatusScreen::buildStatTexts(Player& player) {
 	statTexts.push_back(defenseText);
 	RenderText magicDefenseText("Magic Defense: " + std::to_string(player.getMagDefense()), font, 10, sf::Vector2f(50.f, 90.f + 5 * statSpacingY));
 	statTexts.push_back(magicDefenseText);
-	return statTexts;
-}
 
-void StatusScreen::checkForNewStats(Player& player) {
+	player.setStatsOutdated(false);
+	return statTexts;
 }

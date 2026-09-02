@@ -17,5 +17,4 @@ public:
     StatusScreen();
     void draw(sf::RenderTarget& target, Player& player) const;
 	std::vector<RenderText>& buildStatTexts(Player& player);
-    void checkForNewStats(Player& player);
 };

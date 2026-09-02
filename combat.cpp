@@ -123,8 +123,10 @@ void Combat::start() {
 
 	if (enemies.empty()) return;
 
-	party[0].setPosition(175.f, 180.f);
-	party[1].setPosition(175.f, 220.f);
+	for (int i = 0; i < party.size(); i++) {
+		party[i].setPosition(175.f, 180.f + i * 40);
+		party[i].setStatsOutdated(true);
+	}
 
 	for (int i = 0; i < enemies.size(); i++) {
 		enemies[i].setPosition(465.f, 180.f + i * 40);
