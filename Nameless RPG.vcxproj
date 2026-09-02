@@ -38,6 +38,7 @@
     <ClCompile Include="combat.cpp" />
     <ClCompile Include="skill.cpp" />
     <ClCompile Include="skillDatabase.cpp" />
+    <ClCompile Include="statusScreen.cpp" />
     <ClCompile Include="textUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +62,7 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="skill.h" />
     <ClInclude Include="skillDatabase.h" />
+    <ClInclude Include="statusScreen.h" />
     <ClInclude Include="textUtils.h" />
   </ItemGroup>
   <ItemGroup>

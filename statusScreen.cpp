@@ -1,5 +1,6 @@
 #include "statusScreen.h"
 #include "player.h"
+#include "textUtils.h"
 
 StatusScreen::StatusScreen() {
     font.loadFromFile("assets/Roboto_Condensed-Black.ttf");
@@ -42,4 +43,38 @@ void StatusScreen::draw(sf::RenderTarget& target, Player& player) const {
     target.draw(magicAttackText);
     target.draw(defenseText);
     target.draw(magicDefenseText);
+}
+
+std::vector<RenderText>& StatusScreen::buildStatTexts(Player& player) {
+	statTexts.clear();
+	RenderText nameText;
+	nameText.text.setFont(font);
+	nameText.text.setString(player.getName());
+	nameText.text.setCharacterSize(16);
+	nameText.position = sf::Vector2f(50.f, 50.f);
+	statTexts.push_back(nameText);
+	RenderText disciplineText;
+	disciplineText.text.setFont(font);
+	disciplineText.text.setString("Discipline: " + player.getDiscipline());
+	disciplineText.text.setCharacterSize(12);
+	disciplineText.position = sf::Vector2f(50.f, 70.f);
+	statTexts.push_back(disciplineText);
+	RenderText levelText;
+	levelText.text.setFont(font);
+	levelText.text.setString("Level: " + std::to_string(player.getLevel()));
+	levelText.text.setCharacterSize(12);
+	levelText.position = sf::Vector2f(80.f, 70.f);
+	statTexts.push_back(levelText);
+	RenderText hpText;
+	hpText.text.setFont(font);
+	hpText.text.setString("HP: " + std::to_string(player.getHp()) + "/" + std::to_string(player.getMaxHp()));
+	hpText.text.setCharacterSize(10);
+	hpText.position = sf::Vector2f(50.f, 90.f);
+	statTexts.push_back(hpText);
+	RenderText mpText;
+	mpText.text.setFont(font);
+	mpText.text.setString("MP: " + std::to_string(player.getMp()) + "/" + std::to_string(player.getMaxMp()));
+	mpText.text.setCharacterSize(10);
+	mpText.position = sf::Vector2f(50.f, 90.f + statSpacingY);
+	statTexts.push_back(mpText);
 }
