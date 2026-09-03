@@ -36,7 +36,7 @@ void Exploration::update(float dt, InputHandler& inputHandler, Player& player) {
 	openFieldMenu(inputHandler);
 
 	if (inFieldMenu) {
-		fieldMenu.handleFieldMenu(inputHandler);
+		fieldMenu.handleInput(inputHandler);
 	}
 }
 
@@ -47,10 +47,7 @@ void Exploration::draw(sf::RenderTarget& target, Player& player) {
 	target.setView(target.getDefaultView());
 
 	if (inFieldMenu) {
-		if (inItemMenu)
-			itemMenu.draw(target);
-		else
-			fieldMenu.draw(target);
+			fieldMenu.draw(target, player);
 	}
 }
 
@@ -92,35 +89,35 @@ void Exploration::openFieldMenu(InputHandler& inputHandler) {
 	}
 }
 
-void Exploration::handleFieldMenu(InputHandler& inputHandler) {
+void FieldMenu::handleInput(InputHandler& inputHandler) {
 	if (inputHandler.wasPressed(InputAction::MenuUp)) {
-		fieldMenu.moveUp();
+		moveUp();
 	}
 	if (inputHandler.wasPressed(InputAction::MenuDown)) {
-		fieldMenu.moveDown();
+		moveDown();
 	}
 	if (inputHandler.wasPressed(InputAction::Confirm)) {
-		FieldMenu::Option selected = fieldMenu.getSelectedOption();
+		FieldMenu::Option selected = getSelectedOption();
 	
 
 	switch (selected) {
 		case FieldMenu::Option::Status:
-			// Handle Status option
+			currentState = FieldMenuState::StatusScreen;
 			break;
 		case FieldMenu::Option::Discipline:
-			// Handle Discipline option
+			currentState = FieldMenuState::DisciplineScreen;
 			break;
 		case FieldMenu::Option::Equipment:
-			// Handle Equipment option
+			currentState = FieldMenuState::EquipmentScreen;
 			break;
 		case FieldMenu::Option::Inventory:
-			inItemMenu = true;
+			currentState = FieldMenuState::ItemScreen;
 			break;
 		case FieldMenu::Option::Exit:
-			// Handle Exit option
+			currentState = FieldMenuState::Main;
 			break;
+		}
 	}
-}
 }
 
 FieldMenu::FieldMenu() {
@@ -135,14 +132,34 @@ FieldMenu::FieldMenu() {
 	}
 }
 
-void FieldMenu::draw(sf::RenderTarget& target) {
-	for (size_t i = 0; i < optionTexts.size(); ++i) {
-		if (i == selectedIndex) {
-			optionTexts[i].setFillColor(sf::Color::White);
-		} else {
-			optionTexts[i].setFillColor(sf::Color::Black);
+void FieldMenu::draw(sf::RenderTarget& target, Player& player) {
+
+	switch (currentState) {
+	case FieldMenuState::Main:
+		for (size_t i = 0; i < optionTexts.size(); ++i) {
+			if (i == selectedIndex) {
+				optionTexts[i].setFillColor(sf::Color::White);
+			}
+			else {
+				optionTexts[i].setFillColor(sf::Color::Black);
+			}
+			target.draw(optionTexts[i]);
 		}
-		target.draw(optionTexts[i]);
+		break;
+	
+	case FieldMenuState::StatusScreen:
+		statusScreen.draw(target, player);
+		break;
+	case FieldMenuState::DisciplineScreen:
+		// Draw the discipline screen
+		break;
+	case FieldMenuState::EquipmentScreen:
+		// Draw the equipment screen
+		break;
+	//case FieldMenuState::ItemScreen:
+		//itemMenu.draw(target);
+		break;
 	}
+
 }
 

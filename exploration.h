@@ -13,6 +13,14 @@ constexpr unsigned VirtualHeight = 360;
 class InputHandler;
 
 
+enum class FieldMenuState {
+	Main,
+	DisciplineScreen,
+	StatusScreen,
+	EquipmentScreen,
+	ItemScreen,
+};
+
 class FieldMenu : public Menu {
 public:
 	enum class Option {
@@ -28,12 +36,16 @@ private:
 	const float menuX = 200.f;
 	const float menuY = 100.f;
 	const float optionsSpacing = 12.f;
+	FieldMenuState currentState = FieldMenuState::Main;
+	StatusScreen statusScreen;
 
 
 public:
 	FieldMenu();
-	void draw(sf::RenderTarget& target);
-	FieldMenu::Option getSelectedOption() const { return fieldMenu.getSelectedOption(); }
+	void draw(sf::RenderTarget& target, Player& player);
+	FieldMenu::Option getSelectedOption() const { return static_cast<FieldMenu::Option>(getSelectedIndex()); }
+	void handleInput(InputHandler& inputHandler);
+	FieldMenuState getCurrentState() const { return currentState; }
 };
 
 class Exploration {
@@ -61,7 +73,6 @@ public:
 
 	// Returns true if a random encounter was triggered this frame.
 	void openFieldMenu(InputHandler& inputHandler);
-	void handleFieldMenu(InputHandler& inputHandler);
 	bool checkForEncounter(float dt, Player& player);
 
 	MapTransition* getTransitionAtPosition(const sf::FloatRect& currentBounds, const sf::FloatRect& previousBounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical);

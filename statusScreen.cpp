@@ -4,13 +4,15 @@
 
 StatusScreen::StatusScreen() {
     font.loadFromFile("assets/Roboto_Condensed-Black.ttf");
+	texture.loadFromFile("assets/statusScreen.png");
+	sprite.setTexture(texture);
 }
 
-void StatusScreen::draw(sf::RenderTarget& target, Player& player) const {
-  
-    for (const auto& renderText : buildStatTexts(player)) {
-        target.draw(renderText.text);
-    }
+void StatusScreen::draw(sf::RenderTarget& target, Player& player) {
+	target.draw(sprite);
+	for (const auto& renderText : buildStatTexts(player)) {
+		target.draw(renderText.text);
+	}
 }
 
 std::vector<RenderText>& StatusScreen::buildStatTexts(Player& player) {
@@ -21,7 +23,7 @@ std::vector<RenderText>& StatusScreen::buildStatTexts(Player& player) {
 	statTexts.clear();
 	RenderText nameText(player.getName(), font, 14, sf::Vector2f(50.f, 50.f));
 	statTexts.push_back(nameText);
-	RenderText disciplineText("Discipline: " + player.getDiscipline(), font, 12, sf::Vector2f(50.f, 70.f));
+	RenderText disciplineText("Discipline: " + player.getDiscipline().getName(), font, 12, sf::Vector2f(50.f, 70.f));
 	statTexts.push_back(disciplineText);
 	RenderText levelText("Level: " + std::to_string(player.getLevel()), font, 12, sf::Vector2f(80.f, 70.f));
 	statTexts.push_back(levelText);
