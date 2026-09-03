@@ -186,9 +186,9 @@ void Combat::handlePlayerTurn(const InputHandler& input) {
 	}
 	else if (inSkillMenu) {
 		if (input.wasPressed(InputAction::MenuUp))
-			skillMenu.handleInput(sf::Keyboard::Up);
+			skillMenu.moveUp();
 		if (input.wasPressed(InputAction::MenuDown))
-			skillMenu.handleInput(sf::Keyboard::Down);
+			skillMenu.moveDown();
 		if (input.wasPressed(InputAction::Confirm)) {
 			int index = skillMenu.getSelectedIndex();
 			if (index == -1) {
@@ -844,17 +844,6 @@ void SkillMenu::populate(const std::vector<std::unique_ptr<Skill>>& skills) {
 	optionTexts.push_back(backText);
 
 	selectedIndex = 0;
-}
-
-void SkillMenu::handleInput(sf::Keyboard::Key key) {
-	int total = static_cast<int>(optionTexts.size());
-	if (total == 0) return;
-	if (key == sf::Keyboard::Up) {
-		selectedIndex = (selectedIndex - 1 + total) % total;
-	}
-	else if (key == sf::Keyboard::Down) {
-		selectedIndex = (selectedIndex + 1) % total;
-	}
 }
 
 void SkillMenu::draw(sf::RenderTarget& target) {

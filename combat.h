@@ -103,7 +103,6 @@ private:
 public:
 	SkillMenu();
 	void populate(const std::vector<std::unique_ptr<Skill>>& skills);
-	void handleInput(sf::Keyboard::Key key);
 	void draw(sf::RenderTarget& target);
 	int getSelectedIndex() const;
 };

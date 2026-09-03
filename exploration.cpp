@@ -89,17 +89,8 @@ void Exploration::openFieldMenu(InputHandler& inputHandler) {
 	}
 }
 
-void FieldMenu::handleInput(InputHandler& inputHandler) {
-	if (inputHandler.wasPressed(InputAction::MenuUp)) {
-		moveUp();
-	}
-	if (inputHandler.wasPressed(InputAction::MenuDown)) {
-		moveDown();
-	}
-	if (inputHandler.wasPressed(InputAction::Confirm)) {
-		FieldMenu::Option selected = getSelectedOption();
-	
-
+void FieldMenu::onSelect() {
+	FieldMenu::Option selected = getSelectedOption();
 	switch (selected) {
 		case FieldMenu::Option::Status:
 			currentState = FieldMenuState::StatusScreen;
@@ -116,7 +107,6 @@ void FieldMenu::handleInput(InputHandler& inputHandler) {
 		case FieldMenu::Option::Exit:
 			currentState = FieldMenuState::Main;
 			break;
-		}
 	}
 }
 

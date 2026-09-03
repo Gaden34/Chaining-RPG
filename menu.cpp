@@ -1,6 +1,19 @@
 #include "Menu.h"
 #include "item.h"
 
+
+void Menu::handleInput(InputHandler& inputHandler) {
+	if (inputHandler.wasPressed(InputAction::MenuUp)) {
+		moveUp();
+	}
+	if (inputHandler.wasPressed(InputAction::MenuDown)) {
+		moveDown();
+	}
+	if (inputHandler.wasPressed(InputAction::MenuSelect)) {
+		onSelect();
+	}
+}
+
 ItemMenu::ItemMenu() {
 	if (!font.loadFromFile("assets/Roboto_Condensed-Black.ttf")) {
 		std::cerr << "Failed to load font!" << std::endl;

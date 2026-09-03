@@ -43,8 +43,8 @@ private:
 public:
 	FieldMenu();
 	void draw(sf::RenderTarget& target, Player& player);
+	void onSelect();
 	FieldMenu::Option getSelectedOption() const { return static_cast<FieldMenu::Option>(getSelectedIndex()); }
-	void handleInput(InputHandler& inputHandler);
 	FieldMenuState getCurrentState() const { return currentState; }
 };
 
