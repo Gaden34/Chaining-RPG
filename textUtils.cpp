@@ -27,4 +27,10 @@ namespace TextUtils {
 		}
 		return "a";
 	}
-}
+
+	sf::Text createText(const std::string& str, const sf::Font& font, unsigned int characterSize, const sf::Vector2f& position, const sf::Color& color) {
+		sf::Text text(str, font, characterSize);
+		text.setPosition(position);
+		text.setFillColor(color);
+		return text;
+	}

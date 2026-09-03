@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include "inputHandler.h"
 
 class Inventory;
 
@@ -37,6 +38,7 @@ public:
 		lastEnterPressed = true;
 		lastEscapePressed = false;
 }
+	virtual void handleInput(InputHandler& inputHandler);
     void moveUp() { if (optionTexts.empty()) return;
     selectedIndex = (selectedIndex - 1 + static_cast<int>(optionTexts.size())) % static_cast<int>(optionTexts.size()); }
 	void moveDown() { if (optionTexts.empty()) return;

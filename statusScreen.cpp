@@ -11,33 +11,33 @@ StatusScreen::StatusScreen() {
 void StatusScreen::draw(sf::RenderTarget& target, Player& player) {
 	target.draw(sprite);
 	for (const auto& renderText : buildStatTexts(player)) {
-		target.draw(renderText.text);
+		target.draw(renderText); 
 	}
 }
 
-std::vector<RenderText>& StatusScreen::buildStatTexts(Player& player) {
+std::vector<sf::Text>& StatusScreen::buildStatTexts(Player& player) {
 	if (!player.getStatsOutdated() && !statTexts.empty()) {
 		return statTexts;
 	}
 
 	statTexts.clear();
-	RenderText nameText(player.getName(), font, 14, sf::Vector2f(50.f, 50.f));
+	sf::Text nameText = TextUtils::createText(player.getName(), font, 14, sf::Vector2f(50.f, 50.f), sf::Color::Black);
 	statTexts.push_back(nameText);
-	RenderText disciplineText("Discipline: " + player.getDiscipline().getName(), font, 12, sf::Vector2f(50.f, 70.f));
+	sf::Text disciplineText = TextUtils::createText("Discipline: " + player.getDiscipline().getName(), font, 12, sf::Vector2f(50.f, 70.f), sf::Color::Black);
 	statTexts.push_back(disciplineText);
-	RenderText levelText("Level: " + std::to_string(player.getLevel()), font, 12, sf::Vector2f(80.f, 70.f));
+	sf::Text levelText = TextUtils::createText("Level: " + std::to_string(player.getLevel()), font, 12, sf::Vector2f(80.f, 70.f), sf::Color::Black);
 	statTexts.push_back(levelText);
-	RenderText hpText("HP: " + std::to_string(player.getHp()) + "/" + std::to_string(player.getMaxHp()), font, 10, sf::Vector2f(50.f, 90.f));
+	sf::Text hpText = TextUtils::createText("HP: " + std::to_string(player.getHp()) + "/" + std::to_string(player.getMaxHp()), font, 10, sf::Vector2f(50.f, 90.f), sf::Color::Black);
 	statTexts.push_back(hpText);
-	RenderText mpText("MP: " + std::to_string(player.getMp()) + "/" + std::to_string(player.getMaxMp()), font, 10, sf::Vector2f(50.f, 90.f + statSpacingY));
+	sf::Text mpText = TextUtils::createText("MP: " + std::to_string(player.getMp()) + "/" + std::to_string(player.getMaxMp()), font, 10, sf::Vector2f(50.f, 90.f + statSpacingY), sf::Color::Black);
 	statTexts.push_back(mpText);
-	RenderText attackText("Attack: " + std::to_string(player.getAttack()), font, 10, sf::Vector2f(50.f, 90.f + 2 * statSpacingY));
+	sf::Text attackText = TextUtils::createText("Attack: " + std::to_string(player.getAttack()), font, 10, sf::Vector2f(50.f, 90.f + 2 * statSpacingY), sf::Color::Black);
 	statTexts.push_back(attackText);
-	RenderText magicAttackText("Magic Attack: " + std::to_string(player.getMagAttack()), font, 10, sf::Vector2f(50.f, 90.f + 3 * statSpacingY));
+	sf::Text magicAttackText = TextUtils::createText("Magic Attack: " + std::to_string(player.getMagAttack()), font, 10, sf::Vector2f(50.f, 90.f + 3 * statSpacingY), sf::Color::Black);
 	statTexts.push_back(magicAttackText);
-	RenderText defenseText("Defense: " + std::to_string(player.getDefense()), font, 10, sf::Vector2f(50.f, 90.f + 4 * statSpacingY));
+	sf::Text defenseText = TextUtils::createText("Defense: " + std::to_string(player.getDefense()), font, 10, sf::Vector2f(50.f, 90.f + 4 * statSpacingY), sf::Color::Black);
 	statTexts.push_back(defenseText);
-	RenderText magicDefenseText("Magic Defense: " + std::to_string(player.getMagDefense()), font, 10, sf::Vector2f(50.f, 90.f + 5 * statSpacingY));
+	sf::Text magicDefenseText = TextUtils::createText("Magic Defense: " + std::to_string(player.getMagDefense()), font, 10, sf::Vector2f(50.f, 90.f + 5 * statSpacingY), sf::Color::Black);
 	statTexts.push_back(magicDefenseText);
 
 	player.setStatsOutdated(false);

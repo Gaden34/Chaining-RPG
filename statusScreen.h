@@ -10,12 +10,12 @@ private:
     sf::Font font;
     sf::Sprite sprite;
     sf::Texture texture;
-	std::vector<RenderText> statTexts;
+	std::vector<sf::Text> statTexts;
     float statSpacingY = 20.f;
     bool statsOutdated = false;
 
 public:
     StatusScreen();
     void draw(sf::RenderTarget& target, Player& player);
-    std::vector<RenderText>& buildStatTexts(Player& player);
+    std::vector<sf::Text>& buildStatTexts(Player& player);
 };
