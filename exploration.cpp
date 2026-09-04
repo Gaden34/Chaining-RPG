@@ -40,10 +40,10 @@ void Exploration::update(float dt, InputHandler& inputHandler, Player& player) {
 	}
 }
 
-void Exploration::draw(sf::RenderTarget& target, Player& player) {
+void Exploration::draw(sf::RenderTarget& target, std::vector<Player>& party) {
 	target.setView(camera);
 	map.draw(target);
-	player.drawExploring(target);
+	party[0].drawExploring(target);
 	target.setView(target.getDefaultView());
 
 	if (inFieldMenu) {

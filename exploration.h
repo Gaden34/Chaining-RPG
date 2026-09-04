@@ -38,11 +38,13 @@ private:
 	const float optionsSpacing = 12.f;
 	FieldMenuState currentState = FieldMenuState::Main;
 	StatusScreen statusScreen;
+	size_t selectedMemberIndex = 0;
 
 
 public:
 	FieldMenu();
-	void draw(sf::RenderTarget& target, Player& player);
+	void draw(sf::RenderTarget& target, std::vector<Player>& party);
+	void handleInput(InputHandler& inputHandler, size_t partySize);
 	void onSelect();
 	FieldMenu::Option getSelectedOption() const { return static_cast<FieldMenu::Option>(getSelectedIndex()); }
 	FieldMenuState getCurrentState() const { return currentState; }
@@ -69,8 +71,8 @@ public:
 	Exploration(std::mt19937& rng, MessageLog& messageLog);
 
 	void start(Player& player);
-	void update(float dt, InputHandler& inputHandler, Player& player);
-	void draw(sf::RenderTarget& target, Player& player);
+	void update(float dt, InputHandler& inputHandler, std::vector<Player>& party);
+	void draw(sf::RenderTarget& target, std::vector<Player>& party);
 
 	// Returns true if a random encounter was triggered this frame.
 	void openFieldMenu(InputHandler& inputHandler);
