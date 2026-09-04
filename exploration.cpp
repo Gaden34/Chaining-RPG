@@ -85,7 +85,14 @@ void Exploration::openFieldMenu(InputHandler& inputHandler) {
 		inFieldMenu = true;
 	} 
 	else if (inputHandler.wasPressed(InputAction::Cancel) && inFieldMenu) {
-		inFieldMenu = false;
+		if (fieldMenu.getCurrentState() == FieldMenuState::Main) {
+			inFieldMenu = false;
+			fieldMenu.reset();
+		}
+		else {
+			fieldMenu.setCurrentState(FieldMenuState::Main);
+		}
+		
 	}
 }
 

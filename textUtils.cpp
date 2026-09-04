@@ -3,7 +3,7 @@
 namespace TextUtils {
 	std::string capitalizeFirst(const std::string& text) {
 		std::string result = text;
-		
+
 		if (!text.empty()) {
 			result[0] = std::toupper(text[0]);
 		}
@@ -12,7 +12,7 @@ namespace TextUtils {
 
 	std::string lowerFirst(const std::string& text) {
 		std::string result = text;
-		
+
 		if (!text.empty()) {
 			result[0] = std::tolower(text[0]);
 		}
@@ -34,3 +34,4 @@ namespace TextUtils {
 		text.setFillColor(color);
 		return text;
 	}
+}

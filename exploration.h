@@ -46,6 +46,7 @@ public:
 	void onSelect();
 	FieldMenu::Option getSelectedOption() const { return static_cast<FieldMenu::Option>(getSelectedIndex()); }
 	FieldMenuState getCurrentState() const { return currentState; }
+	void setCurrentState(FieldMenuState state) { currentState = state; }
 };
 
 class Exploration {

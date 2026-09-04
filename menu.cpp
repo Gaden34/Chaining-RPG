@@ -1,5 +1,6 @@
 #include "Menu.h"
 #include "item.h"
+#include "InputHandler.h"
 
 
 void Menu::handleInput(InputHandler& inputHandler) {
@@ -9,7 +10,7 @@ void Menu::handleInput(InputHandler& inputHandler) {
 	if (inputHandler.wasPressed(InputAction::MenuDown)) {
 		moveDown();
 	}
-	if (inputHandler.wasPressed(InputAction::MenuSelect)) {
+	if (inputHandler.wasPressed(InputAction::Confirm)) {
 		onSelect();
 	}
 }

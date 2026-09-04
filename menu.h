@@ -2,8 +2,8 @@
 #include <vector>
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include "inputHandler.h"
 
+class InputHandler;
 class Inventory;
 
 class Menu {
