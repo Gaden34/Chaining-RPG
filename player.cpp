@@ -45,10 +45,12 @@ const AxisInput verticalAxisInput = {
 	}; 
 }
 
-Player::Player(MessageLog& m, std::string n, std::string textureName, Inventory& inv) : messageLog(m), partyInventory(inv) {
+Player::Player(MessageLog& m, std::string n, std::string textureName, std::string portraitTextureName, Inventory& inv) : messageLog(m), partyInventory(inv) {
 	name = n;
 	texture.loadFromFile("assets/" + textureName + ".png");
+	portraitTexture.loadFromFile("assets/" + portraitTextureName + ".png");
 	sprite.setTexture(texture);
+	portraitSprite.setTexture(portraitTexture);
 	moveSpeed = 120.f;
 	maxHp = 42;
 	hp = maxHp;

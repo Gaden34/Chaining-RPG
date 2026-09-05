@@ -176,9 +176,11 @@ void FieldMenu::handleInput(InputHandler& inputHandler, size_t partySize) {
 		if (currentState != FieldMenuState::Main && currentState != FieldMenuState::ItemScreen) {
 			if (inputHandler.wasPressed(InputAction::MenuRight)) {
 				selectedMemberIndex = (selectedMemberIndex + 1) % partySize;
+				statusScreen.setNeedsRebuild(true);
 			}
 			else if (inputHandler.wasPressed(InputAction::MenuLeft)) {
 				selectedMemberIndex = (selectedMemberIndex - 1 + partySize) % partySize;
+				statusScreen.setNeedsRebuild(true);
 			}
 		}
 	}

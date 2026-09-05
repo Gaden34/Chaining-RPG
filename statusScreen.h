@@ -12,10 +12,11 @@ private:
     sf::Texture texture;
 	std::vector<sf::Text> statTexts;
     float statSpacingY = 20.f;
-    bool statsOutdated = false;
+    bool needsRebuild = true;
 
 public:
     StatusScreen();
     void draw(sf::RenderTarget& target, Player& player);
     std::vector<sf::Text>& buildStatTexts(Player& player);
+	void setNeedsRebuild(bool rebuild) { needsRebuild = rebuild; }
 };

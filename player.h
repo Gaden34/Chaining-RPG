@@ -37,7 +37,7 @@ private:
 	sf::FloatRect previousCollisionBox;
 
 public:
-	Player(MessageLog& m, std::string n, std::string textureName, Inventory& inv);
+	Player(MessageLog& m, std::string n, std::string textureName, std::string portraitTextureName, Inventory& inv);
 	Player(const Player&) = delete;
 	Player& operator=(const Player&) = delete;
 	Player(Player&&) = default;
