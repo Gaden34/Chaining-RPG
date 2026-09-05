@@ -33,7 +33,7 @@ void Game::draw() {
 		break;
 
 	case GameState::Exploring:
-		exploration.draw(gameTexture, party[0]);
+		exploration.draw(gameTexture, party);
 		messageLog.draw(gameTexture);
 		break;
 
@@ -152,7 +152,7 @@ void Game::updateCharacterCreation(float dt) {
 }
 
 void Game::updateExploration(float dt) {
-	exploration.update(dt, inputHandler, party[0]);
+	exploration.update(dt, inputHandler, party);
 	if (exploration.checkForEncounter(dt, party[0])) {
 		startCombat();
 	}

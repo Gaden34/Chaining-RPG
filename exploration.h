@@ -45,10 +45,11 @@ public:
 	FieldMenu();
 	void draw(sf::RenderTarget& target, std::vector<Player>& party);
 	void handleInput(InputHandler& inputHandler, size_t partySize);
-	void onSelect();
+	void selectState();
 	FieldMenu::Option getSelectedOption() const { return static_cast<FieldMenu::Option>(getSelectedIndex()); }
 	FieldMenuState getCurrentState() const { return currentState; }
 	void setCurrentState(FieldMenuState state) { currentState = state; }
+
 };
 
 class Exploration {

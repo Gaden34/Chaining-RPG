@@ -17,9 +17,9 @@ void Exploration::start(Player& player) {
 	player.getWalkAnimation().setFrame(1);
 }
 
-void Exploration::update(float dt, InputHandler& inputHandler, Player& player) {
-	player.update(dt, inputHandler, map);
-	setCamera(player);
+void Exploration::update(float dt, InputHandler& inputHandler, std::vector<Player>& party) {
+	party[0].update(dt, inputHandler, map);
+	setCamera(party[0]);
 
 	if (inItemMenu) {
 		if (inputHandler.wasPressed(InputAction::MenuUp))
@@ -36,7 +36,7 @@ void Exploration::update(float dt, InputHandler& inputHandler, Player& player) {
 	openFieldMenu(inputHandler);
 
 	if (inFieldMenu) {
-		fieldMenu.handleInput(inputHandler);
+		fieldMenu.handleInput(inputHandler, party.size());
 	}
 }
 
@@ -47,7 +47,7 @@ void Exploration::draw(sf::RenderTarget& target, std::vector<Player>& party) {
 	target.setView(target.getDefaultView());
 
 	if (inFieldMenu) {
-			fieldMenu.draw(target, player);
+			fieldMenu.draw(target, party);
 	}
 }
 
@@ -96,7 +96,7 @@ void Exploration::openFieldMenu(InputHandler& inputHandler) {
 	}
 }
 
-void FieldMenu::onSelect() {
+void FieldMenu::selectState() {
 	FieldMenu::Option selected = getSelectedOption();
 	switch (selected) {
 		case FieldMenu::Option::Status:
@@ -129,7 +129,7 @@ FieldMenu::FieldMenu() {
 	}
 }
 
-void FieldMenu::draw(sf::RenderTarget& target, Player& player) {
+void FieldMenu::draw(sf::RenderTarget& target, std::vector<Player>& party) {
 
 	switch (currentState) {
 	case FieldMenuState::Main:
@@ -145,7 +145,7 @@ void FieldMenu::draw(sf::RenderTarget& target, Player& player) {
 		break;
 	
 	case FieldMenuState::StatusScreen:
-		statusScreen.draw(target, player);
+		statusScreen.draw(target, party[selectedMemberIndex]);
 		break;
 	case FieldMenuState::DisciplineScreen:
 		// Draw the discipline screen
@@ -159,4 +159,27 @@ void FieldMenu::draw(sf::RenderTarget& target, Player& player) {
 	}
 
 }
+
+void FieldMenu::handleInput(InputHandler& inputHandler, size_t partySize) {
+	if (currentState == FieldMenuState::Main) {
+		if (inputHandler.wasPressed(InputAction::MenuUp)) {
+			moveUp();
+		}
+		else if (inputHandler.wasPressed(InputAction::MenuDown)) {
+			moveDown();
+		}
+		else if (inputHandler.wasPressed(InputAction::Confirm)) {
+			selectState();
+		}
+	}
+
+		if (currentState != FieldMenuState::Main && currentState != FieldMenuState::ItemScreen) {
+			if (inputHandler.wasPressed(InputAction::MenuRight)) {
+				selectedMemberIndex = (selectedMemberIndex + 1) % partySize;
+			}
+			else if (inputHandler.wasPressed(InputAction::MenuLeft)) {
+				selectedMemberIndex = (selectedMemberIndex - 1 + partySize) % partySize;
+			}
+		}
+	}
 
