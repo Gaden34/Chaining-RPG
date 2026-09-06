@@ -2,6 +2,7 @@
 
 Character::Character(Character&& other) 
 	: texture(std::move(other.texture)),
+	portraitTexture(std::move(other.portraitTexture)),
 	name(std::move(other.name)),
 	hp(other.hp),
 	mp(other.mp),
@@ -9,17 +10,22 @@ Character::Character(Character&& other)
 	maxMp(other.maxMp),
 	attack(other.attack),
 	magAttack(other.magAttack),
+	defense(other.defense),
+	magDefense(other.magDefense),
 	moveSpeed(other.moveSpeed),
-	alive(other.alive)//,
-	//inventory(std::move(other.inventory))
+	alive(other.alive),
+	statsOutdated(other.statsOutdated)
 {
 	sprite.setTexture(texture);
 	sprite.setPosition(other.sprite.getPosition());
+	portraitSprite.setTexture(portraitTexture);
+	portraitSprite.setPosition(other.portraitSprite.getPosition());
 }
 
 Character& Character::operator=(Character&& other) {
 	if (this != &other) {
 		texture = std::move(other.texture);
+		portraitTexture = std::move(other.portraitTexture);
 		name = std::move(other.name);
 		hp = other.hp;
 		mp = other.mp;
@@ -27,11 +33,16 @@ Character& Character::operator=(Character&& other) {
 		maxMp = other.maxMp;
 		attack = other.attack;
 		magAttack = other.magAttack;
+		defense = other.defense;
+		magDefense = other.magDefense;
 		moveSpeed = other.moveSpeed;
 		alive = other.alive;
+		statsOutdated = other.statsOutdated;
 		//inventory = std::move(other.inventory);
 		sprite.setTexture(texture);
 		sprite.setPosition(other.sprite.getPosition());
+		portraitSprite.setTexture(portraitTexture);
+		portraitSprite.setPosition(other.portraitSprite.getPosition());
 	}
 	return *this;
 }

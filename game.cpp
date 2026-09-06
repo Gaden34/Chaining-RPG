@@ -11,8 +11,8 @@ Game::Game() : combat(party, messageLog, rng), combatTestSetup(party, messageLog
 	gameTexture.create(640, 360);
 	SkillDatabase::loadSkills("skills.json");
 	ItemDatabase::loadItems("items.json");
-	party.emplace_back(messageLog, "Gaden", "spiky", partyInventory);
-	party.emplace_back(messageLog, "Kari", "bluey", partyInventory);
+	party.emplace_back(messageLog, "Gaden", "spiky", "spiky", partyInventory);
+	party.emplace_back(messageLog, "Kari", "bluey", "bluey", partyInventory);
 	party[1].setDiscipline(DisciplineID::Combatant);
 	window.setFramerateLimit(60);
 

@@ -54,7 +54,7 @@ public:
 	int getMagDefense() const { return magDefense; }
 	float getMoveSpeed() const { return moveSpeed; }
 	const sf::Sprite& getSprite() const { return sprite; }
-	const sf::Sprite& getPortraitSprite() const { return portraitSprite; }
+	sf::Sprite& getPortraitSprite() { return portraitSprite; }
 	void takeDamage(int amount);
 	bool isAlive() const { return alive; }
 	bool getStatsOutdated() const { return statsOutdated; }

@@ -10,15 +10,19 @@ StatusScreen::StatusScreen() {
 
 void StatusScreen::draw(sf::RenderTarget& target, Player& player) {
 	target.draw(sprite);
-	for (const auto& renderText : buildStatTexts(player)) {
+	target.draw(portraitSprite);
+	
+	for (const auto& renderText : buildPlayerProfile(player)) {
 		target.draw(renderText); 
 	}
 }
 
-std::vector<sf::Text>& StatusScreen::buildStatTexts(Player& player) {
+std::vector<sf::Text>& StatusScreen::buildPlayerProfile(Player& player) {
 	if (!player.getStatsOutdated() && !statTexts.empty() && !needsRebuild) {
 		return statTexts;
 	}
+
+	setPortraitSprite(player);
 
 	statTexts.clear();
 	sf::Text nameText = TextUtils::createText(player.getName(), font, 14, sf::Vector2f(90.f, 22.f), sf::Color::Black);
@@ -43,4 +47,11 @@ std::vector<sf::Text>& StatusScreen::buildStatTexts(Player& player) {
 	needsRebuild = false;
 	player.setStatsOutdated(false);
 	return statTexts;
+}
+
+void StatusScreen::setPortraitSprite(Player& player) {
+	portraitSprite = player.getPortraitSprite();
+	sf::FloatRect bounds = portraitSprite.getGlobalBounds();
+	portraitSprite.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+	portraitSprite.setPosition(52.f, 52.f);
 }
