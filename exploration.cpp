@@ -153,8 +153,9 @@ void FieldMenu::draw(sf::RenderTarget& target, std::vector<Player>& party) {
 	case FieldMenuState::EquipmentScreen:
 		// Draw the equipment screen
 		break;
-	//case FieldMenuState::ItemScreen:
-		//itemMenu.draw(target);
+	case FieldMenuState::ItemScreen:
+		itemScreen.populate(party[selectedMemberIndex].getInventory());
+		itemScreen.draw(target);
 		break;
 	}
 

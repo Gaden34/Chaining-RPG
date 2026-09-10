@@ -21,7 +21,7 @@ ItemMenu::ItemMenu() {
 	}
 }
 
-void ItemMenu::populate(const Inventory& inventory) {
+void ItemMenu::populate(const Inventory& inventory, float x, float y) {
 	optionTexts.clear();
 	selectedIndex = 0;
 
@@ -29,7 +29,7 @@ void ItemMenu::populate(const Inventory& inventory) {
 		const ItemData* data = ItemDatabase::getItemByID(slot.itemID);
 		std::string label = data ? data->name + " x" + std::to_string(slot.quantity) : "Unknown";
 		sf::Text text(label, font, 12);
-		text.setPosition(menuX, menuY + optionTexts.size() * optionSpacing);
+		text.setPosition(x, y + optionTexts.size() * optionSpacing);
 		text.setFillColor(sf::Color::Black);
 		optionTexts.push_back(text);
 	}

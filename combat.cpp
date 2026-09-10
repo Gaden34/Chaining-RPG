@@ -230,7 +230,7 @@ void Combat::handlePlayerTurn(const InputHandler& input) {
 				inSkillMenu = true;
 				break;
 			case CombatMenu::MenuOption::Item:
-				itemMenu.populate(party[activePlayerIndex].getInventory());
+				itemMenu.populate(party[activePlayerIndex].getInventory(), 352.f, 300.f);
 				itemMenu.setLastEnterPressed(true);
 				inItemMenu = true;
 				break;
@@ -354,11 +354,10 @@ void Combat::performSkill(QueuedAction& action) {
 			pendingSkillActions.push_back({ action, effectID });
 		}
 	}
-	else {
+
 		calculateSkillDamage(skill, player, target);
 		handleSteal(skill, player, target);
 		handleDeath(*target);
-	}
 }
 
 void Combat::performItem(QueuedAction& action) {

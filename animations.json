@@ -28,5 +28,20 @@
 					"loop": true
 				}
 		}
+	},
+	"lightning bolt": {
+		"texture": "assets/LightningBolt-Sheet.png",
+		"animations": {
+			"cast": {
+				"totalFrames": 3,
+				"columns": 4,
+				"frameWidth": 12,
+				"frameHeight": 360,
+				"frameDuration": 0.1,
+				"startX": 0,
+				"startY": 0,
+				"loop": false
+			}
+		}
 	}
 }

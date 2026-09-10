@@ -24,7 +24,8 @@
           "base_damage": 60,
           "hits": [ 1 ],
           "chain_window": 0.2,
-          "chain_damage_pct": 25.0
+          "chain_damage_pct": 25.0,
+          "animation": "lightning bolt"
         }
       ],
       "5": [

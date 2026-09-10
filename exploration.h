@@ -38,6 +38,7 @@ private:
 	const float optionsSpacing = 12.f;
 	FieldMenuState currentState = FieldMenuState::Main;
 	StatusScreen statusScreen;
+	ItemMenu itemScreen;
 	size_t selectedMemberIndex = 0;
 
 
