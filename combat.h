@@ -19,6 +19,8 @@ class Inventory;
 
 enum class CombatState {
 	PlayerTurn,
+	SkillMenu,
+	ItemMenu,
 	SelectingTarget,
 	ChoosingQueuedActions,
 	PlayerAnimation,
@@ -140,8 +142,6 @@ private:
 	SkillMenu skillMenu;
 	ItemMenu itemMenu;
 	QueuedActionMenu queuedActionMenu;
-	bool inSkillMenu = false;
-	bool inItemMenu = false;
 	ChainSystem chain;
 	MessageLog& messageLog;
 	QueuedAction currentAction;
@@ -169,6 +169,8 @@ public:
 
 private:
 	void handlePlayerTurn(const InputHandler& input);
+	void handleSkillMenu(const InputHandler& input);
+	void handleItemMenu(const InputHandler& input);
 	void buildValidTargets();
 	void beginTargeting();
 	void targetCharacter(const InputHandler& input);

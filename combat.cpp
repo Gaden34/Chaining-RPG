@@ -25,6 +25,14 @@ void Combat::update(float dt, const InputHandler& input) {
 		handlePlayerTurn(input);
 		break;
 
+	case CombatState::SkillMenu:
+		handleSkillMenu(input);
+		break;
+
+	case CombatState::ItemMenu:
+		handleItemMenu(input);
+		break;
+
 	case CombatState::SelectingTarget:
 		targetCharacter(input);
 		break;
@@ -68,21 +76,28 @@ void Combat::draw(sf::RenderTarget& target) {
 
 	messageLog.draw(target);
 
-switch (currentState) {	
-case CombatState::PlayerTurn:
 	if (!party.empty()) {
 		sf::Text nameLabel(party[activePlayerIndex].getName(), font, 12);
 		nameLabel.setPosition(320.f, 288.f);
 		nameLabel.setFillColor(sf::Color::White);
-		target.draw(nameLabel);
 	}
-		if (inItemMenu)
-			itemMenu.draw(target);
-		else if (inSkillMenu)
-			skillMenu.draw(target);
-		else
-			menu.draw(target);
-		break;
+
+switch (currentState) {	
+case CombatState::PlayerTurn:
+	
+	target.draw(nameLabel);
+	menu.draw(target);
+	break;
+
+case CombatState::SkillMenu:
+	target.draw(nameLabel);
+	skillMenu.draw(target);
+	break;
+
+case CombatState::ItemMenu:
+	target.draw(nameLabel);	
+	itemMenu.draw(target);
+	break;
 
 case CombatState::SelectingTarget:
 	drawTargetPointer(target);
@@ -107,8 +122,6 @@ void Combat::start() {
 	currentAction = {};
 	skillEffects.clear();
 	menu.reset();
-	inSkillMenu = false;
-	inItemMenu = false;
 	itemMenu.reset();
 	enemies.clear();
 
@@ -143,20 +156,32 @@ CombatState Combat::getState() {
 void Combat::handlePlayerTurn(const InputHandler& input) {
 	if (currentState != CombatState::PlayerTurn) return;
 
-	if (!inSkillMenu && !inItemMenu) {
-		if (input.wasPressed(InputAction::MenuLeft)) {
+	if (input.wasPressed(InputAction::MenuLeft)) {
 			activePlayerIndex = (activePlayerIndex - 1 + (int)party.size()) % (int)party.size();
 			menu.reset();
 		}
-		if (input.wasPressed(InputAction::MenuRight)) {
+	if (input.wasPressed(InputAction::MenuRight)) {
 			activePlayerIndex = (activePlayerIndex + 1) % (int)party.size();
 			menu.reset();
 		}
+
+	if (input.WasPressed(InputAction::Cancel)) {
+		CombatState returnState = CombatState::PlayerTurn;
+
+		if (currentAction.type == ActionType::Skill) {
+			returnState = CombatState::SkillMenu;
+		} else if (currentAction.type == ActionType::Item) {
+			returnState = CombatState::ItemMenu;
+		}
 	}
+
+	currentAction = {};
+	currentState = returnState;
+	
 
 	if (playerActed[activePlayerIndex]) return;
 
-	if (inItemMenu) {
+	/*if (inItemMenu) {
 		if (input.wasPressed(InputAction::MenuUp))
 			itemMenu.moveUp();
 		if (input.wasPressed(InputAction::MenuDown))
@@ -208,7 +233,7 @@ void Combat::handlePlayerTurn(const InputHandler& input) {
 			inSkillMenu = false;
 			skillMenu.reset();
 		}
-	}
+	}*/
 	else {
 		if (input.wasPressed(InputAction::MenuUp))
 			menu.moveUp();
@@ -227,12 +252,12 @@ void Combat::handlePlayerTurn(const InputHandler& input) {
 			case CombatMenu::MenuOption::Skill:
 				skillMenu.populate(party[activePlayerIndex].getSkills());
 				skillMenu.setLastEnterPressed(true);
-				inSkillMenu = true;
+				currentState = CombatState::SkillMenu;
 				break;
 			case CombatMenu::MenuOption::Item:
 				itemMenu.populate(party[activePlayerIndex].getInventory(), 352.f, 300.f);
 				itemMenu.setLastEnterPressed(true);
-				inItemMenu = true;
+				currentState = CombatState::ItemMenu;
 				break;
 			case CombatMenu::MenuOption::Defend:
 				break;
@@ -253,6 +278,56 @@ void Combat::buildValidTargets() {
 	for (auto& enemy : enemies) {
 		if (enemy.isAlive())
 			validTargets.push_back(&enemy);
+	}
+}
+
+void Combat::handleSkillMenu(const InputHandler& input) {
+	if (input.wasPressed(InputAction::MenuUp))
+		skillMenu.moveUp();
+	if (input.wasPressed(InputAction::MenuDown))
+		skillMenu.moveDown();
+	if (input.wasPressed(InputAction::Confirm)) {
+		int index = skillMenu.getSelectedIndex();
+		if (index == -1) {
+			currentState = CombatState::PlayerTurn;
+			skillMenu.reset();
+		}
+		else {
+			currentAction = {};
+			currentAction.type = ActionType::Skill;
+			currentAction.actor = &party[activePlayerIndex];
+			currentAction.skill = party[activePlayerIndex].getSkillByIndex(index);
+			beginTargeting();
+		}
+	}
+	if (input.wasPressed(InputAction::Cancel)) {
+		currentState = CombatState::PlayerTurn;
+		skillMenu.reset();
+	}
+}
+
+void Combat::handleItemMenu(const InputHandler& input) {
+	if (input.wasPressed(InputAction::MenuUp))
+		itemMenu.moveUp();
+	if (input.wasPressed(InputAction::MenuDown))
+		itemMenu.moveDown();
+	if (input.wasPressed(InputAction::Confirm)) {
+		int index = itemMenu.getSelectedIndex();
+		if (index == -1) {
+			currentState = CombatState::PlayerTurn;
+			itemMenu.reset();
+		}
+		else {
+			currentAction = {};
+			currentAction.type = ActionType::Item;
+			currentAction.actor = &party[activePlayerIndex];
+			currentAction.item = party[activePlayerIndex].getInventory().getItemByIndex(index);
+			beginTargeting();
+		}
+	}
+	if (input.wasPressed(InputAction::Cancel)) {
+		currentState = CombatState::PlayerTurn;
+		itemMenu.reset();
 	}
 }
 
