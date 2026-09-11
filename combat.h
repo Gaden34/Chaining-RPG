@@ -175,6 +175,7 @@ private:
 	void beginTargeting();
 	void targetCharacter(const InputHandler& input);
 	void drawTargetPointer(sf::RenderTarget& target);
+	void drawActivePlayerName(sf::RenderTarget& target);
 	int randomRange(int min, int max);
 	void performAttack(QueuedAction& action);
 	void performSkill(QueuedAction& action);

@@ -76,26 +76,20 @@ void Combat::draw(sf::RenderTarget& target) {
 
 	messageLog.draw(target);
 
-	if (!party.empty()) {
-		sf::Text nameLabel(party[activePlayerIndex].getName(), font, 12);
-		nameLabel.setPosition(320.f, 288.f);
-		nameLabel.setFillColor(sf::Color::White);
-	}
-
 switch (currentState) {	
 case CombatState::PlayerTurn:
 	
-	target.draw(nameLabel);
+	drawActivePlayerName(target);
 	menu.draw(target);
 	break;
 
 case CombatState::SkillMenu:
-	target.draw(nameLabel);
+	drawActivePlayerName(target);
 	skillMenu.draw(target);
 	break;
 
 case CombatState::ItemMenu:
-	target.draw(nameLabel);	
+	drawActivePlayerName(target);	
 	itemMenu.draw(target);
 	break;
 
@@ -165,7 +159,7 @@ void Combat::handlePlayerTurn(const InputHandler& input) {
 			menu.reset();
 		}
 
-	if (input.WasPressed(InputAction::Cancel)) {
+	if (input.wasPressed(InputAction::Cancel)) {
 		CombatState returnState = CombatState::PlayerTurn;
 
 		if (currentAction.type == ActionType::Skill) {
@@ -173,10 +167,9 @@ void Combat::handlePlayerTurn(const InputHandler& input) {
 		} else if (currentAction.type == ActionType::Item) {
 			returnState = CombatState::ItemMenu;
 		}
+		currentAction = {};
+		currentState = returnState;
 	}
-
-	currentAction = {};
-	currentState = returnState;
 	
 
 	if (playerActed[activePlayerIndex]) return;
@@ -312,17 +305,22 @@ void Combat::handleItemMenu(const InputHandler& input) {
 	if (input.wasPressed(InputAction::MenuDown))
 		itemMenu.moveDown();
 	if (input.wasPressed(InputAction::Confirm)) {
+		const auto& slots = party[activePlayerIndex].getInventory().getItems();
 		int index = itemMenu.getSelectedIndex();
-		if (index == -1) {
-			currentState = CombatState::PlayerTurn;
-			itemMenu.reset();
-		}
-		else {
-			currentAction = {};
-			currentAction.type = ActionType::Item;
-			currentAction.actor = &party[activePlayerIndex];
-			currentAction.item = party[activePlayerIndex].getInventory().getItemByIndex(index);
-			beginTargeting();
+		if (!slots.empty() && index >= 0 && index < (int)slots.size()) {
+			const ItemData* item = ItemDatabase::getItemByID(slots[index].itemID);
+			if (item) {
+				if (!canQueueConsumableItem(*item, party[activePlayerIndex].getInventory())) {
+					messageLog.addMessage("No more " + item->name + " left to queue.", sf::Color::Red);
+				}
+				else {
+					currentAction = {};
+					currentAction.type = ActionType::Item;
+					currentAction.actor = &party[activePlayerIndex];
+					currentAction.item = const_cast<ItemData*>(item);
+					beginTargeting();
+				}
+			}
 		}
 	}
 	if (input.wasPressed(InputAction::Cancel)) {
@@ -370,7 +368,7 @@ void Combat::targetCharacter(const InputHandler& input) {
 		menu.setLastEnterPressed(true);
 	}
 	if (input.wasPressed(InputAction::Cancel)) {
-		if (inItemMenu) {
+		if (currentState == CombatState::ItemMenu) {
 			releaseConsumableItemReservation(*currentAction.item);
 		} else {
 			menu.setLastEscapePressed(true);
@@ -387,6 +385,13 @@ void Combat::drawTargetPointer(sf::RenderTarget& target) {
 	float y = bounds.top - pointerSprite.getGlobalBounds().height - 4.f;
 	pointerSprite.setPosition(x, y);
 	target.draw(pointerSprite);
+}
+
+void Combat::drawActivePlayerName(sf::RenderTarget& target) {
+	sf::Text nameLabel(party[activePlayerIndex].getName(), font, 12);
+	nameLabel.setPosition(320.f, 288.f);
+	nameLabel.setFillColor(sf::Color::White);
+	target.draw(nameLabel);
 }
 
 int Combat::randomRange(int min, int max) {
@@ -624,8 +629,6 @@ void Combat::advanceActivePlayer() {
 		if (!playerActed[next]) {
 			activePlayerIndex = next;
 			menu.reset();
-			inSkillMenu = false;
-			inItemMenu = false;
 			itemMenu.reset();
 			currentState = CombatState::PlayerTurn;
 			return;
@@ -635,8 +638,6 @@ void Combat::advanceActivePlayer() {
 	playerActed.assign(party.size(), false);
 	activePlayerIndex = 0;
 	menu.reset();
-	inSkillMenu = false;
-	inItemMenu = false;
 	itemMenu.reset();
 	queuedActionMenu.populate(actionQueue);
 	currentState = CombatState::ChoosingQueuedActions;
