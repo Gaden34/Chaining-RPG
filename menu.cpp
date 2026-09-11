@@ -15,6 +15,20 @@ void Menu::handleInput(InputHandler& inputHandler) {
 	}
 }
 
+void Menu::updateScrollOffset() {
+	int total = static_cast<int>(optionTexts.size());
+	if (total <= maxVisibleOptions) {
+		scrollOffset = 0;
+		return;
+	}
+
+	if (selectedIndex >= scrollOffset + maxVisibleOptions) {
+		scrollOffset = selectedIndex - maxVisibleOptions + 1;
+	} else if (selectedIndex < scrollOffset) {
+		scrollOffset = selectedIndex;
+	}
+}
+
 ItemMenu::ItemMenu() {
 	if (!font.loadFromFile("assets/Roboto_Condensed-Black.ttf")) {
 		std::cerr << "Failed to load font!" << std::endl;
@@ -36,8 +50,15 @@ void ItemMenu::populate(const Inventory& inventory, float x, float y) {
 }
 
 void ItemMenu::draw(sf::RenderTarget& target) {
-	for (int i = 0; i < (int)optionTexts.size(); i++) {
+	if (optionTexts.empty()) return;
+
+	int total = static_cast<int>(optionTexts.size());
+	int endIndex = std::min(scrollOffset + maxVisibleOptions, total); 
+
+	for (int i = scrollOffset; i < endIndex; i++) {
+		int visibleSlot = i - scrollOffset;
 		optionTexts[i].setFillColor(i == selectedIndex ? sf::Color::White : sf::Color::Black);
+		optionTexts[i].setPosition(optionTexts[i].getPosition().x, optionTexts[i].getPosition().y = visibleSlot * optionSpacing + optionTexts[i].getPosition().y);
 		target.draw(optionTexts[i]);
 	}
 }

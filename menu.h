@@ -21,6 +21,8 @@ protected:
 	std::vector<sf::Text> optionTexts;
 	int selectedIndex = 0;
 
+	int scrollOffset = 0;
+	int maxVisibleOptions = 4;
 
 public:
 	Menu() {
@@ -31,6 +33,7 @@ public:
 	virtual ~Menu() = default;
 	void reset() {
 		selectedIndex = 0;
+		scrollOffset = 0;
 		lastUpPressed = false;
 		lastDownPressed = false;
 		lastRightPressed = false;
@@ -39,6 +42,7 @@ public:
 		lastEscapePressed = false;
 }
 	virtual void handleInput(InputHandler& inputHandler);
+	void updateScrollOffset();
 	virtual void onSelect() {}
     void moveUp() { if (optionTexts.empty()) return;
     selectedIndex = (selectedIndex - 1 + static_cast<int>(optionTexts.size())) % static_cast<int>(optionTexts.size()); }
@@ -57,6 +61,8 @@ public:
     void setLastLeftPressed(bool pressed) { lastLeftPressed = pressed; }
     void setLastEnterPressed(bool pressed) { lastEnterPressed = pressed; }
     void setLastEscapePressed(bool pressed) { lastEscapePressed = pressed; }
+	int getScrollOffset() const { return scrollOffset; }
+	int getMaxVisibleOptions() const { return maxVisibleOptions; }
 
 };
 
