@@ -31,23 +31,12 @@ public:
 		}
 	}
 	virtual ~Menu() = default;
-	void reset() {
-		selectedIndex = 0;
-		scrollOffset = 0;
-		lastUpPressed = false;
-		lastDownPressed = false;
-		lastRightPressed = false;
-		lastLeftPressed = false;
-		lastEnterPressed = true;
-		lastEscapePressed = false;
-}
+	void reset();
+	void moveUp();
+	void moveDown();
 	virtual void handleInput(InputHandler& inputHandler);
 	void updateScrollOffset();
 	virtual void onSelect() {}
-    void moveUp() { if (optionTexts.empty()) return;
-    selectedIndex = (selectedIndex - 1 + static_cast<int>(optionTexts.size())) % static_cast<int>(optionTexts.size()); }
-	void moveDown() { if (optionTexts.empty()) return;
-    selectedIndex = (selectedIndex + 1) % static_cast<int>(optionTexts.size()); }
 	int getSelectedIndex() const { return selectedIndex; }
     bool getLastUpPressed() const { return lastUpPressed; }
     bool getLastDownPressed() const { return lastDownPressed; }
@@ -69,12 +58,13 @@ public:
 // Shared inventory list menu, reused by Combat and Exploration.
 class ItemMenu : public Menu {
 private:
-	//const float menuX = 352.f;
-	//const float menuY = 300.f;
+	float menuX = 352.f;
+	float menuY = 300.f;
 	const float optionSpacing = 12.f;
 
 public:
 	ItemMenu();
 	void populate(const Inventory& inventory, float x, float y);
 	void draw(sf::RenderTarget& target);
+	void setPosition(float x, float y) { menuX = x; menuY = y; }
 };
