@@ -84,9 +84,6 @@ public:
 
 private:
 	std::vector<MenuOption> availableOptions;
-	const float menuX = 320.f;
-	const float menuY = 300.f;
-	const float optionSpacing = 12.f;
 
 public:
 	CombatMenu();
@@ -98,9 +95,6 @@ public:
 class SkillMenu : public Menu {
 private:
 	int skillCount = 0;
-	const float menuX = 352.f;
-	const float menuY = 300.f;
-	const float optionSpacing = 12.f;
 
 public:
 	SkillMenu();
@@ -111,9 +105,7 @@ public:
 
 class QueuedActionMenu : public Menu {
 private:
-	const float menuX = 320.f;
-	const float menuY = 300.f;
-	const float optionSpacing = 12.f;
+
 
 public:
 	QueuedActionMenu();

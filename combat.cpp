@@ -865,9 +865,9 @@ void Combat::checkCombatEnd() {
 }
 
 CombatMenu::CombatMenu() {
-	if (!font.loadFromFile("assets/Roboto_Condensed-Black.ttf")) {
-		std::cerr << "Failed to load font!" << std::endl;
-	}
+	// Use base Menu font and set default position/spacing for this menu
+	setPosition(320.f, 300.f);
+	setOptionSpacing(12.f);
 
 	std::vector<std::string> options = { "Attack", "Skill", "Item", "Defend" };
 
@@ -897,9 +897,9 @@ CombatMenu::MenuOption CombatMenu::getSelectedOption() {
 
 
 SkillMenu::SkillMenu() {
-	if (!font.loadFromFile("assets/Roboto_Condensed-Black.ttf")) {
-		std::cerr << "Failed to load font!" << std::endl;
-	}
+	// Use base Menu font and set default position/spacing for this menu
+	setPosition(352.f, 300.f);
+	setOptionSpacing(12.f);
 }
 
 void SkillMenu::populate(const std::vector<std::unique_ptr<Skill>>& skills) {
@@ -940,9 +940,9 @@ int SkillMenu::getSelectedIndex() const {
 }
 
 QueuedActionMenu::QueuedActionMenu() {
-	if (!font.loadFromFile("assets/Roboto_Condensed-Black.ttf")) {
-		std::cerr << "Failed to load font!" << std::endl;
-	}
+	// Use base Menu font and set default position/spacing for this menu
+	setPosition(320.f, 300.f);
+	setOptionSpacing(12.f);
 }
 
 void QueuedActionMenu::populate(const std::vector<QueuedAction>& actions) {

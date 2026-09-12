@@ -65,9 +65,6 @@ void Menu::updateScrollOffset() {
 }
 
 ItemMenu::ItemMenu() {
-	if (!font.loadFromFile("assets/Roboto_Condensed-Black.ttf")) {
-		std::cerr << "Failed to load font!" << std::endl;
-	}
 }
 
 void ItemMenu::populate(const Inventory& inventory, float x, float y) {

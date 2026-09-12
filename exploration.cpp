@@ -109,7 +109,7 @@ void FieldMenu::selectState() {
 			currentState = FieldMenuState::EquipmentScreen;
 			break;
 		case FieldMenu::Option::Inventory:
-			currentState = FieldMenuState::ItemScreen;
+			currentState = FieldMenuState::ItemMenu;
 			break;
 		case FieldMenu::Option::Exit:
 			currentState = FieldMenuState::Main;
@@ -118,12 +118,15 @@ void FieldMenu::selectState() {
 }
 
 FieldMenu::FieldMenu() {
+	// Use base Menu defaults for font; set specific position/spacing for this menu
+	setPosition(200.f, 100.f);
+	setOptionSpacing(12.f);
 	std::vector<std::string> options = { "Status", "Discipline", "Equipment", "Inventory", "Exit" };
 
 	for (size_t i = 0; i < options.size(); ++i) {
 		const auto& option = options[i];
 		sf::Text text(option, font, 12);
-		text.setPosition(menuX, menuY + (i * optionsSpacing));
+		text.setPosition(menuX, menuY + (i * optionSpacing));
 		text.setFillColor(sf::Color::Black);
 		optionTexts.push_back(text);
 	}
@@ -153,9 +156,9 @@ void FieldMenu::draw(sf::RenderTarget& target, std::vector<Player>& party) {
 	case FieldMenuState::EquipmentScreen:
 		// Draw the equipment screen
 		break;
-	case FieldMenuState::ItemScreen:
-		itemScreen.populate(party[selectedMemberIndex].getInventory(), 300.f, 100.f);
-		itemScreen.draw(target);
+	case FieldMenuState::ItemMenu:
+		itemMenu.populate(party[selectedMemberIndex].getInventory(), 300.f, 100.f);
+		itemMenu.draw(target);
 		break;
 	}
 
@@ -174,7 +177,13 @@ void FieldMenu::handleInput(InputHandler& inputHandler, size_t partySize) {
 		}
 	}
 
-		if (currentState != FieldMenuState::Main && currentState != FieldMenuState::ItemScreen) {
+		switch(currentState) {
+		case FieldMenuState::Main:
+			break;
+		case FieldMenuState::ItemMenu:
+			itemMenu.handleInput(inputHandler);
+			break;
+		default:
 			if (inputHandler.wasPressed(InputAction::MenuRight)) {
 				selectedMemberIndex = (selectedMemberIndex + 1) % partySize;
 				statusScreen.setNeedsRebuild(true);

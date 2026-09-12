@@ -23,6 +23,10 @@ protected:
 
 	int scrollOffset = 0;
 	int maxVisibleOptions = 4;
+	// Common position and spacing for menus. Subclasses can override via setPosition / setOptionSpacing
+	float menuX = 320.f;
+	float menuY = 300.f;
+	float optionSpacing = 12.f;
 
 public:
 	Menu() {
@@ -53,18 +57,15 @@ public:
 	int getScrollOffset() const { return scrollOffset; }
 	int getMaxVisibleOptions() const { return maxVisibleOptions; }
 
+	void setPosition(float x, float y) { menuX = x; menuY = y; }
+	void setOptionSpacing(float spacing) { optionSpacing = spacing; }
+
 };
 
 // Shared inventory list menu, reused by Combat and Exploration.
 class ItemMenu : public Menu {
-private:
-	float menuX = 352.f;
-	float menuY = 300.f;
-	const float optionSpacing = 12.f;
-
 public:
 	ItemMenu();
 	void populate(const Inventory& inventory, float x, float y);
 	void draw(sf::RenderTarget& target);
-	void setPosition(float x, float y) { menuX = x; menuY = y; }
 };
