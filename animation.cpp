@@ -151,7 +151,32 @@ bool AnimationLoader::loadAssetFromFile(const std::string& filePath, const std::
         }
 
         const bool loop = clipNode.value("loop", true);
-        outAsset.clips[clipName] = buildClipFromGrid(spec, loop);
+        AnimationClip clip = buildClipFromGrid(spec, loop);
+
+        // parse optional clip-level properties
+        clip.instant = clipNode.value("instant", false);
+        clip.displayDuration = clipNode.value("displayDuration", 0.0f);
+
+        // origin can be specified as a string like "bottom" or numeric originX/originY
+        if (clipNode.contains("origin") && clipNode["origin"].is_string()) {
+            std::string originStr = clipNode.value("origin", "");
+            if (originStr == "bottom") {
+                // bottom-center
+                clip.originX = spec.frameWidth / 2.0f;
+                clip.originY = spec.frameHeight;
+            }
+            else if (originStr == "center") {
+                clip.originX = spec.frameWidth / 2.0f;
+                clip.originY = spec.frameHeight / 2.0f;
+            }
+        }
+
+        if (clipNode.contains("originX") && clipNode.contains("originY")) {
+            clip.originX = clipNode.value("originX", clip.originX);
+            clip.originY = clipNode.value("originY", clip.originY);
+        }
+
+        outAsset.clips[clipName] = std::move(clip);
     }
 
     return !outAsset.clips.empty();

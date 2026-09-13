@@ -23,6 +23,7 @@ enum class FieldMenuState {
 	StatusScreen,
 	EquipmentScreen,
 	ItemMenu,
+	None
 };
 
 class FieldMenu : public Menu {

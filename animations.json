@@ -30,17 +30,21 @@
 		}
 	},
 	"lightning bolt": {
-		"texture": "assets/LightningBolt-Sheet.png",
+		"texture": "assets/LightningBolt.png",
 		"animations": {
 			"cast": {
-				"totalFrames": 3,
-				"columns": 4,
-				"frameWidth": 12,
+				"totalFrames": 1,
+				"columns": 1,
+				"frameWidth": 184,
 				"frameHeight": 360,
-				"frameDuration": 0.1,
+				"frameDuration": 0.2,
 				"startX": 0,
 				"startY": 0,
-				"loop": false
+				"loop": false,
+				"instant": true,
+				"originX": 180,
+        "originY": 359,
+				"displayDuration": 0.12
 			}
 		}
 	}

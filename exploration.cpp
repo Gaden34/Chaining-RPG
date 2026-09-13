@@ -70,6 +70,7 @@ void Exploration::setCamera(Player& player) {
 
 void Exploration::openFieldMenu(InputHandler& inputHandler) {
 	if (inputHandler.wasPressed(InputAction::Cancel) && currentState == ExplorationState::Exploring) {
+		fieldMenu.setCurrentState(FieldMenuState::Main);
 		currentState = ExplorationState::FieldMenu;
 	} 
 	else if (inputHandler.wasPressed(InputAction::Cancel) && currentState == ExplorationState::FieldMenu) {
@@ -81,6 +82,11 @@ void Exploration::openFieldMenu(InputHandler& inputHandler) {
 			fieldMenu.setCurrentState(FieldMenuState::Main);
 		}
 		
+	}
+
+	if (fieldMenu.getCurrentState() == FieldMenuState::None) {
+		currentState = ExplorationState::Exploring;
+		fieldMenu.reset();
 	}
 }
 
@@ -100,7 +106,7 @@ void FieldMenu::selectState() {
 			currentState = FieldMenuState::ItemMenu;
 			break;
 		case FieldMenu::Option::Exit:
-			currentState = FieldMenuState::Main;
+			currentState = FieldMenuState::None;
 			break;
 	}
 }

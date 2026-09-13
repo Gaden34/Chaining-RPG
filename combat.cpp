@@ -715,17 +715,30 @@ int Combat::triggerSkillEffect(const std::string& animationName, Character& targ
 	for (int i = 0; i < instanceCount; ++i) {
 		CombatVisualEffect effect;
 		effect.effectID = effectID;
+		// copy the clip into the animation (frames & loop)
 		effect.animation.setAnimation(clipIt->second);
 		effect.sprite.setTexture(effectTextures[animationName], true);
 		effect.sprite.setTextureRect(effect.animation.getCurrentFrame());
-
-		const sf::FloatRect frameBounds(effect.animation.getCurrentFrame());
-		effect.sprite.setOrigin(frameBounds.width / 2.f, frameBounds.height / 2.f);
+		// determine origin based on clip metadata if present
+		const AnimationClip& clip = clipIt->second;
+		const sf::IntRect currentRect = effect.animation.getCurrentFrame();
+		if (clip.originX >= 0.0f && clip.originY >= 0.0f) {
+			effect.sprite.setOrigin(clip.originX, clip.originY);
+		} else {
+			effect.sprite.setOrigin(currentRect.width / 2.f, currentRect.height / 2.f);
+		}
 
 		const float offsetX = instanceCount > 1 ? static_cast<float>(randomRange(-spreadRadius, spreadRadius)) : 0.f;
 		effect.targetPosition = { targetCenter.x + offsetX, targetCenter.y };
-		effect.startPosition = { effect.targetPosition.x - 200.f, effect.targetPosition.y - 200.f };
-		effect.dropDuration = 0.7f;
+
+		if (clip.instant) {
+			// draw immediately at target and disappear after displayDuration
+			effect.startPosition = effect.targetPosition;
+			effect.dropDuration = clip.displayDuration > 0.0f ? clip.displayDuration : 0.08f;
+		} else {
+			effect.startPosition = { effect.targetPosition.x - 200.f, effect.targetPosition.y - 200.f };
+			effect.dropDuration = 0.7f;
+		}
 		effect.elapsedTime = 0.f;
 		effect.delay = i * staggerInterval;
 		effect.sprite.setPosition(effect.startPosition);

@@ -23,6 +23,13 @@ struct SpriteSheetGridSpec {
 struct AnimationClip {
 	std::vector<AnimationFrame> frames;
 	bool loop = true;
+	// If true, the clip should be drawn instantly at its target (no travel/drop animation).
+	bool instant = false;
+	// Optional display duration used for instant clips (seconds). If <= 0, the caller may choose a default.
+	float displayDuration = 0.0f;
+	// Optional origin offset (pixels) to use when drawing the sprite. If both are negative, caller should use default.
+	float originX = -1.0f;
+	float originY = -1.0f;
 };
 
 struct AnimationAsset {
