@@ -7,7 +7,7 @@
 
 
 
-Game::Game() : combat(party, messageLog, rng), combatTestSetup(party, messageLog), exploration(rng, messageLog), window(sf::VideoMode({ 1280, 720 }), "Nameless RPG"), rng(std::random_device{}()) {
+Game::Game() : combat(party, messageLog, rng), combatTestSetup(party, messageLog), exploration(rng, party, messageLog), window(sf::VideoMode({ 1280, 720 }), "Nameless RPG"), rng(std::random_device{}()) {
 	gameTexture.create(640, 360);
 	SkillDatabase::loadSkills("skills.json");
 	ItemDatabase::loadItems("items.json");
@@ -33,7 +33,7 @@ void Game::draw() {
 		break;
 
 	case GameState::Exploring:
-		exploration.draw(gameTexture, party);
+		exploration.draw(gameTexture);
 		messageLog.draw(gameTexture);
 		break;
 
@@ -152,7 +152,7 @@ void Game::updateCharacterCreation(float dt) {
 }
 
 void Game::updateExploration(float dt) {
-	exploration.update(dt, inputHandler, party);
+	exploration.update(dt, inputHandler);
 	if (exploration.checkForEncounter(dt, party[0])) {
 		startCombat();
 	}

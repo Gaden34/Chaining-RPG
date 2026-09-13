@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <iostream>
 
-Exploration::Exploration(std::mt19937& rng, MessageLog& messageLog)
-	: rng(rng), messageLog(messageLog) {
+Exploration::Exploration(std::mt19937& rng, std::vector<Player>& party, MessageLog& messageLog)
+	: rng(rng), party(party), messageLog(messageLog) {
 	camera = sf::View(sf::FloatRect(0.f, 0.f, static_cast<float>(VirtualWidth), static_cast<float>(VirtualHeight)));
 }
 
@@ -17,36 +17,24 @@ void Exploration::start(Player& player) {
 	player.getWalkAnimation().setFrame(1);
 }
 
-void Exploration::update(float dt, InputHandler& inputHandler, std::vector<Player>& party) {
+void Exploration::update(float dt, InputHandler& inputHandler) {
 	party[0].update(dt, inputHandler, map);
 	setCamera(party[0]);
 
-	if (inItemMenu) {
-		if (inputHandler.wasPressed(InputAction::MenuUp))
-			itemMenu.moveUp();
-		if (inputHandler.wasPressed(InputAction::MenuDown))
-			itemMenu.moveDown();
-		if (inputHandler.wasPressed(InputAction::Cancel)) {
-			inItemMenu = false;
-			itemMenu.reset();
-		}
-		return;
-	}
-
 	openFieldMenu(inputHandler);
 
-	if (inFieldMenu) {
-		fieldMenu.handleInput(inputHandler, party.size());
+	if (currentState == ExplorationState::FieldMenu) {
+		fieldMenu.handleInput(inputHandler, party);
 	}
 }
 
-void Exploration::draw(sf::RenderTarget& target, std::vector<Player>& party) {
+void Exploration::draw(sf::RenderTarget& target) {
 	target.setView(camera);
 	map.draw(target);
 	party[0].drawExploring(target);
 	target.setView(target.getDefaultView());
 
-	if (inFieldMenu) {
+	if (currentState == ExplorationState::FieldMenu) {
 			fieldMenu.draw(target, party);
 	}
 }
@@ -81,12 +69,12 @@ void Exploration::setCamera(Player& player) {
 }
 
 void Exploration::openFieldMenu(InputHandler& inputHandler) {
-	if (inputHandler.wasPressed(InputAction::Cancel) && !inFieldMenu) {
-		inFieldMenu = true;
+	if (inputHandler.wasPressed(InputAction::Cancel) && currentState == ExplorationState::Exploring) {
+		currentState = ExplorationState::FieldMenu;
 	} 
-	else if (inputHandler.wasPressed(InputAction::Cancel) && inFieldMenu) {
+	else if (inputHandler.wasPressed(InputAction::Cancel) && currentState == ExplorationState::FieldMenu) {
 		if (fieldMenu.getCurrentState() == FieldMenuState::Main) {
-			inFieldMenu = false;
+			currentState = ExplorationState::Exploring;
 			fieldMenu.reset();
 		}
 		else {
@@ -136,15 +124,7 @@ void FieldMenu::draw(sf::RenderTarget& target, std::vector<Player>& party) {
 
 	switch (currentState) {
 	case FieldMenuState::Main:
-		for (size_t i = 0; i < optionTexts.size(); ++i) {
-			if (i == selectedIndex) {
-				optionTexts[i].setFillColor(sf::Color::White);
-			}
-			else {
-				optionTexts[i].setFillColor(sf::Color::Black);
-			}
-			target.draw(optionTexts[i]);
-		}
+		drawMain(target, false);
 		break;
 	
 	case FieldMenuState::StatusScreen:
@@ -157,14 +137,29 @@ void FieldMenu::draw(sf::RenderTarget& target, std::vector<Player>& party) {
 		// Draw the equipment screen
 		break;
 	case FieldMenuState::ItemMenu:
-		itemMenu.populate(party[selectedMemberIndex].getInventory(), 300.f, 100.f);
+		drawMain(target, true);
 		itemMenu.draw(target);
 		break;
 	}
 
 }
 
-void FieldMenu::handleInput(InputHandler& inputHandler, size_t partySize) {
+void FieldMenu::drawMain(sf::RenderTarget& target, bool disabled) {
+	for (size_t i = 0; i < optionTexts.size(); ++i) {
+		if (disabled) {
+			optionTexts[i].setFillColor(sf::Color(128, 128, 128));
+		}
+		else if (i == selectedIndex) {
+			optionTexts[i].setFillColor(sf::Color::White);
+		}
+		else {
+			optionTexts[i].setFillColor(sf::Color::Black);
+		}
+		target.draw(optionTexts[i]);
+	}
+}
+
+void FieldMenu::handleInput(InputHandler& inputHandler, std::vector<Player>& party) {
 	if (currentState == FieldMenuState::Main) {
 		if (inputHandler.wasPressed(InputAction::MenuUp)) {
 			moveUp();
@@ -174,6 +169,11 @@ void FieldMenu::handleInput(InputHandler& inputHandler, size_t partySize) {
 		}
 		else if (inputHandler.wasPressed(InputAction::Confirm)) {
 			selectState();
+			// If we just entered the item menu, populate it once so selection state is preserved
+			if (currentState == FieldMenuState::ItemMenu) {
+				itemMenu.populate(party[selectedMemberIndex].getInventory(), 270.f, 100.f);
+				itemMenu.setLastEnterPressed(true);
+			}
 		}
 	}
 
@@ -181,17 +181,35 @@ void FieldMenu::handleInput(InputHandler& inputHandler, size_t partySize) {
 		case FieldMenuState::Main:
 			break;
 		case FieldMenuState::ItemMenu:
-			itemMenu.handleInput(inputHandler);
+			handleItemMenu(inputHandler, party);
 			break;
 		default:
 			if (inputHandler.wasPressed(InputAction::MenuRight)) {
-				selectedMemberIndex = (selectedMemberIndex + 1) % partySize;
+				selectedMemberIndex = (selectedMemberIndex + 1) % party.size();
 				statusScreen.setNeedsRebuild(true);
 			}
 			else if (inputHandler.wasPressed(InputAction::MenuLeft)) {
-				selectedMemberIndex = (selectedMemberIndex - 1 + partySize) % partySize;
+				selectedMemberIndex = (selectedMemberIndex - 1 + party.size()) % party.size();
 				statusScreen.setNeedsRebuild(true);
 			}
 		}
 	}
+
+void FieldMenu::handleItemMenu(const InputHandler& input, std::vector<Player>& party) {
+	if (input.wasPressed(InputAction::MenuUp))
+		itemMenu.moveUp();
+	if (input.wasPressed(InputAction::MenuDown))
+		itemMenu.moveDown();
+	if (input.wasPressed(InputAction::Confirm)) {
+		const auto& slots = party[0].getInventory().getItems();
+		int index = itemMenu.getSelectedIndex();
+		if (!slots.empty() && index >= 0 && index < (int)slots.size()) {
+			const ItemData* item = ItemDatabase::getItemByID(slots[index].itemID);
+		}
+	}
+	if (input.wasPressed(InputAction::Cancel)) {
+		currentState = FieldMenuState::Main;
+		itemMenu.reset();
+	}
+}
 

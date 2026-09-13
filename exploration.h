@@ -47,7 +47,10 @@ private:
 public:
 	FieldMenu();
 	void draw(sf::RenderTarget& target, std::vector<Player>& party);
-	void handleInput(InputHandler& inputHandler, size_t partySize);
+	void drawMain(sf::RenderTarget& target, bool disabled);
+	void handleInput(InputHandler& inputHandler, std::vector<Player>& party);
+	void handleItemMenu(const InputHandler& inputHandler, std::vector<Player>& party);
+	void handleStatusScreen(const InputHandler& inputHandler, std::vector<Player>& party);
 	void selectState();
 	FieldMenu::Option getSelectedOption() const { return static_cast<FieldMenu::Option>(getSelectedIndex()); }
 	FieldMenuState getCurrentState() const { return currentState; }
@@ -62,25 +65,25 @@ private:
 	float encounterTimer = 0.f;
 	sf::Vector2f playerPosition = { 40.f, 20.f };
 	std::mt19937& rng;
+	std::vector<Player>& party;
 	MessageLog& messageLog;
 	FieldMenu fieldMenu;
 	ItemMenu itemMenu;
 	StatusScreen statusScreen;
-	bool inFieldMenu = false;
-	bool inItemMenu = false;
+	ExplorationState currentState = ExplorationState::Exploring;
 
 	void setCamera(Player& player);
 
 public:
-	Exploration(std::mt19937& rng, MessageLog& messageLog);
+	Exploration(std::mt19937& rng, std::vector<Player>& party, MessageLog& messageLog);
 
 	void start(Player& player);
-	void update(float dt, InputHandler& inputHandler, std::vector<Player>& party);
-	void draw(sf::RenderTarget& target, std::vector<Player>& party);
+	void update(float dt, InputHandler& inputHandler);
+	void draw(sf::RenderTarget& target);
 
 	// Returns true if a random encounter was triggered this frame.
 	void openFieldMenu(InputHandler& inputHandler);
-	void handleFieldMenu(InputHandler& inputHandler, std::vector<Player>& party);
+	void handleFieldMenu(InputHandler& inputHandler);
 	bool checkForEncounter(float dt, Player& player);
 
 	MapTransition* getTransitionAtPosition(const sf::FloatRect& currentBounds, const sf::FloatRect& previousBounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical);
