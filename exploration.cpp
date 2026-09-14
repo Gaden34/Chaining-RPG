@@ -103,6 +103,7 @@ void FieldMenu::selectState() {
 			currentState = FieldMenuState::EquipmentScreen;
 			break;
 		case FieldMenu::Option::Inventory:
+			itemMenu.populate(party[selectedMemberIndex].getInventory(), 270.f, 100.f, 10);
 			currentState = FieldMenuState::ItemMenu;
 			break;
 		case FieldMenu::Option::Exit:
@@ -166,56 +167,60 @@ void FieldMenu::drawMain(sf::RenderTarget& target, bool disabled) {
 }
 
 void FieldMenu::handleInput(InputHandler& inputHandler, std::vector<Player>& party) {
-	if (currentState == FieldMenuState::Main) {
-		if (inputHandler.wasPressed(InputAction::MenuUp)) {
-			moveUp();
-		}
-		else if (inputHandler.wasPressed(InputAction::MenuDown)) {
-			moveDown();
-		}
-		else if (inputHandler.wasPressed(InputAction::Confirm)) {
-			selectState();
-			// If we just entered the item menu, populate it once so selection state is preserved
-			if (currentState == FieldMenuState::ItemMenu) {
-				itemMenu.populate(party[selectedMemberIndex].getInventory(), 270.f, 100.f);
-				itemMenu.setLastEnterPressed(true);
-			}
-		}
-	}
 
 		switch(currentState) {
 		case FieldMenuState::Main:
+			handleMain(inputHandler);
 			break;
 		case FieldMenuState::ItemMenu:
 			handleItemMenu(inputHandler, party);
 			break;
+		case FieldMenuState::StatusScreen:
+			handleStatusScreen(inputHandler, party);
+			break;
 		default:
-			if (inputHandler.wasPressed(InputAction::MenuRight)) {
-				selectedMemberIndex = (selectedMemberIndex + 1) % party.size();
-				statusScreen.setNeedsRebuild(true);
-			}
-			else if (inputHandler.wasPressed(InputAction::MenuLeft)) {
-				selectedMemberIndex = (selectedMemberIndex - 1 + party.size()) % party.size();
-				statusScreen.setNeedsRebuild(true);
-			}
-		}
+			break;
 	}
+}
 
-void FieldMenu::handleItemMenu(const InputHandler& input, std::vector<Player>& party) {
-	if (input.wasPressed(InputAction::MenuUp))
+void FieldMenu::handleMain(InputHandler& inputHandler) {
+	if (inputHandler.wasPressed(InputAction::MenuUp)) {
+		moveUp();
+	}
+	else if (inputHandler.wasPressed(InputAction::MenuDown)) {
+		moveDown();
+	}
+	else if (inputHandler.wasPressed(InputAction::Confirm)) {
+		selectState();
+	}
+}
+
+void FieldMenu::handleItemMenu(const InputHandler& inputHandler, std::vector<Player>& party) {
+	if (inputHandler.wasPressed(InputAction::MenuUp))
 		itemMenu.moveUp();
-	if (input.wasPressed(InputAction::MenuDown))
+	if (inputHandler.wasPressed(InputAction::MenuDown))
 		itemMenu.moveDown();
-	if (input.wasPressed(InputAction::Confirm)) {
+	if (inputHandler.wasPressed(InputAction::Confirm)) {
 		const auto& slots = party[0].getInventory().getItems();
 		int index = itemMenu.getSelectedIndex();
 		if (!slots.empty() && index >= 0 && index < (int)slots.size()) {
 			const ItemData* item = ItemDatabase::getItemByID(slots[index].itemID);
 		}
 	}
-	if (input.wasPressed(InputAction::Cancel)) {
+	if (inputHandler.wasPressed(InputAction::Cancel)) {
 		currentState = FieldMenuState::Main;
 		itemMenu.reset();
+	}
+}
+
+void FieldMenu::handleStatusScreen(const InputHandler& inputHandler, std::vector<Player>& party) {
+	if (inputHandler.wasPressed(InputAction::MenuRight)) {
+		selectedMemberIndex = (selectedMemberIndex + 1) % party.size();
+		statusScreen.setNeedsRebuild(true);
+	}
+	else if (inputHandler.wasPressed(InputAction::MenuLeft)) {
+		selectedMemberIndex = (selectedMemberIndex - 1 + party.size()) % party.size();
+		statusScreen.setNeedsRebuild(true);
 	}
 }
 

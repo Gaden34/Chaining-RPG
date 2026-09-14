@@ -2,10 +2,7 @@
 #include "player.h"
 #include "textUtils.h"
 
-StatusScreen::StatusScreen() {
-    font.loadFromFile("assets/Roboto_Condensed-Black.ttf");
-	texture.loadFromFile("assets/statusScreen.png");
-	sprite.setTexture(texture);
+StatusScreen::StatusScreen() : MenuScreen("assets/Roboto_Condensed-Black.ttf", "assets/statusScreen.png") {
 }
 
 void StatusScreen::draw(sf::RenderTarget& target, Player& player) {

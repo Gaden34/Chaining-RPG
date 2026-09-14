@@ -248,7 +248,7 @@ void Combat::handlePlayerTurn(const InputHandler& input) {
 				currentState = CombatState::SkillMenu;
 				break;
 			case CombatMenu::MenuOption::Item:
-				itemMenu.populate(party[activePlayerIndex].getInventory(), 352.f, 300.f);
+				itemMenu.populate(party[activePlayerIndex].getInventory(), 352.f, 300.f, 4);
 				itemMenu.setLastEnterPressed(true);
 				currentState = CombatState::ItemMenu;
 				break;

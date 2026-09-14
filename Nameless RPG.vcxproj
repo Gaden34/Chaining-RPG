@@ -33,6 +33,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map.cpp" />
     <ClCompile Include="menu.cpp" />
+    <ClCompile Include="menuScreen.cpp" />
     <ClCompile Include="messageLog.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="combat.cpp" />
@@ -58,6 +59,7 @@
     <ClInclude Include="item.h" />
     <ClInclude Include="map.h" />
     <ClInclude Include="menu.h" />
+    <ClInclude Include="menuScreen.h" />
     <ClInclude Include="messageLog.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="skill.h" />

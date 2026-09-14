@@ -66,6 +66,6 @@ public:
 class ItemMenu : public Menu {
 public:
 	ItemMenu();
-	void populate(const Inventory& inventory, float x, float y);
+	void populate(const Inventory& inventory, float x, float y, int maxVisible);
 	void draw(sf::RenderTarget& target);
 };

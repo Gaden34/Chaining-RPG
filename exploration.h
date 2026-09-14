@@ -50,6 +50,7 @@ public:
 	void draw(sf::RenderTarget& target, std::vector<Player>& party);
 	void drawMain(sf::RenderTarget& target, bool disabled);
 	void handleInput(InputHandler& inputHandler, std::vector<Player>& party);
+	void handleMain(InputHandler& inputHandler);
 	void handleItemMenu(const InputHandler& inputHandler, std::vector<Player>& party);
 	void handleStatusScreen(const InputHandler& inputHandler, std::vector<Player>& party);
 	void selectState();
