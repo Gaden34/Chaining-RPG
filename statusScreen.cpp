@@ -52,3 +52,43 @@ void StatusScreen::setPortraitSprite(Player& player) {
 	portraitSprite.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
 	portraitSprite.setPosition(52.f, 52.f);
 }
+
+void DisciplineSelectMenu::populate(Player& player) {
+	for (const auto& disciplineID : player.getUnlockedDisciplines()) {
+		optionTexts.push_back(disciplineID);
+	}
+}
+
+void DisciplineSelectMenu::draw(sf::RenderTarget& target, Player& player) {
+}
+
+void DisciplineScreen::draw(sf::RenderTarget& target, Player& player) {
+	for (const auto& renderText : buildDisciplineProfile(player)) {
+		target.draw(renderText); 
+	}
+
+	if (inDisciplineSelection) {}
+}
+
+std::vector<sf::Text>& DisciplineScreen::buildDisciplineProfile(Player& player) {
+	if (!player.getStatsOutdated() && !disciplineTexts.empty() && !needsRebuild) {
+		return disciplineTexts;
+	}
+
+	setDisciplineIconSprite(player);
+
+	disciplineTexts.clear();
+	sf::Text disciplineText = TextUtils::createText("Discipline: " + player.getDiscipline().getName(), font, 12, sf::Vector2f(90.f, 42.f), sf::Color::Black);
+	disciplineTexts.push_back(disciplineText);
+
+	needsRebuild = false;
+	player.setStatsOutdated(false);
+	return disciplineTexts;
+}
+
+void DisciplineScreen::setDisciplineIconSprite(Player& player) {
+	disciplineIconSprite = player.getDisciplineIconSprite();
+	sf::FloatRect bounds = disciplineIconSprite.getGlobalBounds();
+	disciplineIconSprite.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+	disciplineIconSprite.setPosition(52.f, 52.f);
+}

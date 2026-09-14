@@ -28,6 +28,7 @@ private:
 	bool isMoving = false;
 	MessageLog& messageLog;
 	DisciplineID discipline;
+	std::vector<DisciplineID> unlockedDisciplines = { DisciplineID::Mage, DisciplineID::Thief, DisciplineID::Combatant };
 	std::vector<std::unique_ptr<Skill>> skills;
 	Animation walkAnimation;
 	sf::Texture walkTexture;
@@ -72,4 +73,6 @@ public:
 	Animation& getWalkAnimation() { return walkAnimation; }
 	sf::FloatRect getCollisionBox(sf::Vector2f position) const;
 	sf::FloatRect getPreviousCollisionBox() const { return previousCollisionBox; }
+	std::vector<DisciplineID>& getUnlockedDisciplines() { return unlockedDisciplines; }
+	void unlockDiscipline(DisciplineID id);
 };

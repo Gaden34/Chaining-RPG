@@ -263,3 +263,9 @@ bool Player::hasSkill(const std::string& skillName) const {
 sf::FloatRect Player::getCollisionBox(sf::Vector2f position) const {
 	return sf::FloatRect(position.x + 12.f, position.y + 28.f, 9.f, 2.f);
 }
+
+void Player::unlockDiscipline(DisciplineID id) {
+	if (std::find(unlockedDisciplines.begin(), unlockedDisciplines.end(), id) == unlockedDisciplines.end()) {
+		unlockedDisciplines.push_back(id);
+	}
+}
