@@ -5,7 +5,7 @@
 #include "player.h"
 #include "messageLog.h"
 #include "menu.h"
-#include "statusScreen.h"
+#include "submenuScreen.h"
 
 
 constexpr unsigned VirtualWidth = 640;
@@ -50,10 +50,10 @@ public:
 	void draw(sf::RenderTarget& target, std::vector<Player>& party);
 	void drawMain(sf::RenderTarget& target, bool disabled);
 	void handleInput(InputHandler& inputHandler, std::vector<Player>& party);
-	void handleMain(InputHandler& inputHandler);
+	void handleMain(InputHandler& inputHandler, std::vector<Player>& party);
 	void handleItemMenu(const InputHandler& inputHandler, std::vector<Player>& party);
 	void handleStatusScreen(const InputHandler& inputHandler, std::vector<Player>& party);
-	void selectState();
+	void selectState(std::vector<Player>& party);
 	FieldMenu::Option getSelectedOption() const { return static_cast<FieldMenu::Option>(getSelectedIndex()); }
 	FieldMenuState getCurrentState() const { return currentState; }
 	void setCurrentState(FieldMenuState state) { currentState = state; }

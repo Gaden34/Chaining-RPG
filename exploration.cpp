@@ -90,7 +90,7 @@ void Exploration::openFieldMenu(InputHandler& inputHandler) {
 	}
 }
 
-void FieldMenu::selectState() {
+void FieldMenu::selectState(std::vector<Player>& party) {
 	FieldMenu::Option selected = getSelectedOption();
 	switch (selected) {
 		case FieldMenu::Option::Status:
@@ -170,7 +170,7 @@ void FieldMenu::handleInput(InputHandler& inputHandler, std::vector<Player>& par
 
 		switch(currentState) {
 		case FieldMenuState::Main:
-			handleMain(inputHandler);
+			handleMain(inputHandler, party);
 			break;
 		case FieldMenuState::ItemMenu:
 			handleItemMenu(inputHandler, party);
@@ -183,7 +183,7 @@ void FieldMenu::handleInput(InputHandler& inputHandler, std::vector<Player>& par
 	}
 }
 
-void FieldMenu::handleMain(InputHandler& inputHandler) {
+void FieldMenu::handleMain(InputHandler& inputHandler, std::vector<Player>& party) {
 	if (inputHandler.wasPressed(InputAction::MenuUp)) {
 		moveUp();
 	}
@@ -191,7 +191,7 @@ void FieldMenu::handleMain(InputHandler& inputHandler) {
 		moveDown();
 	}
 	else if (inputHandler.wasPressed(InputAction::Confirm)) {
-		selectState();
+		selectState(party);
 	}
 }
 

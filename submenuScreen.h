@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "menuScreen.h"
+#include "menu.h"
 #include "textUtils.h"
 
 class Player;
@@ -37,6 +38,6 @@ private:
 public:
     DisciplineScreen();
     void draw(sf::RenderTarget& target, Player& player);
-    std::vector<sf::Text>& buildDisciplineProfile(Player& player);
-    void setDisciplineIconSprite(Player& player);
+   // std::vector<sf::Text>& buildDisciplineProfile(Player& player);
+    //void setDisciplineIconSprite(Player& player);
 };

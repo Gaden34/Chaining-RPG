@@ -1,4 +1,4 @@
-#include "statusScreen.h"
+#include "submenuScreen.h"
 #include "player.h"
 #include "textUtils.h"
 
@@ -55,7 +55,10 @@ void StatusScreen::setPortraitSprite(Player& player) {
 
 void DisciplineSelectMenu::populate(Player& player) {
 	for (const auto& disciplineID : player.getUnlockedDisciplines()) {
-		optionTexts.push_back(disciplineID);
+		std::string label = Disciplines::getDisciplineFromID(disciplineID).getName();
+		sf::Text text(label, font, 12);
+		text.setFillColor(sf::Color::Black);
+		optionTexts.push_back(text);
 	}
 }
 
@@ -63,14 +66,14 @@ void DisciplineSelectMenu::draw(sf::RenderTarget& target, Player& player) {
 }
 
 void DisciplineScreen::draw(sf::RenderTarget& target, Player& player) {
-	for (const auto& renderText : buildDisciplineProfile(player)) {
+	/*for (const auto& renderText : buildDisciplineProfile(player)) {
 		target.draw(renderText); 
-	}
+	}*/
 
 	if (inDisciplineSelection) {}
 }
 
-std::vector<sf::Text>& DisciplineScreen::buildDisciplineProfile(Player& player) {
+/*std::vector<sf::Text>& DisciplineScreen::buildDisciplineProfile(Player& player) {
 	if (!player.getStatsOutdated() && !disciplineTexts.empty() && !needsRebuild) {
 		return disciplineTexts;
 	}
@@ -84,11 +87,11 @@ std::vector<sf::Text>& DisciplineScreen::buildDisciplineProfile(Player& player) 
 	needsRebuild = false;
 	player.setStatsOutdated(false);
 	return disciplineTexts;
-}
+}*/
 
-void DisciplineScreen::setDisciplineIconSprite(Player& player) {
+/*void DisciplineScreen::setDisciplineIconSprite(Player& player) {
 	disciplineIconSprite = player.getDisciplineIconSprite();
 	sf::FloatRect bounds = disciplineIconSprite.getGlobalBounds();
 	disciplineIconSprite.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
 	disciplineIconSprite.setPosition(52.f, 52.f);
-}
+}*/
