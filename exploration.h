@@ -40,6 +40,7 @@ public:
 private:
 
 	FieldMenuState currentState = FieldMenuState::Main;
+	DisciplineScreen disciplineScreen;
 	StatusScreen statusScreen;
 	ItemMenu itemMenu;
 	size_t selectedMemberIndex = 0;
@@ -52,6 +53,7 @@ public:
 	void handleInput(InputHandler& inputHandler, std::vector<Player>& party);
 	void handleMain(InputHandler& inputHandler, std::vector<Player>& party);
 	void handleItemMenu(const InputHandler& inputHandler, std::vector<Player>& party);
+	void handleDisciplineScreen(const InputHandler& inputHandler, std::vector<Player>& party);
 	void handleStatusScreen(const InputHandler& inputHandler, std::vector<Player>& party);
 	void selectState(std::vector<Player>& party);
 	FieldMenu::Option getSelectedOption() const { return static_cast<FieldMenu::Option>(getSelectedIndex()); }

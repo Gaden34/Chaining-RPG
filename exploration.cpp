@@ -213,6 +213,17 @@ void FieldMenu::handleItemMenu(const InputHandler& inputHandler, std::vector<Pla
 	}
 }
 
+void FieldMenu::handleDisciplineScreen(const InputHandler& inputHandler, std::vector<Player>& party) {
+	if (inputHandler.wasPressed(InputAction::MenuRight)) {
+		selectedMemberIndex = (selectedMemberIndex + 1) % party.size();
+		disciplineScreen.setNeedsRebuild(true);
+	}
+	else if (inputHandler.wasPressed(InputAction::MenuLeft)) {
+		selectedMemberIndex = (selectedMemberIndex - 1 + party.size()) % party.size();
+		disciplineScreen.setNeedsRebuild(true);
+	}
+}
+
 void FieldMenu::handleStatusScreen(const InputHandler& inputHandler, std::vector<Player>& party) {
 	if (inputHandler.wasPressed(InputAction::MenuRight)) {
 		selectedMemberIndex = (selectedMemberIndex + 1) % party.size();

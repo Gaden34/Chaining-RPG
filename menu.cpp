@@ -69,11 +69,9 @@ ItemMenu::ItemMenu() {
 
 void ItemMenu::populate(const Inventory& inventory, float x, float y, int maxVisible) {
 	optionTexts.clear();
-	selectedIndex = 0;
-	scrollOffset = 0;
+	reset();
 	setPosition(x, y);
 	maxVisibleOptions = maxVisible;
-	setLastEnterPressed(true);
 
 	for (const auto& slot : inventory.getItems()) {
 		const ItemData* data = ItemDatabase::getItemByID(slot.itemID);

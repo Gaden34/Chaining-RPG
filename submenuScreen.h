@@ -38,6 +38,7 @@ private:
 public:
     DisciplineScreen();
     void draw(sf::RenderTarget& target, Player& player);
+    bool isInDisciplineSelection() const { return inDisciplineSelection; }
    // std::vector<sf::Text>& buildDisciplineProfile(Player& player);
     //void setDisciplineIconSprite(Player& player);
 };

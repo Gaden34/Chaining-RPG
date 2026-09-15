@@ -54,6 +54,10 @@ void StatusScreen::setPortraitSprite(Player& player) {
 }
 
 void DisciplineSelectMenu::populate(Player& player) {
+	optionTexts.clear();
+	reset();
+	//setPosition(menuX, menuY);
+
 	for (const auto& disciplineID : player.getUnlockedDisciplines()) {
 		std::string label = Disciplines::getDisciplineFromID(disciplineID).getName();
 		sf::Text text(label, font, 12);
@@ -63,14 +67,29 @@ void DisciplineSelectMenu::populate(Player& player) {
 }
 
 void DisciplineSelectMenu::draw(sf::RenderTarget& target, Player& player) {
+	int total = static_cast<int>(optionTexts.size());
+	int endIndex = std::min(scrollOffset + maxVisibleOptions, total);
+
+	for (int i = scrollOffset; i < endIndex; ++i) {
+		int visibleSlot = i - scrollOffset;
+		optionTexts[i].setPosition(menuX, menuY + visibleSlot * optionSpacing);
+		optionTexts[i].setFillColor(i == selectedIndex ? sf::Color::White : sf::Color::Black);
+		target.draw(optionTexts[i]);
+	}
 }
 
+DisciplineScreen::DisciplineScreen() : MenuScreen("assets/Roboto_Condensed-Black.ttf", "assets/statusScreen.png") {}
+
 void DisciplineScreen::draw(sf::RenderTarget& target, Player& player) {
+	target.draw(sprite);
+
 	/*for (const auto& renderText : buildDisciplineProfile(player)) {
 		target.draw(renderText); 
 	}*/
 
-	if (inDisciplineSelection) {}
+	if (inDisciplineSelection) {
+		disciplineSelectMenu.draw(target, player);
+	}
 }
 
 /*std::vector<sf::Text>& DisciplineScreen::buildDisciplineProfile(Player& player) {
