@@ -78,6 +78,10 @@ void DisciplineSelectMenu::draw(sf::RenderTarget& target, Player& player) {
 	}
 }
 
+void DisciplineSelectMenu::changeDiscipline(Player& player) {
+	player.setDiscipline(player.getUnlockedDisciplines()[selectedIndex]);
+}
+
 DisciplineScreen::DisciplineScreen() : MenuScreen("assets/Roboto_Condensed-Black.ttf", "assets/statusScreen.png") {}
 
 void DisciplineScreen::draw(sf::RenderTarget& target, Player& player) {

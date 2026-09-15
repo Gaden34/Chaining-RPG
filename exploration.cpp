@@ -138,7 +138,7 @@ void FieldMenu::draw(sf::RenderTarget& target, std::vector<Player>& party) {
 		statusScreen.draw(target, party[selectedMemberIndex]);
 		break;
 	case FieldMenuState::DisciplineScreen:
-		// Draw the discipline screen
+		disciplineScreen.draw(target, party[selectedMemberIndex]);
 		break;
 	case FieldMenuState::EquipmentScreen:
 		// Draw the equipment screen
@@ -174,6 +174,9 @@ void FieldMenu::handleInput(InputHandler& inputHandler, std::vector<Player>& par
 			break;
 		case FieldMenuState::ItemMenu:
 			handleItemMenu(inputHandler, party);
+			break;
+		case FieldMenuState::DisciplineScreen:
+			handleDisciplineScreen(inputHandler, party);
 			break;
 		case FieldMenuState::StatusScreen:
 			handleStatusScreen(inputHandler, party);
@@ -221,6 +224,25 @@ void FieldMenu::handleDisciplineScreen(const InputHandler& inputHandler, std::ve
 	else if (inputHandler.wasPressed(InputAction::MenuLeft)) {
 		selectedMemberIndex = (selectedMemberIndex - 1 + party.size()) % party.size();
 		disciplineScreen.setNeedsRebuild(true);
+	}
+
+	if (inputHandler.wasPressed(InputAction::Confirm)) {
+		if (!disciplineScreen.isInDisciplineSelection()) {
+			disciplineScreen.setInDisciplineSelection(true);
+		}
+		else {
+			disciplineScreen.getDisciplineSelectMenu().changeDiscipline(party[selectedMemberIndex]);
+			disciplineScreen.setInDisciplineSelection(false);
+		}
+	}
+
+	if (inputHandler.wasPressed(InputAction::Cancel)) {
+		if (disciplineScreen.isInDisciplineSelection()) {
+			disciplineScreen.setInDisciplineSelection(false);
+		}
+		else {
+			currentState = FieldMenuState::Main;
+		}
 	}
 }
 

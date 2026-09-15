@@ -25,6 +25,7 @@ public:
     DisciplineSelectMenu();
     void populate(Player& player);
     void draw(sf::RenderTarget& target, Player& player);
+    void changeDiscipline(Player& player);
 };
 
 class DisciplineScreen : public MenuScreen {
@@ -39,6 +40,8 @@ public:
     DisciplineScreen();
     void draw(sf::RenderTarget& target, Player& player);
     bool isInDisciplineSelection() const { return inDisciplineSelection; }
+    void setInDisciplineSelection(bool inSelection) { inDisciplineSelection = inSelection; }
+    DisciplineSelectMenu& getDisciplineSelectMenu() { return disciplineSelectMenu; }
    // std::vector<sf::Text>& buildDisciplineProfile(Player& player);
     //void setDisciplineIconSprite(Player& player);
 };
