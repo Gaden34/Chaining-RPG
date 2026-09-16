@@ -36,6 +36,7 @@ private:
     sf::Text skillDescriptionText;
     float disciplineSpacingY = 20.f;
     bool inDisciplineSelection = false;
+    bool skillListFocused = false;
 
     void buildSkillDescription(Player& player);
 
@@ -46,6 +47,8 @@ public:
     void setInDisciplineSelection(bool inSelection) { inDisciplineSelection = inSelection; }
     DisciplineSelectMenu& getDisciplineSelectMenu() { return disciplineSelectMenu; }
     SkillMenu& getSkillMenu() { return skillMenu; }
-   // std::vector<sf::Text>& buildDisciplineProfile(Player& player);
+    bool isSkillListFocused() const { return skillListFocused; }
+    void setSkillListFocused(bool focused) { skillListFocused = focused; }
+    std::vector<sf::Text>& buildDisciplineProfile(Player& player);
     void setDisciplineIconSprite(Player& player);
 };

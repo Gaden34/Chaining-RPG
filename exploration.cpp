@@ -233,14 +233,22 @@ void FieldMenu::handleDisciplineScreen(const InputHandler& inputHandler, std::ve
 	if (inputHandler.wasPressed(InputAction::MenuUp)) {
 		if (disciplineScreen.isInDisciplineSelection())
 			disciplineScreen.getDisciplineSelectMenu().moveUp();
-		else
-			disciplineScreen.getSkillMenu().moveUp();
+		else if (disciplineScreen.isSkillListFocused())
+			if (disciplineScreen.getSkillMenu().getSelectedIndex() == 0)
+				disciplineScreen.setSkillListFocused(false);
+			else
+				disciplineScreen.getSkillMenu().moveUp();
 	}
 	else if (inputHandler.wasPressed(InputAction::MenuDown)) {
-		if (disciplineScreen.isInDisciplineSelection())
+		if (disciplineScreen.isInDisciplineSelection()) {
 			disciplineScreen.getDisciplineSelectMenu().moveDown();
-		else
-			disciplineScreen.getSkillMenu().moveDown();
+		}
+		else if (disciplineScreen.isSkillListFocused()) {
+			if (disciplineScreen.getSkillMenu().getSelectedIndex() == disciplineScreen.getSkillMenu().getItemCount() - 1)
+				disciplineScreen.setSkillListFocused(false);
+			else
+				disciplineScreen.getSkillMenu().moveDown();
+		}
 	}
 
 	if (inputHandler.wasPressed(InputAction::Confirm)) {
