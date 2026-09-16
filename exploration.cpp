@@ -244,7 +244,7 @@ void FieldMenu::handleDisciplineScreen(const InputHandler& inputHandler, std::ve
 			disciplineScreen.getDisciplineSelectMenu().moveDown();
 		}
 		else if (disciplineScreen.isSkillListFocused()) {
-			if (disciplineScreen.getSkillMenu().getSelectedIndex() == disciplineScreen.getSkillMenu().getItemCount() - 1)
+			if (disciplineScreen.getSkillMenu().getSelectedIndex() == disciplineScreen.getSkillMenu().getSkillCount() - 1)
 				disciplineScreen.setSkillListFocused(false);
 			else
 				disciplineScreen.getSkillMenu().moveDown();

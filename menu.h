@@ -82,4 +82,5 @@ public:
 	void populate(const std::vector<std::unique_ptr<Skill>>& skills);
 	void draw(sf::RenderTarget& target);
 	int getSelectedIndex() const;
+	int getSkillCount() const { return skillCount; }
 };
