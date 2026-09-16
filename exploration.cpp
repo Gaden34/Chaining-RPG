@@ -97,6 +97,7 @@ void FieldMenu::selectState(std::vector<Player>& party) {
 			currentState = FieldMenuState::StatusScreen;
 			break;
 		case FieldMenu::Option::Discipline:
+			disciplineScreen.getDisciplineSelectMenu().populate(party[selectedMemberIndex]);
 			currentState = FieldMenuState::DisciplineScreen;
 			break;
 		case FieldMenu::Option::Equipment:
@@ -226,6 +227,13 @@ void FieldMenu::handleDisciplineScreen(const InputHandler& inputHandler, std::ve
 		disciplineScreen.setNeedsRebuild(true);
 	}
 
+	if (inputHandler.wasPressed(InputAction::MenuUp) && disciplineScreen.isInDisciplineSelection()) {
+		disciplineScreen.getDisciplineSelectMenu().moveUp();
+	}
+	else if (inputHandler.wasPressed(InputAction::MenuDown) && disciplineScreen.isInDisciplineSelection()) {
+		disciplineScreen.getDisciplineSelectMenu().moveDown();
+	}
+
 	if (inputHandler.wasPressed(InputAction::Confirm)) {
 		if (!disciplineScreen.isInDisciplineSelection()) {
 			disciplineScreen.setInDisciplineSelection(true);
@@ -233,6 +241,7 @@ void FieldMenu::handleDisciplineScreen(const InputHandler& inputHandler, std::ve
 		else {
 			disciplineScreen.getDisciplineSelectMenu().changeDiscipline(party[selectedMemberIndex]);
 			disciplineScreen.setInDisciplineSelection(false);
+			statusScreen.setNeedsRebuild(true);
 		}
 	}
 

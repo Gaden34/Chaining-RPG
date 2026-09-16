@@ -56,7 +56,7 @@ void StatusScreen::setPortraitSprite(Player& player) {
 void DisciplineSelectMenu::populate(Player& player) {
 	optionTexts.clear();
 	reset();
-	//setPosition(menuX, menuY);
+	setPosition(50.f, 92.f);
 
 	for (const auto& disciplineID : player.getUnlockedDisciplines()) {
 		std::string label = Disciplines::getDisciplineFromID(disciplineID).getName();
@@ -86,6 +86,10 @@ DisciplineScreen::DisciplineScreen() : MenuScreen("assets/Roboto_Condensed-Black
 
 void DisciplineScreen::draw(sf::RenderTarget& target, Player& player) {
 	target.draw(sprite);
+	target.draw(disciplineIconSprite);
+	if (!disciplineIconSprite.getTexture()) {
+		setDisciplineIconSprite(player);
+	}
 
 	/*for (const auto& renderText : buildDisciplineProfile(player)) {
 		target.draw(renderText); 
@@ -96,25 +100,25 @@ void DisciplineScreen::draw(sf::RenderTarget& target, Player& player) {
 	}
 }
 
-/*std::vector<sf::Text>& DisciplineScreen::buildDisciplineProfile(Player& player) {
-	if (!player.getStatsOutdated() && !disciplineTexts.empty() && !needsRebuild) {
+//std::vector<sf::Text>& DisciplineScreen::buildDisciplineProfile(Player& player) {
+	/*if (!player.getStatsOutdated() && !disciplineTexts.empty() && !needsRebuild) {
 		return disciplineTexts;
-	}
+	}*/
 
-	setDisciplineIconSprite(player);
+	//setDisciplineIconSprite(player);
 
-	disciplineTexts.clear();
+	/*disciplineTexts.clear();
 	sf::Text disciplineText = TextUtils::createText("Discipline: " + player.getDiscipline().getName(), font, 12, sf::Vector2f(90.f, 42.f), sf::Color::Black);
 	disciplineTexts.push_back(disciplineText);
 
 	needsRebuild = false;
 	player.setStatsOutdated(false);
-	return disciplineTexts;
-}*/
+	return disciplineTexts;*/
+//}
 
-/*void DisciplineScreen::setDisciplineIconSprite(Player& player) {
-	disciplineIconSprite = player.getDisciplineIconSprite();
+void DisciplineScreen::setDisciplineIconSprite(Player& player) {
+	disciplineIconSprite = player.getPortraitSprite();
 	sf::FloatRect bounds = disciplineIconSprite.getGlobalBounds();
 	disciplineIconSprite.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
 	disciplineIconSprite.setPosition(52.f, 52.f);
-}*/
+}
