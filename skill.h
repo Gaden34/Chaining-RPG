@@ -42,6 +42,7 @@ public:
 	Skill(const std::string& name, const std::string& description, int mpCost, SkillType type, int baseDamage, const std::vector<int>& hits = {}, const std::string& animationName = "");
 	std::vector<int> getHits() const;
 	const std::string& getName() const { return name; }
+	const std::string& getDescription() const { return description; }
 	int getDamage() const { return baseDamage; }
 	int getMpCost() const { return mpCost; }
 	SkillType getType() const { return type; }

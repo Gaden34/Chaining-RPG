@@ -82,7 +82,10 @@ void DisciplineSelectMenu::changeDiscipline(Player& player) {
 	player.setDiscipline(player.getUnlockedDisciplines()[selectedIndex]);
 }
 
-DisciplineScreen::DisciplineScreen() : MenuScreen("assets/Roboto_Condensed-Black.ttf", "assets/statusScreen.png") {}
+DisciplineScreen::DisciplineScreen() : MenuScreen("assets/Roboto_Condensed-Black.ttf", "assets/statusScreen.png") {
+	skillMenu.setPosition(90.f, 92.f);
+	skillMenu.setOptionSpacing(16.f);
+}
 
 void DisciplineScreen::draw(sf::RenderTarget& target, Player& player) {
 	target.draw(sprite);
@@ -91,30 +94,46 @@ void DisciplineScreen::draw(sf::RenderTarget& target, Player& player) {
 		setDisciplineIconSprite(player);
 	}
 
-	/*for (const auto& renderText : buildDisciplineProfile(player)) {
+	for (const auto& renderText : buildDisciplineProfile(player)) {
 		target.draw(renderText); 
-	}*/
+	}
 
 	if (inDisciplineSelection) {
 		disciplineSelectMenu.draw(target, player);
 	}
+	else {
+		skillMenu.draw(target);
+		buildSkillDescription(player);
+		target.draw(skillDescriptionText);
+	}
 }
 
-//std::vector<sf::Text>& DisciplineScreen::buildDisciplineProfile(Player& player) {
-	/*if (!player.getStatsOutdated() && !disciplineTexts.empty() && !needsRebuild) {
+void DisciplineScreen::buildSkillDescription(Player& player) {
+	int index = skillMenu.getSelectedIndex();
+	const auto& skills = player.getSkills();
+	std::string description = (index >= 0 && index < static_cast<int>(skills.size())) ? skills[index]->getDescription() : "";
+	skillDescriptionText = TextUtils::createText(description, font, 11, sf::Vector2f(90.f, 220.f), sf::Color::Black);
+}
+
+std::vector<sf::Text>& DisciplineScreen::buildDisciplineProfile(Player& player) {
+	if (!player.getStatsOutdated() && !disciplineTexts.empty() && !needsRebuild) {
 		return disciplineTexts;
-	}*/
+	}
 
 	//setDisciplineIconSprite(player);
 
-	/*disciplineTexts.clear();
+	disciplineTexts.clear();
+	sf::Text nameText = TextUtils::createText("Name: " + player.getName(), font, 12, sf::Vector2f(90.f, 22.f), sf::Color::Black);
+	disciplineTexts.push_back(nameText);
 	sf::Text disciplineText = TextUtils::createText("Discipline: " + player.getDiscipline().getName(), font, 12, sf::Vector2f(90.f, 42.f), sf::Color::Black);
 	disciplineTexts.push_back(disciplineText);
+	sf::Text levelText = TextUtils::createText("Level: " + std::to_string(player.getLevel()), font, 12, sf::Vector2f(90.f, 62.f), sf::Color::Black);
+	disciplineTexts.push_back(levelText);
 
 	needsRebuild = false;
 	player.setStatsOutdated(false);
-	return disciplineTexts;*/
-//}
+	return disciplineTexts;
+}
 
 void DisciplineScreen::setDisciplineIconSprite(Player& player) {
 	disciplineIconSprite = player.getPortraitSprite();

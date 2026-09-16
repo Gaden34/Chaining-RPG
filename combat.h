@@ -92,17 +92,6 @@ public:
 
 };
 
-class SkillMenu : public Menu {
-private:
-	int skillCount = 0;
-
-public:
-	SkillMenu();
-	void populate(const std::vector<std::unique_ptr<Skill>>& skills);
-	void draw(sf::RenderTarget& target);
-	int getSelectedIndex() const;
-};
-
 class QueuedActionMenu : public Menu {
 private:
 

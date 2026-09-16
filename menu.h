@@ -1,10 +1,12 @@
 #pragma once
 #include <vector>
+#include <memory>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
 class InputHandler;
 class Inventory;
+class Skill;
 
 class Menu {
 private:
@@ -68,4 +70,16 @@ public:
 	ItemMenu();
 	void populate(const Inventory& inventory, float x, float y, int maxVisible);
 	void draw(sf::RenderTarget& target);
+};
+
+// Shared skill list menu, reused by Combat and the discipline screen.
+class SkillMenu : public Menu {
+private:
+	int skillCount = 0;
+
+public:
+	SkillMenu();
+	void populate(const std::vector<std::unique_ptr<Skill>>& skills);
+	void draw(sf::RenderTarget& target);
+	int getSelectedIndex() const;
 };

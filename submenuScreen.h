@@ -32,8 +32,12 @@ private:
     sf::Sprite disciplineIconSprite;
     std::vector<sf::Text> disciplineTexts;
     DisciplineSelectMenu disciplineSelectMenu;
+    SkillMenu skillMenu;
+    sf::Text skillDescriptionText;
     float disciplineSpacingY = 20.f;
     bool inDisciplineSelection = false;
+
+    void buildSkillDescription(Player& player);
 
 public:
     DisciplineScreen();
@@ -41,6 +45,7 @@ public:
     bool isInDisciplineSelection() const { return inDisciplineSelection; }
     void setInDisciplineSelection(bool inSelection) { inDisciplineSelection = inSelection; }
     DisciplineSelectMenu& getDisciplineSelectMenu() { return disciplineSelectMenu; }
+    SkillMenu& getSkillMenu() { return skillMenu; }
    // std::vector<sf::Text>& buildDisciplineProfile(Player& player);
     void setDisciplineIconSprite(Player& player);
 };

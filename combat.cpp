@@ -909,49 +909,6 @@ CombatMenu::MenuOption CombatMenu::getSelectedOption() {
 }
 
 
-SkillMenu::SkillMenu() {
-	// Use base Menu font and set default position/spacing for this menu
-	setPosition(352.f, 300.f);
-	setOptionSpacing(12.f);
-}
-
-void SkillMenu::populate(const std::vector<std::unique_ptr<Skill>>& skills) {
-	optionTexts.clear();
-	skillCount = static_cast<int>(skills.size());
-
-	for (int i = 0; i < skillCount; i++) {
-		sf::Text text(skills[i]->getName() + " (" + std::to_string(skills[i]->getMpCost()) + " MP)", font, 12);
-		text.setPosition(menuX, menuY + i * optionSpacing);
-		text.setFillColor(sf::Color::Black);
-		optionTexts.push_back(text);
-	}
-
-	sf::Text backText("Back", font, 12);
-	backText.setPosition(menuX, menuY + skillCount * optionSpacing);
-	backText.setFillColor(sf::Color::Black);
-	optionTexts.push_back(backText);
-
-	selectedIndex = 0;
-}
-
-void SkillMenu::draw(sf::RenderTarget& target) {
-	if (skillCount == 0) {
-		sf::Text noSkills("No skills learned.", font, 12);
-		noSkills.setPosition(menuX, menuY - optionSpacing);
-		noSkills.setFillColor(sf::Color(128, 128, 128));
-		target.draw(noSkills);
-	}
-	for (int i = 0; i < static_cast<int>(optionTexts.size()); i++) {
-		optionTexts[i].setFillColor(i == selectedIndex ? sf::Color::White : sf::Color::Black);
-		target.draw(optionTexts[i]);
-	}
-}
-
-int SkillMenu::getSelectedIndex() const {
-	if (selectedIndex < skillCount) return selectedIndex;
-	return -1;
-}
-
 QueuedActionMenu::QueuedActionMenu() {
 	// Use base Menu font and set default position/spacing for this menu
 	setPosition(320.f, 300.f);

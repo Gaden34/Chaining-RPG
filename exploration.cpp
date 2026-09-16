@@ -98,6 +98,7 @@ void FieldMenu::selectState(std::vector<Player>& party) {
 			break;
 		case FieldMenu::Option::Discipline:
 			disciplineScreen.getDisciplineSelectMenu().populate(party[selectedMemberIndex]);
+			disciplineScreen.getSkillMenu().populate(party[selectedMemberIndex].getSkills());
 			currentState = FieldMenuState::DisciplineScreen;
 			break;
 		case FieldMenu::Option::Equipment:
@@ -221,17 +222,25 @@ void FieldMenu::handleDisciplineScreen(const InputHandler& inputHandler, std::ve
 	if (inputHandler.wasPressed(InputAction::MenuRight)) {
 		selectedMemberIndex = (selectedMemberIndex + 1) % party.size();
 		disciplineScreen.setNeedsRebuild(true);
+		disciplineScreen.getSkillMenu().populate(party[selectedMemberIndex].getSkills());
 	}
 	else if (inputHandler.wasPressed(InputAction::MenuLeft)) {
 		selectedMemberIndex = (selectedMemberIndex - 1 + party.size()) % party.size();
 		disciplineScreen.setNeedsRebuild(true);
+		disciplineScreen.getSkillMenu().populate(party[selectedMemberIndex].getSkills());
 	}
 
-	if (inputHandler.wasPressed(InputAction::MenuUp) && disciplineScreen.isInDisciplineSelection()) {
-		disciplineScreen.getDisciplineSelectMenu().moveUp();
+	if (inputHandler.wasPressed(InputAction::MenuUp)) {
+		if (disciplineScreen.isInDisciplineSelection())
+			disciplineScreen.getDisciplineSelectMenu().moveUp();
+		else
+			disciplineScreen.getSkillMenu().moveUp();
 	}
-	else if (inputHandler.wasPressed(InputAction::MenuDown) && disciplineScreen.isInDisciplineSelection()) {
-		disciplineScreen.getDisciplineSelectMenu().moveDown();
+	else if (inputHandler.wasPressed(InputAction::MenuDown)) {
+		if (disciplineScreen.isInDisciplineSelection())
+			disciplineScreen.getDisciplineSelectMenu().moveDown();
+		else
+			disciplineScreen.getSkillMenu().moveDown();
 	}
 
 	if (inputHandler.wasPressed(InputAction::Confirm)) {
