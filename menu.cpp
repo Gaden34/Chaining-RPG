@@ -102,7 +102,7 @@ SkillMenu::SkillMenu() {
 	setOptionSpacing(12.f);
 }
 
-void SkillMenu::populate(const std::vector<std::unique_ptr<Skill>>& skills) {
+void SkillMenu::populate(const std::vector<std::unique_ptr<Skill>>& skills, bool includeBack) {
 	optionTexts.clear();
 	reset();
 	skillCount = static_cast<int>(skills.size());
@@ -113,9 +113,11 @@ void SkillMenu::populate(const std::vector<std::unique_ptr<Skill>>& skills) {
 		optionTexts.push_back(text);
 	}
 
-	sf::Text backText("Back", font, 12);
-	backText.setFillColor(sf::Color::Black);
-	optionTexts.push_back(backText);
+	if (includeBack) {
+		sf::Text backText("Back", font, 12);
+		backText.setFillColor(sf::Color::Black);
+		optionTexts.push_back(backText);
+	}
 }
 
 void SkillMenu::draw(sf::RenderTarget& target) {

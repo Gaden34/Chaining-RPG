@@ -50,6 +50,7 @@ public:
     bool getLastLeftPressed() const { return lastLeftPressed; }
     bool getLastEnterPressed() const { return lastEnterPressed; }
     bool getLastEscapePressed() const { return lastEscapePressed; }
+	void setSelectedIndex(int index) { selectedIndex = index; }
     void setLastUpPressed(bool pressed) { lastUpPressed = pressed; }
     void setLastDownPressed(bool pressed) { lastDownPressed = pressed; }
     void setLastRightPressed(bool pressed) { lastRightPressed = pressed; }
@@ -79,7 +80,7 @@ private:
 
 public:
 	SkillMenu();
-	void populate(const std::vector<std::unique_ptr<Skill>>& skills);
+	void populate(const std::vector<std::unique_ptr<Skill>>& skills, bool includeBack = true);
 	void draw(sf::RenderTarget& target);
 	int getSelectedIndex() const;
 	int getSkillCount() const { return skillCount; }
