@@ -30,6 +30,10 @@ private:
 	DisciplineID discipline;
 	std::vector<DisciplineID> unlockedDisciplines = { DisciplineID::Mage, DisciplineID::Thief, DisciplineID::Combatant };
 	std::vector<std::unique_ptr<Skill>> skills;
+	sf::Sprite portraitSprite;
+	sf::Texture portraitTexture;
+	sf::Sprite battleSprite;
+	sf::Texture battleTexture;
 	Animation walkAnimation;
 	sf::Texture walkTexture;
 	Inventory& partyInventory;
@@ -38,7 +42,7 @@ private:
 	sf::FloatRect previousCollisionBox;
 
 public:
-	Player(MessageLog& m, std::string n, std::string textureName, std::string portraitTextureName, Inventory& inv);
+	Player(MessageLog& m, std::string n, std::string textureName, std::string portraitTextureName, std::string battleTextureName, Inventory& inv);
 	Player(const Player&) = delete;
 	Player& operator=(const Player&) = delete;
 	Player(Player&&) = default;
@@ -70,6 +74,8 @@ public:
 	void unlockLevelSkills();
 	bool hasSkill(const std::string& skillName) const;
 	Inventory& getInventory() override { return partyInventory; }
+	sf::Sprite& getPortraitSprite() { return portraitSprite; }
+	sf::Sprite& getBattleSprite() { return battleSprite; }
 	Animation& getWalkAnimation() { return walkAnimation; }
 	sf::FloatRect getCollisionBox(sf::Vector2f position) const;
 	sf::FloatRect getPreviousCollisionBox() const { return previousCollisionBox; }

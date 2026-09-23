@@ -299,5 +299,9 @@ void FieldMenu::handleStatusScreen(const InputHandler& inputHandler, std::vector
 		selectedMemberIndex = (selectedMemberIndex - 1 + party.size()) % party.size();
 		statusScreen.setNeedsRebuild(true);
 	}
+
+	if (inputHandler.wasPressed(InputAction::Cancel)) {
+		currentState = FieldMenuState::Main;
+	}
 }
 

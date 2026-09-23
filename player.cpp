@@ -45,12 +45,14 @@ const AxisInput verticalAxisInput = {
 	}; 
 }
 
-Player::Player(MessageLog& m, std::string n, std::string textureName, std::string portraitTextureName, Inventory& inv) : messageLog(m), partyInventory(inv) {
+Player::Player(MessageLog& m, std::string n, std::string textureName, std::string portraitTextureName, std::string battleTextureName, Inventory& inv) : messageLog(m), partyInventory(inv) {
 	name = n;
 	texture.loadFromFile("assets/" + textureName + ".png");
 	portraitTexture.loadFromFile("assets/" + portraitTextureName + ".png");
+	battleTexture.loadFromFile("assets/" + battleTextureName + ".png");
 	sprite.setTexture(texture);
 	portraitSprite.setTexture(portraitTexture);
+	battleSprite.setTexture(battleTexture);
 	moveSpeed = 120.f;
 	maxHp = 42;
 	hp = maxHp;

@@ -11,9 +11,6 @@ protected:
 	sf::Sprite sprite;
 	sf::Texture texture;
 
-	sf::Sprite portraitSprite;
-	sf::Texture portraitTexture;
-
 	std::string name;
 	int hp;
 	int mp;
@@ -54,7 +51,6 @@ public:
 	int getMagDefense() const { return magDefense; }
 	float getMoveSpeed() const { return moveSpeed; }
 	const sf::Sprite& getSprite() const { return sprite; }
-	sf::Sprite& getPortraitSprite() { return portraitSprite; }
 	void takeDamage(int amount);
 	bool isAlive() const { return alive; }
 	bool getStatsOutdated() const { return statsOutdated; }
