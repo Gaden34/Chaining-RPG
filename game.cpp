@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <vector>
 #include "item.h"
+#include "playerData.cpp"
 
 
 
@@ -14,8 +15,8 @@ Game::Game() : combat(party, messageLog, rng), combatTestSetup(party, messageLog
 	// Reserve space for party members to avoid moving Player objects
 	// which can invalidate sf::Sprite texture pointers (white squares).
 	party.reserve(2);
-	party.emplace_back(messageLog, "Gaden", "spiky", "spiky", "SpikyBattleSprite", partyInventory);
-	party.emplace_back(messageLog, "Kari", "bluey", "bluey", "bluey", partyInventory);
+	party.emplace_back(messageLog, "Gaden", PlayerSprites::Gaden, partyInventory);
+	party.emplace_back(messageLog, "Kari", PlayerSprites::Kari, partyInventory);
 	party[1].setDiscipline(DisciplineID::Combatant);
 	window.setFramerateLimit(60);
 

@@ -75,10 +75,13 @@
     <ClCompile Include="exploration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="statusScreen.cpp">
+    <ClCompile Include="menuScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="menuScreen.cpp">
+    <ClCompile Include="submenuScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="playerData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -146,10 +149,10 @@
     <ClInclude Include="exploration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="statusScreen.h">
+    <ClInclude Include="menuScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="menuScreen.h">
+    <ClInclude Include="submenuScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

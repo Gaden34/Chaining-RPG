@@ -275,6 +275,8 @@ void FieldMenu::handleDisciplineScreen(const InputHandler& inputHandler, std::ve
 		}
 		else {
 			disciplineScreen.getDisciplineSelectMenu().changeDiscipline(party[selectedMemberIndex]);
+			disciplineScreen.getSkillMenu().populate(party[selectedMemberIndex].getSkills(), false);
+			disciplineScreen.setNeedsRebuild(true);
 			disciplineScreen.setInDisciplineSelection(false);
 			statusScreen.setNeedsRebuild(true);
 		}

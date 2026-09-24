@@ -1,6 +1,6 @@
 #include "character.h"
 
-Character::Character(Character&& other) 
+Character::Character(Character&& other)
 	: texture(std::move(other.texture)),
 	name(std::move(other.name)),
 	hp(other.hp),

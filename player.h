@@ -21,6 +21,12 @@ struct AxisInput {
 	TransitionDirection positiveDirection;
 };
 
+struct SpritePaths {
+	std::string overworldTexturePath;
+	std::string portraitTexturePath;
+	std::string battleTexturePath;
+};
+
 class Player : public Character {
 private:
 	int level = 1;
@@ -42,7 +48,7 @@ private:
 	sf::FloatRect previousCollisionBox;
 
 public:
-	Player(MessageLog& m, std::string n, std::string textureName, std::string portraitTextureName, std::string battleTextureName, Inventory& inv);
+	Player(MessageLog& m, std::string n, const SpritePaths& spritePaths, Inventory& inv);
 	Player(const Player&) = delete;
 	Player& operator=(const Player&) = delete;
 	Player(Player&&) = default;

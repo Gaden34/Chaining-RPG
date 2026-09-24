@@ -37,6 +37,7 @@
     <ClCompile Include="messageLog.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="combat.cpp" />
+    <ClCompile Include="playerData.cpp" />
     <ClCompile Include="skill.cpp" />
     <ClCompile Include="skillDatabase.cpp" />
     <ClCompile Include="submenuScreen.cpp" />

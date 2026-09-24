@@ -45,11 +45,11 @@ const AxisInput verticalAxisInput = {
 	}; 
 }
 
-Player::Player(MessageLog& m, std::string n, std::string textureName, std::string portraitTextureName, std::string battleTextureName, Inventory& inv) : messageLog(m), partyInventory(inv) {
+Player::Player(MessageLog& m, std::string n, const SpritePaths& spritePaths, Inventory& inv) : messageLog(m), partyInventory(inv) {
 	name = n;
-	texture.loadFromFile("assets/" + textureName + ".png");
-	portraitTexture.loadFromFile("assets/" + portraitTextureName + ".png");
-	battleTexture.loadFromFile("assets/" + battleTextureName + ".png");
+	texture.loadFromFile(spritePaths.overworldTexturePath);
+	portraitTexture.loadFromFile(spritePaths.portraitTexturePath);
+	battleTexture.loadFromFile(spritePaths.battleTexturePath);
 	sprite.setTexture(texture);
 	portraitSprite.setTexture(portraitTexture);
 	battleSprite.setTexture(battleTexture);
@@ -212,7 +212,9 @@ void Player::setDiscipline(DisciplineID id) {
 	mp = maxMp;
 	attack = d.getBaseAttack();
 	magAttack = d.getBaseMagAttack();
+	skills.clear();
 	unlockLevelSkills();
+	setStatsOutdated(true);
 	
 }
 
@@ -243,14 +245,17 @@ void Player::unlockLevelSkills() {
     // Convert your DisciplineID enum to a string matching the JSON keys
     std::string disciplineStr = getDiscipline().getName(); 
 
-    // Fetch whatever skills are waiting for this exact milestone
-    auto newSkills = SkillDatabase::getSkillsForLevel(disciplineStr, level);
 
-    for (auto& skill : newSkills) {
-        if (!hasSkill(skill->getName())) {
-            learnSkill(std::move(skill));
-        }
-    }
+	// Fetch whatever skills are waiting for this exact milestone
+	auto newSkills = SkillDatabase::getSkillsForLevel(disciplineStr, level);
+
+
+
+	for (auto& skill : newSkills) {
+		if (!hasSkill(skill->getName())) {
+			learnSkill(std::move(skill));
+		}
+	}
 }
 
 bool Player::hasSkill(const std::string& skillName) const {
