@@ -157,6 +157,11 @@ bool AnimationLoader::loadAssetFromFile(const std::string& filePath, const std::
         clip.instant = clipNode.value("instant", false);
         clip.displayDuration = clipNode.value("displayDuration", 0.0f);
 
+        const std::string anchorStr = clipNode.value("anchor", "target");
+        if (anchorStr == "screen") clip.anchor = EffectAnchor::Screen;
+        else if (anchorStr == "caster") clip.anchor = EffectAnchor::Caster;
+        else clip.anchor = EffectAnchor::Target;
+
         // origin can be specified as a string like "bottom" or numeric originX/originY
         if (clipNode.contains("origin") && clipNode["origin"].is_string()) {
             std::string originStr = clipNode.value("origin", "");

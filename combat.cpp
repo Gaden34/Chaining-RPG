@@ -694,7 +694,7 @@ bool Combat::loadEffectAnimation(const std::string& animationName) {
 	return true;
 }
 
-int Combat::triggerSkillEffect(const std::string& animationName, Character& target, int instanceCount) {
+int Combat::triggerEffect(const std::string& animationName, Character* caster, Character* target, int instanceCount) {
 	if (!loadEffectAnimation(animationName)) {
 		return -1;
 	}
@@ -704,11 +704,18 @@ int Combat::triggerSkillEffect(const std::string& animationName, Character& targ
 	if (clipIt == asset.clips.end()) {
 		return -1;
 	}
+	const AnimationClip& clip = clipIt->second;
+
+	sf::Vector2f anchorCenter{ 0.f, 0.f };
+	if (clip.anchor == EffectAnchor::Target && target) {
+		const sf::FloatRect targetBounds = target->getGlobalBounds();
+		anchorCenter = sf::Vector2f(targetBounds.left + targetBounds.width / 2.f, targetBounds.top + targetBounds.height / 2.f);
+	} else if (clip.anchor == EffectAnchor::Caster && caster) {
+		const sf::FloatRect casterBounds = caster->getGlobalBounds();
+		anchorCenter = sf::Vector2f(casterBounds.left + casterBounds.width / 2.f, casterBounds.top + casterBounds.height / 2.f);
+	}
 
 	const int effectID = nextEffectID++;
-	const sf::FloatRect targetBounds = target.getGlobalBounds();
-	const sf::Vector2f targetCenter(targetBounds.left + targetBounds.width / 2.f, targetBounds.top + targetBounds.height / 2.f);
-
 	const float staggerInterval = 0.12f; // rapid succession delay between each drop
 	const int spreadRadius = 8; // horizontal jitter so multiple drops don't stack in a straight line
 
@@ -716,12 +723,17 @@ int Combat::triggerSkillEffect(const std::string& animationName, Character& targ
 		CombatVisualEffect effect;
 		effect.effectID = effectID;
 		// copy the clip into the animation (frames & loop)
-		effect.animation.setAnimation(clipIt->second);
+		effect.anchor = clip.anchor;
+		effect.animation.setAnimation(clip);
 		effect.sprite.setTexture(effectTextures[animationName], true);
 		effect.sprite.setTextureRect(effect.animation.getCurrentFrame());
 		// determine origin based on clip metadata if present
-		const AnimationClip& clip = clipIt->second;
 		const sf::IntRect currentRect = effect.animation.getCurrentFrame();
+
+		if (clip.anchor == EffectAnchor::Screen) {
+			effect.dropDuration = clip.displayDuration > 0.0f ? clip.displayDuration : 0.2f;
+			effect.startPosition = effect.targetPosition = { 0.f, 0.f };
+		} else {
 		if (clip.originX >= 0.0f && clip.originY >= 0.0f) {
 			effect.sprite.setOrigin(clip.originX, clip.originY);
 		} else {
@@ -729,7 +741,7 @@ int Combat::triggerSkillEffect(const std::string& animationName, Character& targ
 		}
 
 		const float offsetX = instanceCount > 1 ? static_cast<float>(randomRange(-spreadRadius, spreadRadius)) : 0.f;
-		effect.targetPosition = { targetCenter.x + offsetX, targetCenter.y };
+		effect.targetPosition = { anchorCenter.x + offsetX, anchorCenter.y };
 
 		if (clip.instant) {
 			// draw immediately at target and disappear after displayDuration
@@ -739,14 +751,23 @@ int Combat::triggerSkillEffect(const std::string& animationName, Character& targ
 			effect.startPosition = { effect.targetPosition.x - 200.f, effect.targetPosition.y - 200.f };
 			effect.dropDuration = 0.7f;
 		}
+			effect.sprite.setPosition(effect.startPosition);
+	}
 		effect.elapsedTime = 0.f;
 		effect.delay = i * staggerInterval;
-		effect.sprite.setPosition(effect.startPosition);
 
 		skillEffects.push_back(std::move(effect));
 	}
 
 	return effectID;
+}
+
+int Combat::triggerSkillEffect(const std::string& animationName, Character& target, int instanceCount) {
+	return triggerSkillEffect(animationName, &target, nullptr, instanceCount);
+}
+
+int Combat::triggerScreenEffect(const std::string& animationName) {
+	return triggerSkillEffect(animationName, nullptr, nullptr, 1);
 }
 
 bool Combat::isEffectFinished(int effectID) const {
@@ -759,34 +780,49 @@ bool Combat::isEffectFinished(int effectID) const {
 }
 
 void Combat::updateSkillEffect(float dt) {
-	for (auto& effect : skillEffects) {
-		if (effect.delay > 0.f) {
-			effect.delay -= dt;
-			continue;
-		}
+    for (auto& effect : skillEffects) {
+        if (effect.delay > 0.f) {
+            effect.delay -= dt;
+            continue;
+        }
 
-		effect.animation.update(dt);
-		effect.sprite.setTextureRect(effect.animation.getCurrentFrame());
+        effect.animation.update(dt);
+        effect.sprite.setTextureRect(effect.animation.getCurrentFrame());
+        effect.elapsedTime += dt;
 
-		effect.elapsedTime += dt;
-		const float t = std::min(effect.elapsedTime / effect.dropDuration, 1.0f);
-		effect.sprite.setPosition(
-			effect.startPosition.x + (effect.targetPosition.x - effect.startPosition.x) * t,
-			effect.startPosition.y + (effect.targetPosition.y - effect.startPosition.y) * t);
-	}
+        if (effect.anchor != EffectAnchor::Screen) {
+            const float t = std::min(effect.elapsedTime / effect.dropDuration, 1.0f);
+            effect.sprite.setPosition(
+                effect.startPosition.x + (effect.targetPosition.x - effect.startPosition.x) * t,
+                effect.startPosition.y + (effect.targetPosition.y - effect.startPosition.y) * t);
+        }
+    }
 
-	skillEffects.erase(
-		std::remove_if(skillEffects.begin(), skillEffects.end(),
-			[](const CombatVisualEffect& e) { return e.delay <= 0.f && e.elapsedTime >= e.dropDuration; }),
-		skillEffects.end());
+    skillEffects.erase(
+        std::remove_if(skillEffects.begin(), skillEffects.end(),
+            [](const CombatVisualEffect& e) { return e.delay <= 0.f && e.elapsedTime >= e.dropDuration; }),
+        skillEffects.end());
 }
 
 void Combat::drawSkillEffect(sf::RenderTarget& target) {
-	for (auto& effect : skillEffects) {
-		if (effect.delay <= 0.f) {
-			target.draw(effect.sprite);
-		}
-	}
+    for (auto& effect : skillEffects) {
+        if (effect.delay > 0.f) continue;
+
+        if (effect.anchor == EffectAnchor::Screen) {
+            const sf::Vector2u texSize = effect.sprite.getTexture()->getSize();
+            const sf::View& view = target.getView();
+            effect.sprite.setOrigin(texSize.x / 2.f, texSize.y / 2.f);
+            effect.sprite.setPosition(view.getCenter());
+            effect.sprite.setScale(view.getSize().x / texSize.x, view.getSize().y / texSize.y);
+
+            const float t = effect.dropDuration > 0.f ? std::min(effect.elapsedTime / effect.dropDuration, 1.0f) : 1.0f;
+            sf::Color c = effect.sprite.getColor();
+            c.a = static_cast<sf::Uint8>(255.f * (1.f - t));
+            effect.sprite.setColor(c);
+        }
+
+        target.draw(effect.sprite);
+    }
 }
 
 void Combat::updatePlayerAnimation(float dt) {

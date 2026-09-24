@@ -32,6 +32,7 @@ class Skill
 private:
 	std::string name;
 	std::string description;
+	std::string screenEffectName;
 	int mpCost;
 	SkillType type;
 	int baseDamage;
@@ -48,6 +49,10 @@ public:
 	SkillType getType() const { return type; }
 	const std::string& getAnimationName() const { return animationName; }
 	static SkillType getSkillTypeFromString(const std::string& type);
+	const std::string& getScreenEffectName() const { return screenEffectName; }
 	StealResult useSteal(Character& user, Character& target, std::mt19937& rng);
 };
 
+// if (!skill->getScreenEffectName().empty()) {
+    //triggerScreenEffect(skill->getScreenEffectName());
+//} in perform skill alongside existing triggerSkillEffect call

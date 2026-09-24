@@ -71,6 +71,7 @@ struct CombatVisualEffect {
 	float dropDuration = 0.5f;
 	float elapsedTime = 0.f;
 	float delay = 0.f; // holds the effect back so multi-hit skills stagger their drops
+	EffectAnchor anchor = EffectAnchor::Target;
 };
 
 struct EnemySpawn {
@@ -170,7 +171,9 @@ private:
 	void updatePlayerAnimation(float dt);
 	void updateEnemyAnimation(float dt);
 	bool loadEffectAnimation(const std::string& animationName);
+	int triggerEffect(const std::string& animationName, Character* caster, Character* target, int instanceCount = 1);
 	int triggerSkillEffect(const std::string& animationName, Character& target, int instanceCount = 1);
+	int triggerScreenEffect(const std::string& animationName);
 	bool isEffectFinished(int effectID) const;
 	void updateSkillEffect(float dt);
 	void drawSkillEffect(sf::RenderTarget& target);

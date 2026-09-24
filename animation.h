@@ -5,6 +5,8 @@
 #include <vector>
 
 
+enum class EffectAnchor { Target, Caster, Screen };
+
 struct AnimationFrame {
 	sf::IntRect rect;
 	float duration;
@@ -30,6 +32,7 @@ struct AnimationClip {
 	// Optional origin offset (pixels) to use when drawing the sprite. If both are negative, caller should use default.
 	float originX = -1.0f;
 	float originY = -1.0f;
+	EffectAnchor anchor = EffectAnchor::Target;
 };
 
 struct AnimationAsset {
