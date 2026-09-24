@@ -85,14 +85,12 @@ void DisciplineSelectMenu::changeDiscipline(Player& player) {
 DisciplineScreen::DisciplineScreen() : MenuScreen("assets/Roboto_Condensed-Black.ttf", "assets/statusScreen.png") {
 	skillMenu.setPosition(90.f, 92.f);
 	skillMenu.setOptionSpacing(16.f);
+	skillMenu.setSelectedIndex(-1); // No skill selected initially
 }
 
 void DisciplineScreen::draw(sf::RenderTarget& target, Player& player) {
 	target.draw(sprite);
 	target.draw(disciplineIconSprite);
-	if (!disciplineIconSprite.getTexture()) {
-		setDisciplineIconSprite(player);
-	}
 
 	for (const auto& renderText : buildDisciplineProfile(player)) {
 		target.draw(renderText); 
@@ -120,12 +118,12 @@ std::vector<sf::Text>& DisciplineScreen::buildDisciplineProfile(Player& player) 
 		return disciplineTexts;
 	}
 
-	//setDisciplineIconSprite(player);
+	setDisciplineIconSprite(player);
 
 	disciplineTexts.clear();
 	sf::Text nameText = TextUtils::createText("Name: " + player.getName(), font, 12, sf::Vector2f(90.f, 22.f), sf::Color::Black);
 	disciplineTexts.push_back(nameText);
-	sf::Text disciplineText = TextUtils::createText("Discipline: " + player.getDiscipline().getName(), font, 12, sf::Vector2f(90.f, 42.f), sf::Color::Black);
+	sf::Text disciplineText = TextUtils::createText("Discipline: " + player.getDiscipline().getName(), font, 12, sf::Vector2f(90.f, 42.f), skillListFocused ? sf::Color::Black : sf::Color::White);
 	disciplineTexts.push_back(disciplineText);
 	sf::Text levelText = TextUtils::createText("Level: " + std::to_string(player.getLevel()), font, 12, sf::Vector2f(90.f, 62.f), sf::Color::Black);
 	disciplineTexts.push_back(levelText);
@@ -136,7 +134,7 @@ std::vector<sf::Text>& DisciplineScreen::buildDisciplineProfile(Player& player) 
 }
 
 void DisciplineScreen::setDisciplineIconSprite(Player& player) {
-	disciplineIconSprite = player.getPortraitSprite();
+	disciplineIconSprite = player.getBattleSprite();
 	sf::FloatRect bounds = disciplineIconSprite.getGlobalBounds();
 	disciplineIconSprite.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
 	disciplineIconSprite.setPosition(52.f, 52.f);

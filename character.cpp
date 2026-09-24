@@ -1,8 +1,7 @@
 #include "character.h"
 
-Character::Character(Character&& other) 
+Character::Character(Character&& other)
 	: texture(std::move(other.texture)),
-	portraitTexture(std::move(other.portraitTexture)),
 	name(std::move(other.name)),
 	hp(other.hp),
 	mp(other.mp),
@@ -18,14 +17,11 @@ Character::Character(Character&& other)
 {
 	sprite.setTexture(texture);
 	sprite.setPosition(other.sprite.getPosition());
-	portraitSprite.setTexture(portraitTexture);
-	portraitSprite.setPosition(other.portraitSprite.getPosition());
 }
 
 Character& Character::operator=(Character&& other) {
 	if (this != &other) {
 		texture = std::move(other.texture);
-		portraitTexture = std::move(other.portraitTexture);
 		name = std::move(other.name);
 		hp = other.hp;
 		mp = other.mp;
@@ -41,8 +37,6 @@ Character& Character::operator=(Character&& other) {
 		//inventory = std::move(other.inventory);
 		sprite.setTexture(texture);
 		sprite.setPosition(other.sprite.getPosition());
-		portraitSprite.setTexture(portraitTexture);
-		portraitSprite.setPosition(other.portraitSprite.getPosition());
 	}
 	return *this;
 }

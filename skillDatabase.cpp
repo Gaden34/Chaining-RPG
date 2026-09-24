@@ -36,26 +36,28 @@ std::vector<std::unique_ptr<Skill>> SkillDatabase::getSkillsForLevel(const std::
     std::vector<std::unique_ptr<Skill>> unlockedSkills;
 
     // Check if we have any data for this combination
-    if (m_database.count(discipline) && m_database[discipline].count(level)) {
-        for (const auto& skillJson : m_database[discipline][level]) {
-            std::string typeStr = skillJson.value("type", "Attack");
-            SkillType skillType = Skill::getSkillTypeFromString(typeStr);
-            
-            // Extract values safely using .value(key, default_fallback)
-            auto skill = std::make_unique<Skill>(
-                skillJson.value("name", "Unknown Skill"),
-                skillJson.value("description", ""),
-                skillJson.value("mp_cost", 0),
-                skillType, 
-                skillJson.value("base_damage", 0),
-                skillJson.value("hits", std::vector<int>{}),
-                skillJson.value("animation", "")
-              );
+	for (int i = 1; i <= level; ++i) {
+		if (m_database.count(discipline) && m_database[discipline].count(i)) {
+			for (const auto& skillJson : m_database[discipline][i]) {
+				std::string typeStr = skillJson.value("type", "Attack");
+				SkillType skillType = Skill::getSkillTypeFromString(typeStr);
+
+				// Extract values safely using .value(key, default_fallback)
+				auto skill = std::make_unique<Skill>(
+					skillJson.value("name", "Unknown Skill"),
+					skillJson.value("description", ""),
+					skillJson.value("mp_cost", 0),
+					skillType,
+					skillJson.value("base_damage", 0),
+					skillJson.value("hits", std::vector<int>{}),
+					skillJson.value("animation", "")
+				);
 
             // Handle unique chain parameters if they exist in the JSON object
 
 
             unlockedSkills.push_back(std::move(skill));
+        }
         }
     }
     return unlockedSkills;

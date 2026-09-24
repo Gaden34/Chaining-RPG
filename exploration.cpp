@@ -78,10 +78,6 @@ void Exploration::openFieldMenu(InputHandler& inputHandler) {
 			currentState = ExplorationState::Exploring;
 			fieldMenu.reset();
 		}
-		else {
-			fieldMenu.setCurrentState(FieldMenuState::Main);
-		}
-		
 	}
 
 	if (fieldMenu.getCurrentState() == FieldMenuState::None) {
@@ -98,7 +94,13 @@ void FieldMenu::selectState(std::vector<Player>& party) {
 			break;
 		case FieldMenu::Option::Discipline:
 			disciplineScreen.getDisciplineSelectMenu().populate(party[selectedMemberIndex]);
-			disciplineScreen.getSkillMenu().populate(party[selectedMemberIndex].getSkills());
+			// When opening from the field menu, do not include the "Back" entry
+			// in the skill list used for viewing skills on the Discipline screen.
+			disciplineScreen.getSkillMenu().populate(party[selectedMemberIndex].getSkills(), false);
+			// Ensure we start with the skill list focused (not the discipline selection)
+			disciplineScreen.setInDisciplineSelection(false);
+			disciplineScreen.setSkillListFocused(false);
+			disciplineScreen.getSkillMenu().setSelectedIndex(-1);
 			currentState = FieldMenuState::DisciplineScreen;
 			break;
 		case FieldMenu::Option::Equipment:
@@ -222,32 +224,48 @@ void FieldMenu::handleDisciplineScreen(const InputHandler& inputHandler, std::ve
 	if (inputHandler.wasPressed(InputAction::MenuRight)) {
 		selectedMemberIndex = (selectedMemberIndex + 1) % party.size();
 		disciplineScreen.setNeedsRebuild(true);
-		disciplineScreen.getSkillMenu().populate(party[selectedMemberIndex].getSkills());
+		disciplineScreen.getSkillMenu().populate(party[selectedMemberIndex].getSkills(), false);
 	}
 	else if (inputHandler.wasPressed(InputAction::MenuLeft)) {
 		selectedMemberIndex = (selectedMemberIndex - 1 + party.size()) % party.size();
 		disciplineScreen.setNeedsRebuild(true);
-		disciplineScreen.getSkillMenu().populate(party[selectedMemberIndex].getSkills());
+		disciplineScreen.getSkillMenu().populate(party[selectedMemberIndex].getSkills(), false);
 	}
 
 	if (inputHandler.wasPressed(InputAction::MenuUp)) {
-		if (disciplineScreen.isInDisciplineSelection())
+		if (disciplineScreen.isInDisciplineSelection()) {
 			disciplineScreen.getDisciplineSelectMenu().moveUp();
-		else if (disciplineScreen.isSkillListFocused())
-			if (disciplineScreen.getSkillMenu().getSelectedIndex() == 0)
+		}
+		else if (!disciplineScreen.isSkillListFocused()) {
+			disciplineScreen.getSkillMenu().setSelectedIndex(disciplineScreen.getSkillMenu().getSkillCount() - 1);
+			disciplineScreen.setSkillListFocused(true);
+		}
+		else if (disciplineScreen.isSkillListFocused()) {
+			if (disciplineScreen.getSkillMenu().getSelectedIndex() == 0) {
 				disciplineScreen.setSkillListFocused(false);
-			else
+				disciplineScreen.getSkillMenu().setSelectedIndex(-1);
+			}
+			else {
 				disciplineScreen.getSkillMenu().moveUp();
+			}
+		}
 	}
 	else if (inputHandler.wasPressed(InputAction::MenuDown)) {
 		if (disciplineScreen.isInDisciplineSelection()) {
 			disciplineScreen.getDisciplineSelectMenu().moveDown();
 		}
+		else if (!disciplineScreen.isSkillListFocused()) {
+			disciplineScreen.getSkillMenu().setSelectedIndex(0);
+			disciplineScreen.setSkillListFocused(true);
+		}
 		else if (disciplineScreen.isSkillListFocused()) {
-			if (disciplineScreen.getSkillMenu().getSelectedIndex() == disciplineScreen.getSkillMenu().getSkillCount() - 1)
+			if (disciplineScreen.getSkillMenu().getSelectedIndex() == disciplineScreen.getSkillMenu().getSkillCount() - 1) {
 				disciplineScreen.setSkillListFocused(false);
-			else
+				disciplineScreen.getSkillMenu().setSelectedIndex(-1);
+			}
+			else {
 				disciplineScreen.getSkillMenu().moveDown();
+			}
 		}
 	}
 
@@ -257,6 +275,8 @@ void FieldMenu::handleDisciplineScreen(const InputHandler& inputHandler, std::ve
 		}
 		else {
 			disciplineScreen.getDisciplineSelectMenu().changeDiscipline(party[selectedMemberIndex]);
+			disciplineScreen.getSkillMenu().populate(party[selectedMemberIndex].getSkills(), false);
+			disciplineScreen.setNeedsRebuild(true);
 			disciplineScreen.setInDisciplineSelection(false);
 			statusScreen.setNeedsRebuild(true);
 		}
@@ -280,6 +300,10 @@ void FieldMenu::handleStatusScreen(const InputHandler& inputHandler, std::vector
 	else if (inputHandler.wasPressed(InputAction::MenuLeft)) {
 		selectedMemberIndex = (selectedMemberIndex - 1 + party.size()) % party.size();
 		statusScreen.setNeedsRebuild(true);
+	}
+
+	if (inputHandler.wasPressed(InputAction::Cancel)) {
+		currentState = FieldMenuState::Main;
 	}
 }
 

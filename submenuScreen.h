@@ -44,11 +44,11 @@ public:
     DisciplineScreen();
     void draw(sf::RenderTarget& target, Player& player);
     bool isInDisciplineSelection() const { return inDisciplineSelection; }
-    void setInDisciplineSelection(bool inSelection) { inDisciplineSelection = inSelection; }
+    void setInDisciplineSelection(bool inSelection) { inDisciplineSelection = inSelection; setNeedsRebuild(true); }
     DisciplineSelectMenu& getDisciplineSelectMenu() { return disciplineSelectMenu; }
     SkillMenu& getSkillMenu() { return skillMenu; }
     bool isSkillListFocused() const { return skillListFocused; }
-    void setSkillListFocused(bool focused) { skillListFocused = focused; }
+    void setSkillListFocused(bool focused) { skillListFocused = focused; setNeedsRebuild(true); }
     std::vector<sf::Text>& buildDisciplineProfile(Player& player);
     void setDisciplineIconSprite(Player& player);
 };

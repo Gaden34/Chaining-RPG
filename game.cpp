@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <vector>
 #include "item.h"
+#include "playerData.cpp"
 
 
 
@@ -11,8 +12,11 @@ Game::Game() : combat(party, messageLog, rng), combatTestSetup(party, messageLog
 	gameTexture.create(640, 360);
 	SkillDatabase::loadSkills("skills.json");
 	ItemDatabase::loadItems("items.json");
-	party.emplace_back(messageLog, "Gaden", "spiky", "spiky", partyInventory);
-	party.emplace_back(messageLog, "Kari", "bluey", "bluey", partyInventory);
+	// Reserve space for party members to avoid moving Player objects
+	// which can invalidate sf::Sprite texture pointers (white squares).
+	party.reserve(2);
+	party.emplace_back(messageLog, "Gaden", PlayerSprites::Gaden, partyInventory);
+	party.emplace_back(messageLog, "Kari", PlayerSprites::Kari, partyInventory);
 	party[1].setDiscipline(DisciplineID::Combatant);
 	window.setFramerateLimit(60);
 
