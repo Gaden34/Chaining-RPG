@@ -51,6 +51,7 @@ std::vector<std::unique_ptr<Skill>> SkillDatabase::getSkillsForLevel(const std::
 					skillJson.value("base_damage", 0),
 					skillJson.value("hits", std::vector<int>{}),
 					skillJson.value("animation", "")
+                    skillJson.value("screen_effect", "")
 				);
 
             // Handle unique chain parameters if they exist in the JSON object

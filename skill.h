@@ -40,7 +40,7 @@ private:
 	std::string animationName;
 
 public:
-	Skill(const std::string& name, const std::string& description, int mpCost, SkillType type, int baseDamage, const std::vector<int>& hits = {}, const std::string& animationName = "");
+	Skill(const std::string& name, const std::string& description, int mpCost, SkillType type, int baseDamage, const std::vector<int>& hits = {}, const std::string& animationName = "", const std::string& screenEffectName = "");
 	std::vector<int> getHits() const;
 	const std::string& getName() const { return name; }
 	const std::string& getDescription() const { return description; }
@@ -53,6 +53,3 @@ public:
 	StealResult useSteal(Character& user, Character& target, std::mt19937& rng);
 };
 
-// if (!skill->getScreenEffectName().empty()) {
-    //triggerScreenEffect(skill->getScreenEffectName());
-//} in perform skill alongside existing triggerSkillEffect call

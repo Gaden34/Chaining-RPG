@@ -867,11 +867,11 @@ void Combat::drawSkillEffect(sf::RenderTarget& target) {
         if (effect.delay > 0.f) continue;
 
         if (effect.anchor == EffectAnchor::Screen) {
-            const sf::Vector2u texSize = effect.sprite.getTexture()->getSize();
+            const sf::Vector2u textureSize = effect.sprite.getTexture()->getSize();
             const sf::View& view = target.getView();
-            effect.sprite.setOrigin(texSize.x / 2.f, texSize.y / 2.f);
+            effect.sprite.setOrigin(textureSize.x / 2.f, textureSize.y / 2.f);
             effect.sprite.setPosition(view.getCenter());
-            effect.sprite.setScale(view.getSize().x / texSize.x, view.getSize().y / texSize.y);
+            effect.sprite.setScale(view.getSize().x / textureSize.x, view.getSize().y / textureSize.y);
 
             const float t = effect.dropDuration > 0.f ? std::min(effect.elapsedTime / effect.dropDuration, 1.0f) : 1.0f;
             sf::Color c = effect.sprite.getColor();

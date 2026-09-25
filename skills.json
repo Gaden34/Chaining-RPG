@@ -25,7 +25,8 @@
           "hits": [ 1 ],
           "chain_window": 0.2,
           "chain_damage_pct": 25.0,
-          "animation": "lightning bolt"
+          "animation": "lightning bolt",
+          "screen_effect": "lightning flash"
         }
       ],
       "5": [
