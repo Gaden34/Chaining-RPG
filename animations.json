@@ -18,15 +18,15 @@
 		"texture": "assets/Fireball-Sheet.png",
 		"animations": {
 			"cast": {
-					"totalFrames": 4,
-					"columns": 4,
-					"frameWidth": 12,
-					"frameHeight": 12,
-					"frameDuration": 0.1,
-					"startX": 0,
-					"startY": 0,
-					"loop": true
-				}
+				"totalFrames": 4,
+				"columns": 4,
+				"frameWidth": 12,
+				"frameHeight": 12,
+				"frameDuration": 0.1,
+				"startX": 0,
+				"startY": 0,
+				"loop": true
+			}
 		}
 	},
 	"lightning bolt": {
@@ -43,39 +43,25 @@
 				"loop": false,
 				"instant": true,
 				"originX": 180,
-        "originY": 359,
+				"originY": 359,
 				"displayDuration": 0.12
+			}
+		}
+	},
+	"lightning flash": {
+		"texture": "assets/Flash-Sheet.png",
+		"animations": {
+			"cast": {
+				"totalFrames": 3,
+				"columns": 1,
+				"frameWidth": 640,
+				"frameHeight": 360,
+				"frameDuration": 0.1,
+				"loop": false,
+				"anchor": "screen",
+				"displayDuration": 0.25
 			}
 		}
 	}
 }
-
-"slash": {
-    "texture": "assets/Slash-Sheet.png",
-    "animations": {
-        "cast": {
-            "totalFrames": 4,
-            "columns": 4,
-            "frameWidth": 32,
-            "frameHeight": 32,
-            "frameDuration": 0.06,
-            "loop": false,
-            "anchor": "target"
-        }
-    }
-},
-"lightningFlash": {
-    "texture": "assets/WhiteFlash.png",
-    "animations": {
-        "cast": {
-            "totalFrames": 1,
-            "columns": 1,
-            "frameWidth": 4,
-            "frameHeight": 4,
-            "frameDuration": 0.2,
-            "loop": false,
-            "anchor": "screen",
-            "displayDuration": 0.25
-        }
-    }
 }

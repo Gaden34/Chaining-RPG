@@ -115,6 +115,12 @@ void Combat::start() {
 	queuedConsumableCounts.clear();
 	currentAction = {};
 	skillEffects.clear();
+	// Clear any pending visual/skill state from a previous combat so pointers to old
+	// characters don't get used when a new battle starts.
+	pendingSkillActions.clear();
+	activeAnimations.clear();
+	animationTimer = 0.f;
+	nextEffectID = 0;
 	menu.reset();
 	itemMenu.reset();
 	enemies.clear();
@@ -427,17 +433,36 @@ void Combat::performSkill(QueuedAction& action) {
 		return;
 	}
 	player->setMp(player->getMp() - skill->getMpCost());
+	// Special-case: Lightning Bolt should show a full-screen flash before the bolt.
+	// Trigger the flash first and defer applying the skill (visual + damage) until the flash completes.
+	if (skill && skill->getName() == "Lightning Bolt") {
+		int screenEffectID = triggerScreenEffect("lightning flash");
+		if (screenEffectID != -1) {
+			// Store the full action and wait for the flash to finish in updateSkillEffect
+			pendingSkillActions.push_back({ action, screenEffectID });
+			return;
+		}
+		// fallback: if the screen effect failed, continue normally
+	}
+
 	if (!skill->getAnimationName().empty()) {
 		int effectID = triggerSkillEffect(skill->getAnimationName(), *target, static_cast<int>(skill->getHits().size()));
 
+		if (!skill->getScreenEffectName().empty()) {
+			triggerScreenEffect(skill->getScreenEffectName());
+		}
+
 		if (effectID != -1) {
+			// Note: existing codebase calculates damage immediately for most skills.
+			// We only defer Lightning Bolt above. For consistency we still record the effect id (unused elsewhere).
 			pendingSkillActions.push_back({ action, effectID });
 		}
 	}
 
-		calculateSkillDamage(skill, player, target);
-		handleSteal(skill, player, target);
-		handleDeath(*target);
+	// Apply skill effects immediately for non-delayed skills (Lightning Bolt is handled above)
+	calculateSkillDamage(skill, player, target);
+	handleSteal(skill, player, target);
+	handleDeath(*target);
 }
 
 void Combat::performItem(QueuedAction& action) {
@@ -763,11 +788,12 @@ int Combat::triggerEffect(const std::string& animationName, Character* caster, C
 }
 
 int Combat::triggerSkillEffect(const std::string& animationName, Character& target, int instanceCount) {
-	return triggerSkillEffect(animationName, &target, nullptr, instanceCount);
+	// target should be passed as the target parameter to triggerEffect (caster == nullptr)
+	return triggerEffect(animationName, nullptr, &target, instanceCount);
 }
 
 int Combat::triggerScreenEffect(const std::string& animationName) {
-	return triggerSkillEffect(animationName, nullptr, nullptr, 1);
+	return triggerEffect(animationName, nullptr, nullptr, 1);
 }
 
 bool Combat::isEffectFinished(int effectID) const {
@@ -802,6 +828,38 @@ void Combat::updateSkillEffect(float dt) {
         std::remove_if(skillEffects.begin(), skillEffects.end(),
             [](const CombatVisualEffect& e) { return e.delay <= 0.f && e.elapsedTime >= e.dropDuration; }),
         skillEffects.end());
+
+	// After updating/erasing visual effects, check for any pending skill actions that were
+	// deferred waiting on a screen effect (e.g., lightning flash). For Lightning Bolt we
+	// trigger the visual lightning strike and then apply damage.
+	if (!pendingSkillActions.empty()) {
+		// Iterate with index so we can remove processed entries
+		for (int i = static_cast<int>(pendingSkillActions.size()) - 1; i >= 0; --i) {
+			const PendingSkillAction& pending = pendingSkillActions[i];
+			// If the effect we were waiting on has finished, process the stored action
+			if (isEffectFinished(pending.effectID)) {
+				QueuedAction action = pending.action;
+
+				// If this was the lightning flash for Lightning Bolt, trigger the bolt animation
+				if (action.skill && action.skill->getName() == "Lightning Bolt") {
+					if (!action.skill->getAnimationName().empty() && action.target) {
+						triggerSkillEffect(action.skill->getAnimationName(), *action.target, static_cast<int>(action.skill->getHits().size()));
+					}
+
+					// Apply the skill effects now that visuals have run
+					Player* player = static_cast<Player*>(action.actor);
+					if (player && action.skill && action.target) {
+						calculateSkillDamage(action.skill, player, action.target);
+						handleSteal(action.skill, player, action.target);
+						handleDeath(*action.target);
+					}
+				}
+
+				// Remove the pending entry
+				pendingSkillActions.erase(pendingSkillActions.begin() + i);
+			}
+		}
+	}
 }
 
 void Combat::drawSkillEffect(sf::RenderTarget& target) {
