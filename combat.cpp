@@ -435,8 +435,8 @@ void Combat::performSkill(QueuedAction& action) {
 	player->setMp(player->getMp() - skill->getMpCost());
 	// Special-case: Lightning Bolt should show a full-screen flash before the bolt.
 	// Trigger the flash first and defer applying the skill (visual + damage) until the flash completes.
-	if (skill && skill->getName() == "Lightning Bolt") {
-		int screenEffectID = triggerScreenEffect("lightning flash");
+	if (skill && !skill->getScreenEffectName().empty()) {
+		int screenEffectID = triggerScreenEffect(skill->getScreenEffectName());
 		if (screenEffectID != -1) {
 			// Store the full action and wait for the flash to finish in updateSkillEffect
 			pendingSkillActions.push_back({ action, screenEffectID });
@@ -445,16 +445,10 @@ void Combat::performSkill(QueuedAction& action) {
 		// fallback: if the screen effect failed, continue normally
 	}
 
+
 	if (!skill->getAnimationName().empty()) {
 		int effectID = triggerSkillEffect(skill->getAnimationName(), *target, static_cast<int>(skill->getHits().size()));
-
-		if (!skill->getScreenEffectName().empty()) {
-			triggerScreenEffect(skill->getScreenEffectName());
-		}
-
 		if (effectID != -1) {
-			// Note: existing codebase calculates damage immediately for most skills.
-			// We only defer Lightning Bolt above. For consistency we still record the effect id (unused elsewhere).
 			pendingSkillActions.push_back({ action, effectID });
 		}
 	}
@@ -841,9 +835,12 @@ void Combat::updateSkillEffect(float dt) {
 				QueuedAction action = pending.action;
 
 				// If this was the lightning flash for Lightning Bolt, trigger the bolt animation
-				if (action.skill && action.skill->getName() == "Lightning Bolt") {
-					if (!action.skill->getAnimationName().empty() && action.target) {
-						triggerSkillEffect(action.skill->getAnimationName(), *action.target, static_cast<int>(action.skill->getHits().size()));
+				if (isEffectFinished(pending.effectID)) {
+					QueuedAction action = pending.action;
+					Skill* skill = action.skill;
+
+					if (skill && !skill->getAnimationName().empty() && action.target) {
+						triggerSkillEffect(skill->getAnimationName(), *action.target, static_cast<int>(skill->getHits().size()));
 					}
 
 					// Apply the skill effects now that visuals have run
