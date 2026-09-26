@@ -50,7 +50,7 @@ std::vector<std::unique_ptr<Skill>> SkillDatabase::getSkillsForLevel(const std::
 					skillType,
 					skillJson.value("base_damage", 0),
 					skillJson.value("hits", std::vector<int>{}),
-					skillJson.value("animation", "")
+					skillJson.value("animation", ""),
                     skillJson.value("screen_effect", "")
 				);
 

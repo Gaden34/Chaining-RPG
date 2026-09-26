@@ -50,6 +50,9 @@ struct QueuedAction {
 struct PendingSkillAction {
 	QueuedAction action;
 	int effectID = -1;
+	// If true, this pending entry represents a screen effect (e.g., lightning flash)
+	// that should trigger the skill visuals and apply damage when it finishes.
+	bool waitForScreenEffect = false;
 };
 
 struct ActiveAnimation {

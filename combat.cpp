@@ -439,7 +439,7 @@ void Combat::performSkill(QueuedAction& action) {
 		int screenEffectID = triggerScreenEffect(skill->getScreenEffectName());
 		if (screenEffectID != -1) {
 			// Store the full action and wait for the flash to finish in updateSkillEffect
-			pendingSkillActions.push_back({ action, screenEffectID });
+			pendingSkillActions.push_back({ action, screenEffectID, true });
 			return;
 		}
 		// fallback: if the screen effect failed, continue normally
@@ -449,7 +449,9 @@ void Combat::performSkill(QueuedAction& action) {
 	if (!skill->getAnimationName().empty()) {
 		int effectID = triggerSkillEffect(skill->getAnimationName(), *target, static_cast<int>(skill->getHits().size()));
 		if (effectID != -1) {
-			pendingSkillActions.push_back({ action, effectID });
+			// This pending entry is for the skill's own animation; damage was applied immediately
+			// so mark waitForScreenEffect = false to indicate no further processing is needed
+			pendingSkillActions.push_back({ action, effectID, false });
 		}
 	}
 
@@ -823,38 +825,36 @@ void Combat::updateSkillEffect(float dt) {
             [](const CombatVisualEffect& e) { return e.delay <= 0.f && e.elapsedTime >= e.dropDuration; }),
         skillEffects.end());
 
-	// After updating/erasing visual effects, check for any pending skill actions that were
-	// deferred waiting on a screen effect (e.g., lightning flash). For Lightning Bolt we
-	// trigger the visual lightning strike and then apply damage.
+	// After updating/erasing visual effects, check for any pending skill actions.
+	// Only entries that were waiting for a screen effect should trigger the skill
+	// visuals and apply damage now. Entries created for a skill's own animation
+	// have already applied effects in performSkill and only need to be removed once
+	// their animation finishes.
 	if (!pendingSkillActions.empty()) {
-		// Iterate with index so we can remove processed entries
 		for (int i = static_cast<int>(pendingSkillActions.size()) - 1; i >= 0; --i) {
 			const PendingSkillAction& pending = pendingSkillActions[i];
-			// If the effect we were waiting on has finished, process the stored action
-			if (isEffectFinished(pending.effectID)) {
-				QueuedAction action = pending.action;
+			if (!isEffectFinished(pending.effectID)) continue;
 
-				// If this was the lightning flash for Lightning Bolt, trigger the bolt animation
-				if (isEffectFinished(pending.effectID)) {
-					QueuedAction action = pending.action;
-					Skill* skill = action.skill;
+			QueuedAction action = pending.action;
+			Skill* skill = action.skill;
 
-					if (skill && !skill->getAnimationName().empty() && action.target) {
-						triggerSkillEffect(skill->getAnimationName(), *action.target, static_cast<int>(skill->getHits().size()));
-					}
-
-					// Apply the skill effects now that visuals have run
-					Player* player = static_cast<Player*>(action.actor);
-					if (player && action.skill && action.target) {
-						calculateSkillDamage(action.skill, player, action.target);
-						handleSteal(action.skill, player, action.target);
-						handleDeath(*action.target);
-					}
+			if (pending.waitForScreenEffect) {
+				// This was a screen effect (e.g., lightning flash) that now finished.
+				// Trigger the skill animation (if any) and then apply the skill effects.
+				if (skill && !skill->getAnimationName().empty() && action.target) {
+					triggerSkillEffect(skill->getAnimationName(), *action.target, static_cast<int>(skill->getHits().size()));
 				}
 
-				// Remove the pending entry
-				pendingSkillActions.erase(pendingSkillActions.begin() + i);
+				Player* player = static_cast<Player*>(action.actor);
+				if (player && skill && action.target) {
+					calculateSkillDamage(skill, player, action.target);
+					handleSteal(skill, player, action.target);
+					handleDeath(*action.target);
+				}
 			}
+
+			// Remove the pending entry
+			pendingSkillActions.erase(pendingSkillActions.begin() + i);
 		}
 	}
 }
