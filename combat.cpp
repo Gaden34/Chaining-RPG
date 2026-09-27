@@ -131,10 +131,18 @@ void Combat::start() {
 		}
 		for (int i = 0; i < spawn.count; ++i) {
 			enemies.emplace_back(*spawn.data);
+			// assign a stable instance id so queued actions can later resolve
+			enemies.back().setInstanceId(nextEnemyInstanceId++);
 		}
 	}
 
 	if (enemies.empty()) return;
+
+	// Debug: print enemies buffer info after creation
+	std::cout << "[DEBUG] start(): enemies.data=" << enemies.data() << " size=" << enemies.size() << " cap=" << enemies.capacity() << "\n";
+	for (size_t i = 0; i < enemies.size(); ++i) {
+		std::cout << "[DEBUG] enemy[" << i << "] id=" << enemies[i].getInstanceId() << " hp=" << enemies[i].getHp() << "\n";
+	}
 
 	for (int i = 0; i < party.size(); i++) {
 		party[i].setPosition(175.f, 180.f + i * 40);
@@ -365,6 +373,13 @@ void Combat::targetCharacter(const InputHandler& input) {
 	}
 	if (input.wasPressed(InputAction::Confirm)) {
 		currentAction.target = validTargets[validTargetIndex];
+		// Store a stable id for this target so we can re-resolve it later if
+		// the enemies vector gets reallocated or elements move.
+		if (currentAction.target) {
+			currentAction.targetInstanceId = currentAction.target->getInstanceId();
+		}
+		// Debug: log queued target info (after instance id recorded)
+		std::cout << "[DEBUG] targetCharacter(): queued target ptr=" << currentAction.target << " instanceId=" << currentAction.targetInstanceId << " validIndex=" << validTargetIndex << " validTargetsSize=" << validTargets.size() << "\n";
 		if (currentAction.type == ActionType::Item && currentAction.item != nullptr) {
 			reserveConsumableItem(*currentAction.item);
 		}
@@ -418,10 +433,6 @@ void Combat::performAttack(QueuedAction& action) {
 	messageLog.addMessage(player->getName() + " hits the " + TextUtils::lowerFirst(target->getName()) + " for " + std::to_string(finalDamage) + " damage!", sf::Color::Black);
 
 	handleDeath(*target);
-	if (actionQueue.empty()) {
-		eraseDeadEnemies();
-		resetEnemyIndex();
-	}
 }
 
 void Combat::performSkill(QueuedAction& action) {
@@ -611,7 +622,23 @@ void Combat::handleQueuedActionMenu(const InputHandler& input) {
 	if (input.wasPressed(InputAction::Confirm)) {
 		int selectedIndex = queuedActionMenu.getSelectedIndex();
 		if (selectedIndex >= 0 && selectedIndex < actionQueue.size()) {
-			if (!actionQueue[selectedIndex].target->isAlive()) {
+			// Debug: print enemies buffer before executing queued action
+			std::cout << "[DEBUG] handleQueuedActionMenu(): before execute enemies.data=" << enemies.data() << " size=" << enemies.size() << " cap=" << enemies.capacity() << "\n";
+			std::cout << "[DEBUG] action[" << selectedIndex << "] targetPtr=" << actionQueue[selectedIndex].target << " targetId=" << actionQueue[selectedIndex].targetInstanceId << "\n";
+			// Ensure target pointer is resolved to a current enemy object. The enemies
+			// vector may have been reallocated/moved since the action was queued, so
+			// prefer resolving by the stored instance id if available.
+			if ((actionQueue[selectedIndex].target == nullptr || actionQueue[selectedIndex].target->getInstanceId() != actionQueue[selectedIndex].targetInstanceId) &&
+				actionQueue[selectedIndex].targetInstanceId >= 0) {
+				for (auto& enemy : enemies) {
+					if (enemy.getInstanceId() == actionQueue[selectedIndex].targetInstanceId) {
+						actionQueue[selectedIndex].target = &enemy;
+						break;
+					}
+				}
+			}
+
+			if (actionQueue[selectedIndex].target == nullptr || !actionQueue[selectedIndex].target->isAlive()) {
 				for (auto& enemy : enemies) {
 					if (enemy.isAlive()) {
 						actionQueue[selectedIndex].target = &enemy;
@@ -838,6 +865,33 @@ void Combat::updateSkillEffect(float dt) {
 			QueuedAction action = pending.action;
 			Skill* skill = action.skill;
 
+			// Resolve target by instance id if available. The copied QueuedAction may
+			// contain a stale pointer if enemies moved; prefer resolving using
+			// targetInstanceId recorded when the action was queued.
+			if ((action.target == nullptr || action.target->getInstanceId() != action.targetInstanceId) &&
+				action.targetInstanceId >= 0) {
+				for (auto& enemy : enemies) {
+					if (enemy.getInstanceId() == action.targetInstanceId) {
+						action.target = &enemy;
+						break;
+					}
+				}
+			}
+
+			// If the resolved target is dead or missing, fall back to first alive enemy.
+			if (action.target == nullptr || !action.target->isAlive()) {
+				action.target = nullptr;
+				for (auto& enemy : enemies) {
+					if (enemy.isAlive()) {
+						action.target = &enemy;
+						break;
+					}
+				}
+			}
+
+			// Debug: print resolution info for pending action
+			std::cout << "[DEBUG] pendingSkillActions: effectID=" << pending.effectID << " resolved targetPtr=" << action.target << " targetId=" << action.targetInstanceId << " enemies.data=" << enemies.data() << " size=" << enemies.size() << " cap=" << enemies.capacity() << "\n";
+
 			if (pending.waitForScreenEffect) {
 				// This was a screen effect (e.g., lightning flash) that now finished.
 				// Trigger the skill animation (if any) and then apply the skill effects.
@@ -863,18 +917,32 @@ void Combat::drawSkillEffect(sf::RenderTarget& target) {
     for (auto& effect : skillEffects) {
         if (effect.delay > 0.f) continue;
 
-        if (effect.anchor == EffectAnchor::Screen) {
-            const sf::Vector2u textureSize = effect.sprite.getTexture()->getSize();
-            const sf::View& view = target.getView();
-            effect.sprite.setOrigin(textureSize.x / 2.f, textureSize.y / 2.f);
-            effect.sprite.setPosition(view.getCenter());
-            effect.sprite.setScale(view.getSize().x / textureSize.x, view.getSize().y / textureSize.y);
+		if (effect.anchor == EffectAnchor::Screen) {
+			// Use the current frame size (texture rect) when computing origin and scale.
+			// The texture may be an atlas, and using the full texture size will cause
+			// the visible rect (single frame) to cover only a portion of the view.
+			const sf::IntRect rect = effect.animation.getCurrentFrame();
+			const sf::Vector2f rectSize(static_cast<float>(rect.width), static_cast<float>(rect.height));
+			const sf::View& view = target.getView();
 
-            const float t = effect.dropDuration > 0.f ? std::min(effect.elapsedTime / effect.dropDuration, 1.0f) : 1.0f;
-            sf::Color c = effect.sprite.getColor();
-            c.a = static_cast<sf::Uint8>(255.f * (1.f - t));
-            effect.sprite.setColor(c);
-        }
+			if (rect.width > 0 && rect.height > 0) {
+				effect.sprite.setOrigin(rectSize.x / 2.f, rectSize.y / 2.f);
+				effect.sprite.setPosition(view.getCenter());
+				effect.sprite.setScale(view.getSize().x / rectSize.x, view.getSize().y / rectSize.y);
+			} else {
+				// Fallback to whole texture size if frame rect is invalid
+				const sf::Vector2u textureSize = effect.sprite.getTexture()->getSize();
+				effect.sprite.setOrigin(textureSize.x / 2.f, textureSize.y / 2.f);
+				effect.sprite.setPosition(view.getCenter());
+				if (textureSize.x > 0 && textureSize.y > 0)
+					effect.sprite.setScale(view.getSize().x / textureSize.x, view.getSize().y / textureSize.y);
+			}
+
+			const float t = effect.dropDuration > 0.f ? std::min(effect.elapsedTime / effect.dropDuration, 1.0f) : 1.0f;
+			sf::Color c = effect.sprite.getColor();
+			c.a = static_cast<sf::Uint8>(255.f * (1.f - t));
+			effect.sprite.setColor(c);
+		}
 
         target.draw(effect.sprite);
     }
@@ -950,9 +1018,21 @@ void Combat::handleDeath(Character& character) {
 	}
 
 void Combat::eraseDeadEnemies() {
+	// Debug: log before erase
+	std::cout << "[DEBUG] eraseDeadEnemies(): before size=" << enemies.size() << " data=" << enemies.data() << " cap=" << enemies.capacity() << "\n";
+	for (size_t i = 0; i < enemies.size(); ++i) {
+		std::cout << "[DEBUG]   enemy[" << i << "] id=" << enemies[i].getInstanceId() << " hp=" << enemies[i].getHp() << "\n";
+	}
+
 	std::erase_if(enemies, [](const auto& enemy) {
 		return enemy.getHp() <= 0;
-		});
+	});
+
+	// Debug: log after erase
+	std::cout << "[DEBUG] eraseDeadEnemies(): after size=" << enemies.size() << " data=" << enemies.data() << " cap=" << enemies.capacity() << "\n";
+	for (size_t i = 0; i < enemies.size(); ++i) {
+		std::cout << "[DEBUG]   enemy[" << i << "] id=" << enemies[i].getInstanceId() << " hp=" << enemies[i].getHp() << "\n";
+	}
 }
 
 void Combat::checkCombatEnd() {

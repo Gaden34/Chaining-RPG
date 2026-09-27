@@ -23,6 +23,7 @@ protected:
 	float moveSpeed;
 	bool alive = true;
 	bool statsOutdated = true;
+	int instanceId = -1;
 
 public:
 	Character() = default;
@@ -55,6 +56,9 @@ public:
 	bool isAlive() const { return alive; }
 	bool getStatsOutdated() const { return statsOutdated; }
 	void setStatsOutdated(bool x) { statsOutdated = x; }
+
+	int getInstanceId() const { return instanceId; }
+	void setInstanceId(int id) { instanceId = id; }
 
 
 	

@@ -53,10 +53,10 @@
 		"animations": {
 			"cast": {
 				"totalFrames": 3,
-				"columns": 1,
+				"columns": 3,
 				"frameWidth": 640,
 				"frameHeight": 360,
-				"frameDuration": 0.1,
+				"frameDuration": 0.05,
 				"loop": false,
 				"anchor": "screen",
 				"displayDuration": 0.25

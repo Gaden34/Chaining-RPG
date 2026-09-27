@@ -13,7 +13,8 @@ Character::Character(Character&& other)
 	magDefense(other.magDefense),
 	moveSpeed(other.moveSpeed),
 	alive(other.alive),
-	statsOutdated(other.statsOutdated)
+	statsOutdated(other.statsOutdated),
+	instanceId(other.instanceId)
 {
 	sprite.setTexture(texture);
 	sprite.setPosition(other.sprite.getPosition());
@@ -34,6 +35,7 @@ Character& Character::operator=(Character&& other) {
 		moveSpeed = other.moveSpeed;
 		alive = other.alive;
 		statsOutdated = other.statsOutdated;
+		instanceId = other.instanceId;
 		//inventory = std::move(other.inventory);
 		sprite.setTexture(texture);
 		sprite.setPosition(other.sprite.getPosition());

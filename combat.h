@@ -43,6 +43,7 @@ struct QueuedAction {
 	
 	Character* actor = nullptr;
 	Character* target = nullptr;
+	int targetInstanceId = -1;
 	Skill* skill = nullptr;
 	ItemData* item = nullptr;
 };
@@ -116,6 +117,7 @@ private:
 	CombatState currentState;
 	std::vector<Player>& party;
 	std::vector<Enemy> enemies;
+	int nextEnemyInstanceId = 0;
 	std::vector<ActiveAnimation> activeAnimations;
 	std::vector<PendingSkillAction> pendingSkillActions;
 	std::unordered_map<std::string, sf::Texture> effectTextures;
