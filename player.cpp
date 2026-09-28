@@ -7,7 +7,6 @@ namespace {
 		if (!AnimationLoader::loadAssetFromFile("animations.json", "player", asset)) {
 			return false;
 		}
-
 		if (!texture.loadFromFile(asset.texturePath)) {
 			return false;
 		}
@@ -33,6 +32,7 @@ namespace {
 
 }
 
+// placeholder to locate insertion point
 namespace 
 { 
 const AxisInput horizontalAxisInput{
@@ -44,6 +44,62 @@ const AxisInput verticalAxisInput = {
 	InputAction::MoveDown, TransitionDirection::Down
 	}; 
 }
+
+// Custom move constructor/assignment to ensure SFML sprites are rebound after move
+/*Player::Player(Player&& other) noexcept
+	: Character(std::move(other)),
+	  level(other.level),
+	  experience(other.experience),
+	  isMoving(other.isMoving),
+	  messageLog(other.messageLog),
+	  discipline(other.discipline),
+	  unlockedDisciplines(std::move(other.unlockedDisciplines)),
+	  skills(std::move(other.skills)),
+	  portraitSprite(),
+	  portraitTexture(std::move(other.portraitTexture)),
+	  battleSprite(),
+	  battleTexture(std::move(other.battleTexture)),
+	  walkAnimation(std::move(other.walkAnimation)),
+	  walkTexture(std::move(other.walkTexture)),
+	  partyInventory(other.partyInventory),
+	  horizontalDirection(other.horizontalDirection),
+	  verticalDirection(other.verticalDirection),
+	  previousCollisionBox(other.previousCollisionBox)
+{
+	// Rebind moved textures to sprites
+	if (portraitTexture.getSize().x > 0 && portraitTexture.getSize().y > 0) portraitSprite.setTexture(portraitTexture);
+	if (battleTexture.getSize().x > 0 && battleTexture.getSize().y > 0) battleSprite.setTexture(battleTexture);
+	sprite.setTexture(texture);
+	portraitSprite.setPosition(other.portraitSprite.getPosition());
+	battleSprite.setPosition(other.battleSprite.getPosition());
+	sprite.setPosition(other.sprite.getPosition());
+}
+
+Player& Player::operator=(Player&& other) noexcept {
+	if (this != &other) {
+		Character::operator=(std::move(other));
+		level = other.level;
+		experience = other.experience;
+		isMoving = other.isMoving;
+		discipline = other.discipline;
+		unlockedDisciplines = std::move(other.unlockedDisciplines);
+		skills = std::move(other.skills);
+		portraitTexture = std::move(other.portraitTexture);
+		portraitSprite.setTexture(portraitTexture);
+		battleTexture = std::move(other.battleTexture);
+		battleSprite.setTexture(battleTexture);
+		walkAnimation = std::move(other.walkAnimation);
+		walkTexture = std::move(other.walkTexture);
+		horizontalDirection = other.horizontalDirection;
+		verticalDirection = other.verticalDirection;
+		previousCollisionBox = other.previousCollisionBox;
+		sprite.setTexture(texture);
+		portraitSprite.setPosition(other.portraitSprite.getPosition());
+		battleSprite.setPosition(other.battleSprite.getPosition());
+		sprite.setPosition(other.sprite.getPosition());
+	}
+	return *this;
+}*/
 
 Player::Player(MessageLog& m, std::string n, const SpritePaths& spritePaths, Inventory& inv) : messageLog(m), partyInventory(inv) {
 	name = n;
@@ -88,8 +144,8 @@ void Player::drawExploring(sf::RenderTarget& target) {
 }
 
 void Player::drawCombat(sf::RenderTarget& target) {
-	sprite.setTexture(texture, true);
-	target.draw(sprite);
+	battleSprite.setTexture(battleTexture, true);
+	target.draw(battleSprite);
 }
 
 

@@ -145,7 +145,7 @@ void Combat::start() {
 	}
 
 	for (int i = 0; i < party.size(); i++) {
-		party[i].setPosition(175.f, 180.f + i * 40);
+		party[i].setBattleSpritePosition(155.f, 180.f + i * 55);
 		party[i].setStatsOutdated(true);
 	}
 

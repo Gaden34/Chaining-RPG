@@ -49,9 +49,10 @@ private:
 
 public:
 	Player(MessageLog& m, std::string n, const SpritePaths& spritePaths, Inventory& inv);
-	Player(const Player&) = delete;
-	Player& operator=(const Player&) = delete;
-	Player(Player&&) = default;
+	//Player(const Player&) = delete;
+	//Player& operator=(const Player&) = delete;
+	//Player(Player&&) noexcept;
+	//Player& operator=(Player&&) noexcept;
 	void update(float dt) override {}
 	void update(float dt, InputHandler& inputHandler, const Map& map);
 	void draw(sf::RenderTarget& target) override { drawExploring(target); }
@@ -82,6 +83,7 @@ public:
 	Inventory& getInventory() override { return partyInventory; }
 	sf::Sprite& getPortraitSprite() { return portraitSprite; }
 	sf::Sprite& getBattleSprite() { return battleSprite; }
+	void setBattleSpritePosition(float x, float y) { battleSprite.setPosition(x, y); }
 	Animation& getWalkAnimation() { return walkAnimation; }
 	sf::FloatRect getCollisionBox(sf::Vector2f position) const;
 	sf::FloatRect getPreviousCollisionBox() const { return previousCollisionBox; }
