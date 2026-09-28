@@ -48,12 +48,15 @@ struct QueuedAction {
 	ItemData* item = nullptr;
 };
 
+enum class PendingSkillPhase {
+	ScreenEffect,
+	SkillAnimation
+};
+
 struct PendingSkillAction {
 	QueuedAction action;
 	int effectID = -1;
-	// If true, this pending entry represents a screen effect (e.g., lightning flash)
-	// that should trigger the skill visuals and apply damage when it finishes.
-	bool waitForScreenEffect = false;
+	PendingSkillPhase phase = PendingSkillPhase::SkillAnimation;
 };
 
 struct ActiveAnimation {
@@ -167,7 +170,8 @@ private:
 	void drawActivePlayerName(sf::RenderTarget& target);
 	int randomRange(int min, int max);
 	void performAttack(QueuedAction& action);
-	void performSkill(QueuedAction& action);
+	void initiateSkill(QueuedAction& action);
+	void resolveSkill(QueuedAction& action);
 	void performItem(QueuedAction& action);
 	void calculateSkillDamage(Skill* skill, Character* actor, Character* target);
 	void handleSteal (Skill* skill, Character* actor, Character* target);
@@ -181,7 +185,7 @@ private:
 	int triggerEffect(const std::string& animationName, Character* caster, Character* target, int instanceCount = 1);
 	int triggerSkillEffect(const std::string& animationName, Character& target, int instanceCount = 1);
 	int triggerScreenEffect(const std::string& animationName);
-	bool isEffectFinished(int effectID) const;
+	bool animationFinished(int effectID) const;
 	void updateSkillEffect(float dt);
 	void drawSkillEffect(sf::RenderTarget& target);
 	bool isVictoryDisplayComplete();

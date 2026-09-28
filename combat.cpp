@@ -304,10 +304,20 @@ void Combat::handleSkillMenu(const InputHandler& input) {
 			skillMenu.reset();
 		}
 		else {
+			Skill* selectedSkill = party[activePlayerIndex].getSkillByIndex(index);
+			if (selectedSkill == nullptr) {
+				return;
+			}
+
+			if (party[activePlayerIndex].getMp() < selectedSkill->getMpCost()) {
+				messageLog.addMessage("Not enough MP!", sf::Color::Red);
+				return;
+			}
+
 			currentAction = {};
 			currentAction.type = ActionType::Skill;
 			currentAction.actor = &party[activePlayerIndex];
-			currentAction.skill = party[activePlayerIndex].getSkillByIndex(index);
+			currentAction.skill = selectedSkill;
 			beginTargeting();
 		}
 	}
@@ -439,38 +449,46 @@ void Combat::performAttack(QueuedAction& action) {
 	handleDeath(*target);
 }
 
-void Combat::performSkill(QueuedAction& action) {
+void Combat::initiateSkill(QueuedAction& action) {
 	Player* player = static_cast<Player*>(action.actor);
-	Character* target = action.target;
 	Skill* skill = action.skill;
+	if (player == nullptr || skill == nullptr || action.target == nullptr) {
+		return;
+	}
 	if (player->getMp() < skill->getMpCost()) {
 		messageLog.addMessage("Not enough MP!", sf::Color::Red);
 		return;
 	}
 	player->setMp(player->getMp() - skill->getMpCost());
-	// Special-case: Lightning Bolt should show a full-screen flash before the bolt.
-	// Trigger the flash first and defer applying the skill (visual + damage) until the flash completes.
+
 	if (skill && !skill->getScreenEffectName().empty()) {
 		int screenEffectID = triggerScreenEffect(skill->getScreenEffectName());
 		if (screenEffectID != -1) {
-			// Store the full action and wait for the flash to finish in updateSkillEffect
-			pendingSkillActions.push_back({ action, screenEffectID, true });
+			pendingSkillActions.push_back({ action, screenEffectID, PendingSkillPhase::ScreenEffect });
 			return;
 		}
-		// fallback: if the screen effect failed, continue normally
 	}
 
 
 	if (!skill->getAnimationName().empty()) {
-		int effectID = triggerSkillEffect(skill->getAnimationName(), *target, static_cast<int>(skill->getHits().size()));
+		int effectID = triggerSkillEffect(skill->getAnimationName(), *action.target, static_cast<int>(skill->getHits().size()));
 		if (effectID != -1) {
-			// This pending entry is for the skill's own animation; damage was applied immediately
-			// so mark waitForScreenEffect = false to indicate no further processing is needed
-			pendingSkillActions.push_back({ action, effectID, false });
+			pendingSkillActions.push_back({ action, effectID, PendingSkillPhase::SkillAnimation });
+			return;
 		}
 	}
 
-	// Apply skill effects immediately for non-delayed skills (Lightning Bolt is handled above)
+	resolveSkill(action);
+}
+
+void Combat::resolveSkill(QueuedAction& action) {
+	Player* player = static_cast<Player*>(action.actor);
+	Skill* skill = action.skill;
+	Character* target = action.target;
+	if (player == nullptr || skill == nullptr || target == nullptr) {
+		return;
+	}
+
 	calculateSkillDamage(skill, player, target);
 	handleSteal(skill, player, target);
 	handleDeath(*target);
@@ -599,7 +617,7 @@ void Combat::executeAction(QueuedAction& action)
 		break;
 
 	case ActionType::Skill:
-		performSkill(action);
+		initiateSkill(action);
 		break;
 
 	case ActionType::Item:
@@ -823,7 +841,7 @@ int Combat::triggerScreenEffect(const std::string& animationName) {
 	return triggerEffect(animationName, nullptr, nullptr, 1);
 }
 
-bool Combat::isEffectFinished(int effectID) const {
+bool Combat::animationFinished(int effectID) const {
 	for (const auto& effect : skillEffects) {
 		if (effect.effectID == effectID) {
 			return false;
@@ -856,15 +874,12 @@ void Combat::updateSkillEffect(float dt) {
             [](const CombatVisualEffect& e) { return e.delay <= 0.f && e.elapsedTime >= e.dropDuration; }),
         skillEffects.end());
 
-	// After updating/erasing visual effects, check for any pending skill actions.
-	// Only entries that were waiting for a screen effect should trigger the skill
-	// visuals and apply damage now. Entries created for a skill's own animation
-	// have already applied effects in performSkill and only need to be removed once
-	// their animation finishes.
+	// Advance pending skills from their screen effect to their skill animation,
+	// then resolve damage only after the final animation has finished.
 	if (!pendingSkillActions.empty()) {
 		for (int i = static_cast<int>(pendingSkillActions.size()) - 1; i >= 0; --i) {
-			const PendingSkillAction& pending = pendingSkillActions[i];
-			if (!isEffectFinished(pending.effectID)) continue;
+			PendingSkillAction pending = pendingSkillActions[i];
+			if (!animationFinished(pending.effectID)) continue;
 
 			QueuedAction action = pending.action;
 			Skill* skill = action.skill;
@@ -896,19 +911,22 @@ void Combat::updateSkillEffect(float dt) {
 			// Debug: print resolution info for pending action
 			std::cout << "[DEBUG] pendingSkillActions: effectID=" << pending.effectID << " resolved targetPtr=" << action.target << " targetId=" << action.targetInstanceId << " enemies.data=" << enemies.data() << " size=" << enemies.size() << " cap=" << enemies.capacity() << "\n";
 
-			if (pending.waitForScreenEffect) {
-				// This was a screen effect (e.g., lightning flash) that now finished.
-				// Trigger the skill animation (if any) and then apply the skill effects.
+			if (pending.phase == PendingSkillPhase::ScreenEffect) {
 				if (skill && !skill->getAnimationName().empty() && action.target) {
-					triggerSkillEffect(skill->getAnimationName(), *action.target, static_cast<int>(skill->getHits().size()));
+					int skillEffectID = triggerSkillEffect(
+						skill->getAnimationName(),
+						*action.target,
+						static_cast<int>(skill->getHits().size()));
+					if (skillEffectID != -1) {
+						pendingSkillActions[i].effectID = skillEffectID;
+						pendingSkillActions[i].phase = PendingSkillPhase::SkillAnimation;
+						continue;
+					}
 				}
 
-				Player* player = static_cast<Player*>(action.actor);
-				if (player && skill && action.target) {
-					calculateSkillDamage(skill, player, action.target);
-					handleSteal(skill, player, action.target);
-					handleDeath(*action.target);
-				}
+				resolveSkill(action);
+			} else {
+				resolveSkill(action);
 			}
 
 			// Remove the pending entry
