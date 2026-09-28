@@ -124,7 +124,7 @@ void Game::update(float dt) {
 	
 	case GameState::Combat:
 		combat.update(dt, inputHandler);
-		if (combat.getState() == CombatState::Victory) {
+		if (combat.isVictoryDisplayComplete()) {
 			startExploring();
 		}
 		break;

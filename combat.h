@@ -138,6 +138,8 @@ private:
 	//Item* pendingItem = nullptr;
 
 	float animationTimer = 0.f;
+	float victoryDelayTimer = 0.f;
+	bool victoryDelayActive = false;
 	int activePlayerIndex = 0;
 	int activeEnemyIndex = 0;
 	int validTargetIndex = 0;
@@ -182,6 +184,7 @@ private:
 	bool isEffectFinished(int effectID) const;
 	void updateSkillEffect(float dt);
 	void drawSkillEffect(sf::RenderTarget& target);
+	bool isVictoryDisplayComplete();
 	std::vector<EnemySpawn> makeRandomEncounter();
 	void handleDeath(Character& character);
 	void eraseDeadEnemies();

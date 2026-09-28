@@ -54,6 +54,10 @@ void Combat::update(float dt, const InputHandler& input) {
 		break;
 
 	case CombatState::Victory:
+		if (skillEffects.empty()) {
+			victoryDelayActive = true;
+			victoryDelayTimer += dt;
+		}
 		break;
 
 
@@ -948,6 +952,15 @@ void Combat::drawSkillEffect(sf::RenderTarget& target) {
     }
 }
 
+bool Combat::isVictoryDisplayComplete() { 
+	if (victoryDelayTimer >= 2.0f) {
+		victoryDelayTimer = 0.f;
+		victoryDelayActive = false;
+		return true;
+	}
+	return false;
+}
+
 void Combat::updatePlayerAnimation(float dt) {
 	if (currentState == CombatState::PlayerAnimation) {
 		animationTimer += dt;
@@ -1033,19 +1046,6 @@ void Combat::eraseDeadEnemies() {
 	for (size_t i = 0; i < enemies.size(); ++i) {
 		std::cout << "[DEBUG]   enemy[" << i << "] id=" << enemies[i].getInstanceId() << " hp=" << enemies[i].getHp() << "\n";
 	}
-}
-
-void Combat::checkCombatEnd() {
-	/*
-	
-
-	if (enemies.empty()) {
-		currentState = CombatState::Victory;
-	} else if (player.getHp() <= 0) {
-        currentState = CombatState::Defeat;
-    }
-	
-	*/
 }
 
 CombatMenu::CombatMenu() {
