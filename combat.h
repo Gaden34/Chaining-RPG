@@ -158,6 +158,7 @@ public:
 	void start();
 	//void start(const EnemyData& data) { start({ EnemySpawn{ &data, 1 } }); }
 	CombatState getState();
+	bool isVictoryDisplayComplete();
 
 private:
 	void handlePlayerTurn(const InputHandler& input);
@@ -188,11 +189,9 @@ private:
 	bool animationFinished(int effectID) const;
 	void updateSkillEffect(float dt);
 	void drawSkillEffect(sf::RenderTarget& target);
-	bool isVictoryDisplayComplete();
 	std::vector<EnemySpawn> makeRandomEncounter();
 	void handleDeath(Character& character);
 	void eraseDeadEnemies();
-	void checkCombatEnd();
 	void advanceActivePlayer();
 	void resetEnemyIndex();
 	int getQueuedConsumableCount(ItemID itemID) const;

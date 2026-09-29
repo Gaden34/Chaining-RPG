@@ -971,7 +971,7 @@ void Combat::drawSkillEffect(sf::RenderTarget& target) {
 }
 
 bool Combat::isVictoryDisplayComplete() { 
-	if (victoryDelayTimer >= 2.0f) {
+	if (victoryDelayTimer >= 1.0f) {
 		victoryDelayTimer = 0.f;
 		victoryDelayActive = false;
 		return true;
