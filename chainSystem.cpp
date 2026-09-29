@@ -20,6 +20,16 @@ void ChainSystem::update(float dt) {
 	}
 }
 
+void ChainSystem::draw(sf::RenderTarget& target, const sf::Font& font) const {
+	sf::Text chainText;
+	chainText.setFont(font);
+	chainText.setCharacterSize(24);
+	chainText.setFillColor(sf::Color::White);
+	chainText.setString("Chain: " + std::to_string(chainCount));
+	chainText.setPosition(300.f, 40.f);
+	target.draw(chainText);
+}
+
 void ChainSystem::registerHit() {
 	if (chainActive) {
 		chainCount++;

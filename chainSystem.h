@@ -1,5 +1,7 @@
 #pragma once
 #include <array>
+#include <vector>
+#include <SFML/Graphics.hpp>
 
 struct ChainBonus {
 	int hitsRequired;
@@ -14,10 +16,12 @@ private:
 	bool chainActive = false;
 	float chainTimer = 0.f;
 
+
 	static const std::array<ChainBonus, 4> chainBonuses;
 
 public:
 	void update(float dt);
+	void draw(sf::RenderTarget& target, const sf::Font& font) const;
 	void registerHit();
 	void reset() { chainCount = 0; }
 	int getChainCount() const { return chainCount; }
