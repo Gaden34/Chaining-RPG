@@ -682,7 +682,7 @@ void Combat::handleQueuedActionMenu(const InputHandler& input) {
 		return;
 	}
 
-	if (actionQueue.empty()) {
+	if (actionQueue.empty() && pendingSkillActions.empty()) {
 		queuedConsumableCounts.clear();
 		eraseDeadEnemies();
 		resetEnemyIndex();
@@ -880,6 +880,14 @@ void Combat::updateSkillEffect(float dt) {
 	if (!pendingSkillActions.empty()) {
 		for (int i = static_cast<int>(pendingSkillActions.size()) - 1; i >= 0; --i) {
 			PendingSkillAction pending = pendingSkillActions[i];
+			pending.elapsedTime += dt;
+			const auto& hitTimes = pending.action.skill->getHitTimes();
+
+			while (pending.nextHitTime < hitTimes.size() && pending.elapsedTime >= hitTimes[pending.nextHitTime]) {
+				pending.totalDamage += applySkillHit(pending.action.skill, pending.action.actor, pending.action.target);
+				++pending.nextHitTime;
+			}
+
 			if (!animationFinished(pending.effectID)) continue;
 
 			QueuedAction action = pending.action;

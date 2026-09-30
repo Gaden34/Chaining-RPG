@@ -37,6 +37,7 @@
         "type": "Magic",
         "base_damage": 10,
         "hits":  [ 1, 2, 3, 4, 5 ],
+        "hit_times": [ 0.70, 0.82, 0.94, 1.06, 1.18 ],
         "chain_window": 0.2,
         "chain_damage_pct": 25.0,
         "animation": "fireball"

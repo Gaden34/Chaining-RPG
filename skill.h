@@ -26,6 +26,18 @@ struct StealResult {
 	ItemID stolenItemID = ItemID::Invalid;
 };
 
+struct SkillData {
+	std::string name;
+	std::string description;
+	int mpCost;
+	SkillType type;
+	int baseDamage;
+	std::vector<int> hits;
+	std::vector<float> hitTimes;
+	std::string animationName;
+	std::string screenEffectName;
+};
+
 
 class Skill
 {
@@ -33,6 +45,7 @@ private:
 	std::string name;
 	std::string description;
 	std::string screenEffectName;
+	const std::vector<float> hitTimes;
 	int mpCost;
 	SkillType type;
 	int baseDamage;
@@ -40,7 +53,7 @@ private:
 	std::string animationName;
 
 public:
-	Skill(const std::string& name, const std::string& description, int mpCost, SkillType type, int baseDamage, const std::vector<int>& hits = {}, const std::string& animationName = "", const std::string& screenEffectName = "");
+	Skill(const SkillData& data);
 	std::vector<int> getHits() const;
 	const std::string& getName() const { return name; }
 	const std::string& getDescription() const { return description; }
@@ -50,6 +63,7 @@ public:
 	const std::string& getAnimationName() const { return animationName; }
 	static SkillType getSkillTypeFromString(const std::string& type);
 	const std::string& getScreenEffectName() const { return screenEffectName; }
+	const std::vector<float>& getHitTimes() const { return hitTimes; }
 	StealResult useSteal(Character& user, Character& target, std::mt19937& rng);
 };
 

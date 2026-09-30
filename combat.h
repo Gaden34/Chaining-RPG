@@ -57,6 +57,9 @@ struct PendingSkillAction {
 	QueuedAction action;
 	int effectID = -1;
 	PendingSkillPhase phase = PendingSkillPhase::SkillAnimation;
+	float elapsedTime = 0.f;
+	std::size_t nextHitTime = 0;
+	int totalDamage = 0;
 };
 
 struct ActiveAnimation {

@@ -43,21 +43,21 @@ std::vector<std::unique_ptr<Skill>> SkillDatabase::getSkillsForLevel(const std::
 				SkillType skillType = Skill::getSkillTypeFromString(typeStr);
 
 				// Extract values safely using .value(key, default_fallback)
-				auto skill = std::make_unique<Skill>(
-					skillJson.value("name", "Unknown Skill"),
-					skillJson.value("description", ""),
-					skillJson.value("mp_cost", 0),
-					skillType,
-					skillJson.value("base_damage", 0),
-					skillJson.value("hits", std::vector<int>{}),
-					skillJson.value("animation", ""),
-                    skillJson.value("screen_effect", "")
-				);
+                    SkillData skillData{};
+                    skillData.name = skillJson.value("name", "Unknown Skill");
+                    skillData.description = skillJson.value("description", "");
+                    skillData.mpCost = skillJson.value("mp_cost", 0);
+                    skillData.type = skillType;
+                    skillData.baseDamage = skillJson.value("base_damage", 0);
+                    skillData.hits = skillJson.value("hits", std::vector<int>{});
+                    skillData.animationName = skillJson.value("animation", "");
+                    skillData.screenEffectName = skillJson.value("screen_effect", "");
+                    skillData.hitTimes = skillJson.value("hit_times", std::vector<float>{});
 
             // Handle unique chain parameters if they exist in the JSON object
 
 
-            unlockedSkills.push_back(std::move(skill));
+            unlockedSkills.push_back(std::make_unique<Skill>(skillData));
         }
         }
     }
