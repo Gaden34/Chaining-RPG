@@ -79,6 +79,7 @@ void Combat::draw(sf::RenderTarget& target) {
 	drawSkillEffect(target);
 
 	messageLog.draw(target);
+	chain.draw(target, font);
 
 switch (currentState) {	
 case CombatState::PlayerTurn:
