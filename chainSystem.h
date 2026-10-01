@@ -2,10 +2,20 @@
 #include <array>
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include "Combat.h"
 
 struct ChainBonus {
 	int hitsRequired;
 	int damagePercent;
+};
+
+struct ActionIdentity {
+	ActionType type = ActionType::None;
+	const void* key = nullptr;
+
+	bool operator==(const ActionIdentity& other) const {
+		return type == other.type && key == other.key;
+	}
 };
 
 
@@ -15,6 +25,7 @@ private:
 	int chainCount = 0;
 	bool chainActive = false;
 	float chainTimer = 0.f;
+	ActionIdentity lastAction;
 
 
 	static const std::array<ChainBonus, 4> chainBonuses;
@@ -22,7 +33,7 @@ private:
 public:
 	void update(float dt);
 	void draw(sf::RenderTarget& target, const sf::Font& font) const;
-	void registerHit();
+	void registerHit(const ActionIdentity& action);
 	void reset() { chainCount = 0; }
 	int getChainCount() const { return chainCount; }
 	bool isChainActive() const { return chainActive; }

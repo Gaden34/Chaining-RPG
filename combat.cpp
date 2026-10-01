@@ -443,7 +443,7 @@ void Combat::performAttack(QueuedAction& action) {
 	damage = damage * chain.getDamagePercent() / 100;
 	int finalDamage = static_cast<int>(std::round(damage));
 	target->takeDamage(finalDamage);
-	chain.registerHit();
+	chain.registerHit({ActionType::Attack, nullptr});
 	std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 	messageLog.addMessage(player->getName() + " hits the " + TextUtils::lowerFirst(target->getName()) + " for " + std::to_string(finalDamage) + " damage!", sf::Color::Black);
 

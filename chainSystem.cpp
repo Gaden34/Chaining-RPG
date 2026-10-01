@@ -33,12 +33,16 @@ void ChainSystem::draw(sf::RenderTarget& target, const sf::Font& font) const {
 	}
 }
 
-void ChainSystem::registerHit() {
+void ChainSystem::registerHit(const ActionIdentity& action) {
 	if (chainActive) {
-		chainCount++;
+		if (!(action == lastAction)) {
+			chainCount++;
+		}
+	} else {
+		chainCount = 1;
 	}
-	else chainCount = 1;
-
+	
+	lastAction = action;
 	chainActive = true;
 	chainTimer = 0.f;
 }
