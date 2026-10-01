@@ -54,10 +54,8 @@ std::vector<std::unique_ptr<Skill>> SkillDatabase::getSkillsForLevel(const std::
                     skillData.screenEffectName = skillJson.value("screen_effect", "");
                     skillData.hitTimes = skillJson.value("hit_times", std::vector<float>{});
 
-            // Handle unique chain parameters if they exist in the JSON object
-
-
-            unlockedSkills.push_back(std::make_unique<Skill>(skillData));
+            auto skill = std::make_unique<Skill>(skillData);
+            unlockedSkills.push_back(std::move(skill));
         }
         }
     }

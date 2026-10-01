@@ -583,6 +583,35 @@ void Combat::calculateSkillDamage(Skill* skill, Character* actor, Character* tar
 	messageLog.addMessage(actor->getName() + " uses " + skill->getName() + " on the " + TextUtils::lowerFirst(target->getName()) + " for " + std::to_string(totalDamage) + " damage!", sf::Color::Black);
 }
 
+int Combat::applySkillHit(Skill* skill, Character* actor, Character* target) {
+
+	float damage = static_cast<float>(skill->getDamage());
+
+	switch (skill->getType()) {
+	case SkillType::Attack: {
+		damage = damage * (100.0f + actor->getAttack()) / 100.0f;
+		break;
+	}
+	case SkillType::Magic: {
+		damage = damage * (100.0f + actor->getMagAttack()) / 100.0f;
+		break;
+	}
+	case SkillType::Steal: {
+		damage = static_cast<float>(actor->getAttack());
+		break;
+	}
+	default:
+		std::cout << "Invalid type" << std::endl;
+		break;
+	}
+
+	damage = randomRange(static_cast<int>(damage * 0.95f), static_cast<int>(damage * 1.05f));
+	damage = damage * chain.getDamagePercent() / 100.0f;
+	const int finalDamage = static_cast<int>(std::round(damage));
+	target->takeDamage(finalDamage);
+	return finalDamage;
+}
+
 void Combat::handleSteal(Skill* skill, Character* actor, Character* target) {
 	if (skill->getType() != SkillType::Steal) {
 		return;

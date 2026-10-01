@@ -178,6 +178,7 @@ private:
 	void resolveSkill(QueuedAction& action);
 	void performItem(QueuedAction& action);
 	void calculateSkillDamage(Skill* skill, Character* actor, Character* target);
+	int applySkillHit(Skill* skill, Character* actor, Character* target);
 	void handleSteal (Skill* skill, Character* actor, Character* target);
 	void executeAction(QueuedAction& action);
 	void handleQueuedActionMenu(const InputHandler& input);

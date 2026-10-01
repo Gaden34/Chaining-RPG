@@ -3,8 +3,9 @@
 #include "character.h"
 #include "item.h"
 
-Skill::Skill(const std::string& name, const std::string& description, int mpCost, SkillType type, int baseDamage, const std::vector<int>& hits, const std::string& animationName, const std::string& screenEffectName)
-    : name(name), description(description), mpCost(mpCost), type(type), baseDamage(baseDamage), hits(hits), animationName(animationName), screenEffectName(screenEffectName) {
+Skill::Skill(const SkillData& skillData)
+    : name(skillData.name), description(skillData.description), mpCost(skillData.mpCost), type(skillData.type), baseDamage(skillData.baseDamage), 
+    hits(skillData.hits), animationName(skillData.animationName), screenEffectName(skillData.screenEffectName) {
 }
 
 
