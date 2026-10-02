@@ -2,7 +2,16 @@
 #include <array>
 #include <vector>
 #include <SFML/Graphics.hpp>
-#include "Combat.h"
+
+// Define the action types used by the chain system. Placing this here avoids a
+// circular include between combat.h and chainSystem.h.
+enum class ActionType {
+	None,
+	Attack,
+	Skill,
+	Item,
+	Defend
+};
 
 struct ChainBonus {
 	int hitsRequired;

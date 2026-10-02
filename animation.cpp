@@ -48,20 +48,50 @@ void Animation::update(float dt) {
         return;
     }
 
-	elapsedTime += dt;
+    // Record previous frame so we can detect newly-entered frames
+    previousFrame = currentFrame;
+    elapsedTime += dt;
 
-	while (elapsedTime >= clip->frames[currentFrame].duration) {
-		elapsedTime -= clip->frames[currentFrame].duration;
+    while (elapsedTime >= clip->frames[currentFrame].duration) {
+        elapsedTime -= clip->frames[currentFrame].duration;
 
-		if (currentFrame + 1 < clip->frames.size()) {
+        if (currentFrame + 1 < clip->frames.size()) {
             ++currentFrame;
-		} else if (clip->loop) {
+        } else if (clip->loop) {
             currentFrame = 0;
-		} else {
-			finished = true;
-			break;
-		}
-	}
+        } else {
+            finished = true;
+            break;
+        }
+    }
+
+    // Detect any event frames that were entered during this update and record them for consumers.
+    if (!clip->eventFrames.empty()) {
+        // If we wrapped or advanced multiple frames, check all intermediate frames.
+        std::size_t start = previousFrame;
+        std::size_t end = currentFrame;
+        if (start == end) {
+            // If same frame but elapsed progressed past duration and clip looped, we may have wrapped.
+            // In that case, consider the current frame as entered.
+            // Fall through to check current frame below.
+        }
+
+        for (int ef : clip->eventFrames) {
+            if (ef < 0 || static_cast<std::size_t>(ef) >= clip->frames.size()) continue;
+
+            // Simple check: if we advanced forward without wrapping and ef is between previousFrame exclusive and currentFrame inclusive
+            if (previousFrame <= currentFrame) {
+                if (static_cast<std::size_t>(ef) > previousFrame && static_cast<std::size_t>(ef) <= currentFrame) {
+                    enteredEvents.push_back(ef);
+                }
+            } else {
+                // Wrapped around: event is entered if ef > previousFrame or ef <= currentFrame
+                if (static_cast<std::size_t>(ef) > previousFrame || static_cast<std::size_t>(ef) <= currentFrame) {
+                    enteredEvents.push_back(ef);
+                }
+            }
+        }
+    }
 }
 
 void Animation::setAnimation(const std::vector<AnimationFrame>& newFrames, bool shouldLoop) {
@@ -69,6 +99,12 @@ void Animation::setAnimation(const std::vector<AnimationFrame>& newFrames, bool 
 	currentFrame = 0;
 	elapsedTime = 0.0f;
 	finished = clip->frames.empty();
+}
+
+std::vector<int> Animation::consumeEnteredEvents() {
+    std::vector<int> out;
+    out.swap(enteredEvents);
+    return out;
 }
 
 sf::IntRect Animation::getCurrentFrame() const {
@@ -179,6 +215,13 @@ bool AnimationLoader::loadAssetFromFile(const std::string& filePath, const std::
         if (clipNode.contains("originX") && clipNode.contains("originY")) {
             clip.originX = clipNode.value("originX", clip.originX);
             clip.originY = clipNode.value("originY", clip.originY);
+        }
+
+        // optional events array: list of frame indices that emit an event when entered
+        if (clipNode.contains("events") && clipNode["events"].is_array()) {
+            for (const auto& ev : clipNode["events"]) {
+                if (ev.is_number_integer()) clip.eventFrames.push_back(ev.get<int>());
+            }
         }
 
         outAsset.clips[clipName] = std::move(clip);

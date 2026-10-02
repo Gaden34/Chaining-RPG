@@ -33,6 +33,9 @@ struct AnimationClip {
 	float originX = -1.0f;
 	float originY = -1.0f;
 	EffectAnchor anchor = EffectAnchor::Target;
+	// Optional list of frame indices that should emit an event when entered.
+	// Interpreted by consumers (e.g., "hit" frames for an animation).
+	std::vector<int> eventFrames;
 };
 
 struct AnimationAsset {
@@ -50,6 +53,10 @@ private:
 	std::size_t currentFrame = 0;
 	float elapsedTime = 0.0f;
 	bool finished = false;
+	// Frame index before the last update; used to detect entered frames.
+	std::size_t previousFrame = 0;
+	// Events (frame indices) that were entered since the last consumer poll.
+	std::vector<int> enteredEvents;
 
 
 public:
@@ -63,6 +70,9 @@ public:
 	bool isFinished() const { return finished; }
 	bool isLooping() const { return clip != nullptr && clip->loop; }
 	sf::IntRect getCurrentFrame() const;
+	std::size_t getCurrentFrameIndex() const { return currentFrame; }
+	// Return the list of frame indices that were entered since the last call and clear the buffer.
+	std::vector<int> consumeEnteredEvents();
 	void setFrame(std::size_t frameIndex);
 };
 

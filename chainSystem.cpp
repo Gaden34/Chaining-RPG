@@ -35,7 +35,7 @@ void ChainSystem::draw(sf::RenderTarget& target, const sf::Font& font) const {
 
 void ChainSystem::registerHit(const ActionIdentity& action) {
 	if (chainActive) {
-		if (!(action == lastAction)) {
+		if (action != lastAction) {
 			chainCount++;
 		}
 	} else {

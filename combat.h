@@ -30,13 +30,7 @@ enum class CombatState {
 	Defeat
 };
 
-enum class ActionType {
-	None,
-	Attack,
-	Skill,
-	Item,
-	Defend
-};
+// ActionType is defined in chainSystem.h to avoid circular includes.
 
 struct QueuedAction {
 	ActionType type = ActionType::None;
@@ -58,7 +52,8 @@ struct PendingSkillAction {
 	int effectID = -1;
 	PendingSkillPhase phase = PendingSkillPhase::SkillAnimation;
 	float elapsedTime = 0.f;
-	std::size_t nextHitTime = 0;
+	// Number of hit events already applied for this pending action.
+	int appliedHits = 0;
 	int totalDamage = 0;
 };
 
