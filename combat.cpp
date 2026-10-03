@@ -143,11 +143,6 @@ void Combat::start() {
 
 	if (enemies.empty()) return;
 
-	// Debug: print enemies buffer info after creation
-	std::cout << "[DEBUG] start(): enemies.data=" << enemies.data() << " size=" << enemies.size() << " cap=" << enemies.capacity() << "\n";
-	for (size_t i = 0; i < enemies.size(); ++i) {
-		std::cout << "[DEBUG] enemy[" << i << "] id=" << enemies[i].getInstanceId() << " hp=" << enemies[i].getHp() << "\n";
-	}
 
 	for (int i = 0; i < party.size(); i++) {
 		party[i].setBattleSpritePosition(155.f, 180.f + i * 55);
@@ -393,8 +388,7 @@ void Combat::targetCharacter(const InputHandler& input) {
 		if (currentAction.target) {
 			currentAction.targetInstanceId = currentAction.target->getInstanceId();
 		}
-		// Debug: log queued target info (after instance id recorded)
-		std::cout << "[DEBUG] targetCharacter(): queued target ptr=" << currentAction.target << " instanceId=" << currentAction.targetInstanceId << " validIndex=" << validTargetIndex << " validTargetsSize=" << validTargets.size() << "\n";
+		
 		if (currentAction.type == ActionType::Item && currentAction.item != nullptr) {
 			reserveConsumableItem(*currentAction.item);
 		}
@@ -490,7 +484,7 @@ void Combat::resolveSkill(QueuedAction& action) {
 		return;
 	}
 
-	calculateSkillDamage(skill, player, target);
+	//calculateSkillDamage(skill, player, target);
 	handleSteal(skill, player, target);
 	handleDeath(*target);
 }
@@ -676,9 +670,6 @@ void Combat::handleQueuedActionMenu(const InputHandler& input) {
 	if (input.wasPressed(InputAction::Confirm)) {
 		int selectedIndex = queuedActionMenu.getSelectedIndex();
 		if (selectedIndex >= 0 && selectedIndex < actionQueue.size()) {
-			// Debug: print enemies buffer before executing queued action
-			std::cout << "[DEBUG] handleQueuedActionMenu(): before execute enemies.data=" << enemies.data() << " size=" << enemies.size() << " cap=" << enemies.capacity() << "\n";
-			std::cout << "[DEBUG] action[" << selectedIndex << "] targetPtr=" << actionQueue[selectedIndex].target << " targetId=" << actionQueue[selectedIndex].targetInstanceId << "\n";
 			// Ensure target pointer is resolved to a current enemy object. The enemies
 			// vector may have been reallocated/moved since the action was queued, so
 			// prefer resolving by the stored instance id if available.
@@ -915,6 +906,11 @@ void Combat::updateSkillEffect(float dt) {
 			const auto& hitTimes = pending.action.skill ? pending.action.skill->getHitTimes() : std::vector<float>();
 
 			// Apply any scheduled hits based on elapsed time (timing-driven approach).
+			std::cout << "Skill: " << pending.action.skill->getName()
+				<< " hitTimes: " << hitTimes.size()
+				<< " elapsed: " << pending.elapsedTime
+				<< '\n';
+
 			while (pending.appliedHits < static_cast<int>(hitTimes.size()) && pending.elapsedTime >= hitTimes[pending.appliedHits]) {
 				// Resolve the target in case the original pointer is stale.
 				QueuedAction action = pending.action;
@@ -978,9 +974,6 @@ void Combat::updateSkillEffect(float dt) {
 					}
 				}
 			}
-
-			// Debug: print resolution info for pending action
-			std::cout << "[DEBUG] pendingSkillActions: effectID=" << pending.effectID << " resolved targetPtr=" << action.target << " targetId=" << action.targetInstanceId << " enemies.data=" << enemies.data() << " size=" << enemies.size() << " cap=" << enemies.capacity() << "\n";
 
 			if (pending.phase == PendingSkillPhase::ScreenEffect) {
 				if (skill && !skill->getAnimationName().empty() && action.target) {
@@ -1141,22 +1134,12 @@ void Combat::handleDeath(Character& character) {
 	}
 
 void Combat::eraseDeadEnemies() {
-	// Debug: log before erase
-	std::cout << "[DEBUG] eraseDeadEnemies(): before size=" << enemies.size() << " data=" << enemies.data() << " cap=" << enemies.capacity() << "\n";
-	for (size_t i = 0; i < enemies.size(); ++i) {
-		std::cout << "[DEBUG]   enemy[" << i << "] id=" << enemies[i].getInstanceId() << " hp=" << enemies[i].getHp() << "\n";
-	}
 
 	std::erase_if(enemies, [](const auto& enemy) {
 		return enemy.getHp() <= 0;
 	});
-
-	// Debug: log after erase
-	std::cout << "[DEBUG] eraseDeadEnemies(): after size=" << enemies.size() << " data=" << enemies.data() << " cap=" << enemies.capacity() << "\n";
-	for (size_t i = 0; i < enemies.size(); ++i) {
-		std::cout << "[DEBUG]   enemy[" << i << "] id=" << enemies[i].getInstanceId() << " hp=" << enemies[i].getHp() << "\n";
-	}
 }
+
 
 CombatMenu::CombatMenu() {
 	// Use base Menu font and set default position/spacing for this menu

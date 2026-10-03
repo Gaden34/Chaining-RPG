@@ -5,7 +5,7 @@
 
 Skill::Skill(const SkillData& skillData)
     : name(skillData.name), description(skillData.description), mpCost(skillData.mpCost), type(skillData.type), baseDamage(skillData.baseDamage), 
-    hits(skillData.hits), animationName(skillData.animationName), screenEffectName(skillData.screenEffectName) {
+    hits(skillData.hits), hitTimes(skillData.hitTimes), animationName(skillData.animationName), screenEffectName(skillData.screenEffectName) {
 }
 
 
