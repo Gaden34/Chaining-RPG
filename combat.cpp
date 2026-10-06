@@ -581,6 +581,7 @@ void Combat::calculateSkillDamage(Skill* skill, Character* actor, Character* tar
 
 int Combat::applySkillHit(Skill* skill, Character* actor, Character* target) {
 
+	chain.registerHit({ ActionType::Skill, static_cast<const void*>(skill) });
 	float damage = static_cast<float>(skill->getDamage());
 
 	switch (skill->getType()) {
