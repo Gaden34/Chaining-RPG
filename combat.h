@@ -125,6 +125,7 @@ private:
 	std::unordered_map<std::string, AnimationAsset> effectAssets;
 	std::vector<CombatVisualEffect> skillEffects;
 	int nextEffectID = 0;
+	int nextActionId = 1;
 	std::mt19937& rng;
 	CombatMenu menu;
 	SkillMenu skillMenu;

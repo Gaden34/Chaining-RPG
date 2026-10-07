@@ -916,9 +916,7 @@ void Combat::updatePendingSkills(float dt)
 	if (pendingSkillActions.empty())
 		return;
 
-	for (int i = static_cast<int>(pendingSkillActions.size()) - 1;
-		i >= 0;
-		--i)
+	for (int i = static_cast<int>(pendingSkillActions.size()) - 1; i >= 0; --i)
 	{
 		PendingSkillAction& pending = pendingSkillActions[i];
 

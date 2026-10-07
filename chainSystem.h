@@ -18,14 +18,6 @@ struct ChainBonus {
 	int damagePercent;
 };
 
-struct ActionIdentity {
-	ActionType type = ActionType::None;
-	const void* key = nullptr;
-
-	bool operator==(const ActionIdentity& other) const {
-		return type == other.type && key == other.key;
-	}
-};
 
 
 class ChainSystem
@@ -34,7 +26,7 @@ private:
 	int chainCount = 0;
 	bool chainActive = false;
 	float chainTimer = 0.f;
-	ActionIdentity lastAction;
+	int lastActionId = 0;
 
 
 	static const std::array<ChainBonus, 4> chainBonuses;
@@ -42,7 +34,7 @@ private:
 public:
 	void update(float dt);
 	void draw(sf::RenderTarget& target, const sf::Font& font) const;
-	void registerHit(const ActionIdentity& action);
+	void registerHit(int actionId);
 	void reset() { chainCount = 0; }
 	int getChainCount() const { return chainCount; }
 	bool isChainActive() const { return chainActive; }
