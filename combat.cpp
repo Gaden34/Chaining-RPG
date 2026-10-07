@@ -127,6 +127,7 @@ void Combat::start() {
 	activeAnimations.clear();
 	animationTimer = 0.f;
 	nextEffectID = 0;
+	nextActionId = 1;
 	menu.reset();
 	itemMenu.reset();
 	enemies.clear();
@@ -254,6 +255,7 @@ void Combat::handlePlayerTurn(const InputHandler& input) {
 				currentAction = {};
 				currentAction.type = ActionType::Attack;
 				currentAction.actor = &party[activePlayerIndex];
+				currentAction.actionId = nextActionId++;
 				menu.setLastEnterPressed(true);
 				beginTargeting();
 				break;
@@ -315,6 +317,7 @@ void Combat::handleSkillMenu(const InputHandler& input) {
 			currentAction.type = ActionType::Skill;
 			currentAction.actor = &party[activePlayerIndex];
 			currentAction.skill = selectedSkill;
+			currentAction.actionId = nextActionId++;
 			beginTargeting();
 		}
 	}
@@ -343,6 +346,7 @@ void Combat::handleItemMenu(const InputHandler& input) {
 					currentAction.type = ActionType::Item;
 					currentAction.actor = &party[activePlayerIndex];
 					currentAction.item = const_cast<ItemData*>(item);
+					currentAction.actionId = nextActionId++;
 					beginTargeting();
 				}
 			}
@@ -438,7 +442,7 @@ void Combat::performAttack(QueuedAction& action) {
 	damage = damage * chain.getDamagePercent() / 100;
 	int finalDamage = static_cast<int>(std::round(damage));
 	target->takeDamage(finalDamage);
-	chain.registerHit({ActionType::Attack, nullptr});
+	chain.registerHit(action.actionId);
 	std::cout << "Chain count: " << chain.getChainCount() << std::endl;
 	messageLog.addMessage(player->getName() + " hits the " + TextUtils::lowerFirst(target->getName()) + " for " + std::to_string(finalDamage) + " damage!", sf::Color::Black);
 
@@ -582,7 +586,6 @@ void Combat::calculateSkillDamage(Skill* skill, Character* actor, Character* tar
 
 int Combat::applySkillHit(Skill* skill, Character* actor, Character* target) {
 
-	chain.registerHit({ ActionType::Skill, static_cast<const void*>(skill) });
 	float damage = static_cast<float>(skill->getDamage());
 
 	switch (skill->getType()) {
@@ -1048,6 +1051,7 @@ void Combat::updatePendingSkills(float dt)
 			// retarget to another enemy.
 			if (target && target->isAlive())
 			{
+				chain.registerHit(pending.action.actionId);
 				int damage = applySkillHit(
 					skill,
 					pending.action.actor,

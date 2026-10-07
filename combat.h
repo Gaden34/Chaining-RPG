@@ -38,6 +38,7 @@ struct QueuedAction {
 	Character* actor = nullptr;
 	Character* target = nullptr;
 	int targetInstanceId = -1;
+	int actionId = -1;
 	Skill* skill = nullptr;
 	ItemData* item = nullptr;
 };
