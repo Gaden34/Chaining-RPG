@@ -19,6 +19,7 @@ void Combat::update(float dt, const InputHandler& input) {
 
 	chain.update(dt);
 	updateSkillEffect(dt);
+	updatePendingSkills(dt);
 
 	switch (currentState) {
 	case CombatState::PlayerTurn:
@@ -874,150 +875,253 @@ bool Combat::animationFinished(int effectID) const {
 	return true;
 }
 
-void Combat::updateSkillEffect(float dt) {
-	for (auto& effect : skillEffects) {
-        if (effect.delay > 0.f) {
-            effect.delay -= dt;
-            continue;
-        }
+void Combat::updateSkillEffect(float dt)
+{
+	for (auto& effect : skillEffects)
+	{
+		if (effect.delay > 0.f)
+		{
+			effect.delay -= dt;
+			continue;
+		}
 
-        effect.animation.update(dt);
-        effect.sprite.setTextureRect(effect.animation.getCurrentFrame());
-        effect.elapsedTime += dt;
+		effect.animation.update(dt);
+		effect.sprite.setTextureRect(effect.animation.getCurrentFrame());
+		effect.elapsedTime += dt;
 
-        if (effect.anchor != EffectAnchor::Screen) {
-            const float t = std::min(effect.elapsedTime / effect.dropDuration, 1.0f);
-            effect.sprite.setPosition(
-                effect.startPosition.x + (effect.targetPosition.x - effect.startPosition.x) * t,
-                effect.startPosition.y + (effect.targetPosition.y - effect.startPosition.y) * t);
-        }
-    }
+		if (effect.anchor != EffectAnchor::Screen)
+		{
+			const float t =
+				std::min(effect.elapsedTime / effect.dropDuration, 1.0f);
 
-	std::erase_if(skillEffects, [](const CombatVisualEffect& e) {
-		return e.delay <= 0.f && e.elapsedTime >= e.dropDuration;
+			effect.sprite.setPosition(
+				effect.startPosition.x +
+				(effect.targetPosition.x - effect.startPosition.x) * t,
+
+				effect.startPosition.y +
+				(effect.targetPosition.y - effect.startPosition.y) * t
+			);
+		}
+	}
+
+	std::erase_if(skillEffects, [](const CombatVisualEffect& e)
+		{
+			return e.delay <= 0.f &&
+				e.elapsedTime >= e.dropDuration;
 		});
-		
-	// Advance pending skills from their screen effect to their skill animation,
-	// then resolve damage only after the final animation has finished.
-	if (!pendingSkillActions.empty()) {
-		for (int i = static_cast<int>(pendingSkillActions.size()) - 1; i >= 0; --i) {
-			PendingSkillAction& pending = pendingSkillActions[i];
-			pending.elapsedTime += dt;
+}
+	
+void Combat::updatePendingSkills(float dt)
+{
+	if (pendingSkillActions.empty())
+		return;
 
-			const auto& hitTimes = pending.action.skill ? pending.action.skill->getHitTimes() : std::vector<float>();
+	for (int i = static_cast<int>(pendingSkillActions.size()) - 1;
+		i >= 0;
+		--i)
+	{
+		PendingSkillAction& pending = pendingSkillActions[i];
 
-			// Apply any scheduled hits based on elapsed time (timing-driven approach).
-			std::cout << "Skill: " << pending.action.skill->getName()
-				<< " hitTimes: " << hitTimes.size()
-				<< " elapsed: " << pending.elapsedTime
-				<< '\n';
+		Skill* skill = pending.action.skill;
 
-			while (pending.appliedHits < static_cast<int>(hitTimes.size()) && pending.elapsedTime >= hitTimes[pending.appliedHits]) {
-				// Resolve the target in case the original pointer is stale.
-				QueuedAction action = pending.action;
-				if ((action.target == nullptr || action.target->getInstanceId() != action.targetInstanceId) &&
-					action.targetInstanceId >= 0) {
-					for (auto& enemy : enemies) {
-						if (enemy.getInstanceId() == action.targetInstanceId) {
-							action.target = &enemy;
+		if (!skill)
+		{
+			pendingSkillActions.erase(pendingSkillActions.begin() + i);
+			continue;
+		}
+
+		// ------------------------------------------------------------
+		// SCREEN EFFECT
+		// ------------------------------------------------------------
+		// Wait until the initial screen effect finishes.
+		// Then start the actual skill animation.
+		// ------------------------------------------------------------
+		if (pending.phase == PendingSkillPhase::ScreenEffect)
+		{
+			if (!animationFinished(pending.effectID))
+				continue;
+
+			if (!skill->getAnimationName().empty())
+			{
+				// Resolve the intended target using its instance ID.
+				Character* target = nullptr;
+
+				if (pending.action.targetInstanceId >= 0)
+				{
+					for (auto& enemy : enemies)
+					{
+						if (enemy.getInstanceId() ==
+							pending.action.targetInstanceId)
+						{
+							target = &enemy;
 							break;
 						}
 					}
 				}
 
-				if (action.target == nullptr || !action.target->isAlive()) {
-					action.target = nullptr;
-					for (auto& enemy : enemies) {
-						if (enemy.isAlive()) {
-							action.target = &enemy;
-							break;
-						}
-					}
+				// If the original target is still valid, use it.
+				if (!target &&
+					pending.action.target != nullptr &&
+					pending.action.target->isAlive())
+				{
+					target = pending.action.target;
 				}
 
-				// Apply one hit for this scheduled time
-				if (action.target) {
-					int dmg = applySkillHit(pending.action.skill, pending.action.actor, action.target);
-					pending.totalDamage += dmg;
-					++pending.appliedHits;
-				} else {
-					// No valid target to apply hit to; still count the hit as applied to progress the timing
-					++pending.appliedHits;
-				}
-			}
-
-			// If the effect animation (screen or skill) has not finished, wait.
-			if (!animationFinished(pending.effectID)) continue;
-
-			QueuedAction action = pending.action;
-			Skill* skill = action.skill;
-
-			// Resolve target by instance id if available. The copied QueuedAction may
-			// contain a stale pointer if enemies moved; prefer resolving using
-			// targetInstanceId recorded when the action was queued.
-			if ((action.target == nullptr || action.target->getInstanceId() != action.targetInstanceId) &&
-				action.targetInstanceId >= 0) {
-				for (auto& enemy : enemies) {
-					if (enemy.getInstanceId() == action.targetInstanceId) {
-						action.target = &enemy;
-						break;
-					}
-				}
-			}
-
-			// If the resolved target is dead or missing, fall back to first alive enemy.
-			if (action.target == nullptr || !action.target->isAlive()) {
-				action.target = nullptr;
-				for (auto& enemy : enemies) {
-					if (enemy.isAlive()) {
-						action.target = &enemy;
-						break;
-					}
-				}
-			}
-
-			if (pending.phase == PendingSkillPhase::ScreenEffect) {
-				if (skill && !skill->getAnimationName().empty() && action.target) {
+				if (target)
+				{
 					int skillEffectID = triggerSkillEffect(
 						skill->getAnimationName(),
-						*action.target,
+						*target,
 						static_cast<int>(skill->getHits().size()));
-					if (skillEffectID != -1) {
-						pendingSkillActions[i].effectID = skillEffectID;
-						pendingSkillActions[i].phase = PendingSkillPhase::SkillAnimation;
+
+					if (skillEffectID != -1)
+					{
+						pending.effectID = skillEffectID;
+						pending.phase = PendingSkillPhase::SkillAnimation;
+
+						// IMPORTANT:
+						// The skill timer starts when the actual
+						// skill animation starts.
+						pending.elapsedTime = 0.f;
+						pending.appliedHits = 0;
+						pending.totalDamage = 0;
+
+						// Keep the resolved target.
+						pending.action.target = target;
+
 						continue;
 					}
 				}
+			}
 
-				// If we already applied individual hits via timing, perform post-hit effects
-				if (pending.appliedHits > 0) {
-					// Use resolved action.target
-					if (action.target) {
-						Character* actor = pending.action.actor;
-						messageLog.addMessage(actor->getName() + " uses " + skill->getName() + " on the " + TextUtils::lowerFirst(action.target->getName()) + " for " + std::to_string(pending.totalDamage) + " damage!", sf::Color::Black);
-						handleSteal(skill, actor, action.target);
-						handleDeath(*action.target);
+			// No skill animation exists, so resolve immediately.
+			resolveSkill(pending.action);
+
+			pendingSkillActions.erase(
+				pendingSkillActions.begin() + i);
+
+			continue;
+		}
+
+
+		// ------------------------------------------------------------
+		// SKILL ANIMATION
+		// ------------------------------------------------------------
+
+		pending.elapsedTime += dt;
+
+		const auto& hitTimes = skill->getHitTimes();
+
+		// Apply every hit whose scheduled time has been reached.
+		//
+		// The while loop is important because one frame could potentially
+		// advance past more than one hit time.
+		//
+		// Example:
+		// hitTimes = { 0.2f, 0.4f }
+		//
+		// If dt causes elapsedTime to jump from 0.1 -> 0.45,
+		// BOTH hits need to be applied this frame.
+		// ------------------------------------------------------------
+		while (pending.appliedHits <
+			static_cast<int>(hitTimes.size()) &&
+			pending.elapsedTime >=
+			hitTimes[pending.appliedHits])
+		{
+			Character* target = pending.action.target;
+
+			// Re-resolve the target using its instance ID if necessary.
+			if (pending.action.targetInstanceId >= 0)
+			{
+				target = nullptr;
+
+				for (auto& enemy : enemies)
+				{
+					if (enemy.getInstanceId() ==
+						pending.action.targetInstanceId)
+					{
+						target = &enemy;
+						break;
 					}
-				} else {
-					resolveSkill(action);
-				}
-			} else {
-				// Skill animation finished; if hits were applied by timing, finalize, otherwise fallback
-				if (pending.appliedHits > 0) {
-					if (action.target) {
-						Character* actor = pending.action.actor;
-						messageLog.addMessage(actor->getName() + " uses " + skill->getName() + " on the " + TextUtils::lowerFirst(action.target->getName()) + " for " + std::to_string(pending.totalDamage) + " damage!", sf::Color::Black);
-						handleSteal(skill, actor, action.target);
-						handleDeath(*action.target);
-					}
-				} else {
-					resolveSkill(action);
 				}
 			}
 
-			// Remove the pending entry
-			pendingSkillActions.erase(pendingSkillActions.begin() + i);
+			// If the intended target is gone/dead, don't silently
+			// retarget to another enemy.
+			if (target && target->isAlive())
+			{
+				int damage = applySkillHit(
+					skill,
+					pending.action.actor,
+					target);
+
+				pending.totalDamage += damage;
+			}
+
+			// Whether the hit landed or not, advance to the next
+			// scheduled hit so the skill doesn't get stuck.
+			++pending.appliedHits;
 		}
+
+
+		// ------------------------------------------------------------
+		// WAIT FOR SKILL ANIMATION TO FINISH
+		// ------------------------------------------------------------
+
+		if (!animationFinished(pending.effectID))
+			continue;
+
+
+		// ------------------------------------------------------------
+		// FINALIZE SKILL
+		// ------------------------------------------------------------
+
+		Character* target = pending.action.target;
+
+		// Resolve the target one final time using its stable ID.
+		if (pending.action.targetInstanceId >= 0)
+		{
+			target = nullptr;
+
+			for (auto& enemy : enemies)
+			{
+				if (enemy.getInstanceId() ==
+					pending.action.targetInstanceId)
+				{
+					target = &enemy;
+					break;
+				}
+			}
+		}
+
+		if (pending.appliedHits > 0 && target)
+		{
+			Character* actor = pending.action.actor;
+
+			messageLog.addMessage(
+				actor->getName() +
+				" uses " +
+				skill->getName() +
+				" on the " +
+				TextUtils::lowerFirst(target->getName()) +
+				" for " +
+				std::to_string(pending.totalDamage) +
+				" damage!",
+				sf::Color::Black
+			);
+
+			handleSteal(skill, actor, target);
+			handleDeath(*target);
+		}
+		else if (pending.appliedHits == 0)
+		{
+			// Skills with no timed hits use the normal skill resolution.
+			resolveSkill(pending.action);
+		}
+
+		// Remove this pending skill.
+		pendingSkillActions.erase(
+			pendingSkillActions.begin() + i);
 	}
 }
 

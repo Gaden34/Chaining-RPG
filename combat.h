@@ -187,6 +187,7 @@ private:
 	int triggerScreenEffect(const std::string& animationName);
 	bool animationFinished(int effectID) const;
 	void updateSkillEffect(float dt);
+	void updatePendingSkills(float dt);
 	void drawSkillEffect(sf::RenderTarget& target);
 	std::vector<EnemySpawn> makeRandomEncounter();
 	void handleDeath(Character& character);
