@@ -548,7 +548,7 @@ void Combat::calculateSkillDamage(Skill* skill, Character* actor, Character* tar
 	for (auto& hit : skill->getHits()) {
 		// Register a skill hit in the chain system. Use the skill pointer as the key so
 		// different skills don't chain together mistakenly.
-		chain.registerHit({ ActionType::Skill, static_cast<const void*>(skill) });
+		//chain.registerHit();
 		float damage = static_cast<float>(skill->getDamage());
 
 		switch (skill->getType()) {
@@ -956,7 +956,7 @@ void Combat::updatePendingSkills(float dt)
 						{
 							target = &enemy;
 							break;
-						}
+						} 
 					}
 				}
 
@@ -1031,25 +1031,8 @@ void Combat::updatePendingSkills(float dt)
 		{
 			Character* target = pending.action.target;
 
-			// Re-resolve the target using its instance ID if necessary.
-			if (pending.action.targetInstanceId >= 0)
-			{
-				target = nullptr;
-
-				for (auto& enemy : enemies)
-				{
-					if (enemy.getInstanceId() ==
-						pending.action.targetInstanceId)
-					{
-						target = &enemy;
-						break;
-					}
-				}
-			}
-
-			// If the intended target is gone/dead, don't silently
-			// retarget to another enemy.
-			if (target && target->isAlive())
+			
+			if (target)
 			{
 				chain.registerHit(pending.action.actionId);
 				int damage = applySkillHit(
