@@ -1053,7 +1053,12 @@ void Combat::updatePendingSkills(float dt)
 		// WAIT FOR SKILL ANIMATION TO FINISH
 		// ------------------------------------------------------------
 
-		if (!animationFinished(pending.effectID))
+		// Ensure both the visual effect has finished and all scheduled
+		// timed hits have been applied before finalizing the pending skill.
+		const auto& hitTimesRef = skill->getHitTimes();
+		const bool allHitsApplied = pending.appliedHits >= static_cast<int>(hitTimesRef.size());
+
+		if (!animationFinished(pending.effectID) || !allHitsApplied)
 			continue;
 
 

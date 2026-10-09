@@ -23,6 +23,7 @@
           "type": "Magic",
           "base_damage": 60,
           "hits": [ 1 ],
+          "hit_times": [ 0.25 ],
           "chain_window": 0.2,
           "chain_damage_pct": 25.0,
           "animation": "lightning bolt",
