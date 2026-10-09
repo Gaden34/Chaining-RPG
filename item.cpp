@@ -101,6 +101,7 @@ bool ItemDatabase::loadItems(const std::string& filePath) {
         item.id = static_cast<ItemID>(itemJson.value("id", -1));
         item.name = itemJson.value("name", "Unknown Item");
         item.description = itemJson.value("description", "");
+        item.animationName = itemJson.value("animation_name", "");
         item.maxStackSize = itemJson.value("max_stack_size", 1);
 		item.sellValue = itemJson.value("sell_value", 0);
         item.isConsumable = itemJson.value("is_consumable", true);

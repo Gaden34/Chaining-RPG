@@ -67,6 +67,11 @@ struct ActiveAnimation {
 	bool isActive = false;
 };
 
+struct ActionTimeline {
+	std::string animationName;
+	std::vector<float> hitTimes;
+}
+
 // A one-off visual effect (e.g. a spell dropping onto its target) played over the target's sprite.
 struct CombatVisualEffect {
 	int effectID = -1;
@@ -173,9 +178,11 @@ private:
 	void performAttack(QueuedAction& action);
 	void initiateSkill(QueuedAction& action);
 	void resolveSkill(QueuedAction& action);
+	void initiateItem(QueuedAction& action);
 	void performItem(QueuedAction& action);
 	void calculateSkillDamage(Skill* skill, Character* actor, Character* target);
 	int applySkillHit(Skill* skill, Character* actor, Character* target);
+	int applyItemHit(ItemData* item, Character* actor, Character* target);
 	void handleSteal (Skill* skill, Character* actor, Character* target);
 	void executeAction(QueuedAction& action);
 	void handleQueuedActionMenu(const InputHandler& input);
@@ -187,6 +194,7 @@ private:
 	int triggerEffect(const std::string& animationName, Character* caster, Character* target, int instanceCount = 1);
 	int triggerSkillEffect(const std::string& animationName, Character& target, int instanceCount = 1);
 	int triggerScreenEffect(const std::string& animationName);
+	ActionTimeline timelineFor(const QueuedAction& action);
 	bool animationFinished(int effectID) const;
 	void updateSkillEffect(float dt);
 	void updatePendingSkills(float dt);

@@ -494,6 +494,26 @@ void Combat::resolveSkill(QueuedAction& action) {
 	handleDeath(*target);
 }
 
+void Combat::initiateItem(QueuedAction& action) {
+    Player* player = static_cast<Player*>(action.actor);
+    const ItemData* item = action.item;
+    if (!player || !item || !action.target) return;
+
+    // Validate and reserve now, so the item isn't consumed twice.
+    if (item->isConsumable) releaseConsumableItemReservation(*item);
+
+    const ActionTimeline tl = timelineFor(action);
+    if (!tl.animationName.empty()) {
+        int id = triggerSkillEffect(tl.animationName, *action.target,
+                                    std::max<int>(1, tl.hitTimes.size()));
+        if (id != -1) {
+            pendingSkillActions.push_back({ action, id, PendingSkillPhase::SkillAnimation });
+            return;
+        }
+    }
+    performItem(action);   // no animation: resolve instantly
+}
+
 void Combat::performItem(QueuedAction& action) {
 	Player* player = static_cast<Player*>(action.actor);
 	Character* target = action.target;
@@ -869,6 +889,18 @@ int Combat::triggerScreenEffect(const std::string& animationName) {
 	return triggerEffect(animationName, nullptr, nullptr, 1);
 }
 
+ActionTimeline Combat::timelineFor(const QueuedAction& action) {
+	if (action.type == ActionType::Skill && action.skill) {
+		return { action.skill->getAnimationName(), action.skill->getHitTimes() };
+	}
+
+	if (action.type == ActionType::Item && action.item) {
+		return { action.item->animationName, ItemSystem::getHitTimes(*action.item) };
+
+	}
+	return {};
+}
+
 bool Combat::animationFinished(int effectID) const {
 	for (const auto& effect : skillEffects) {
 		if (effect.effectID == effectID) {
@@ -1035,11 +1067,10 @@ void Combat::updatePendingSkills(float dt)
 			if (target)
 			{
 				chain.registerHit(pending.action.actionId);
-				int damage = applySkillHit(
-					skill,
-					pending.action.actor,
-					target);
-
+				int damage = (pending.action.type == ActionType::Item)
+    ? applyItemHit(*pending.action.item, pending.appliedHits,
+                   pending.action.actor, target)
+    : applySkillHit(pending.action.skill, pending.action.actor, target);
 				pending.totalDamage += damage;
 			}
 

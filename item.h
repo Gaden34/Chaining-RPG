@@ -67,6 +67,7 @@ struct ItemData {
     ItemID id;
     std::string name;
     std::string description;
+    std::string animationName;
 
     int maxStackSize = 1;
     int sellValue = 0;
@@ -105,6 +106,8 @@ public:
     static void handleStatusHealItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result);
     static void handleBuffItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result);
     static void handleDamageItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result);
+    static std::string getAnimationName(const ItemData& item);
+    static std::vector<float> getHitTimes(const ItemData& item);
 };
 
 class Inventory {
