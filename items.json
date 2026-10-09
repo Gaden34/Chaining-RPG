@@ -52,6 +52,8 @@
           "target_attribute": "HP",
           "amount": 0,
           "damage_power": 15,
+          "hits" : [ 1 ],
+          "hit_times" : [ 0.2 ],
           "cures_status": "None",
           "inflict_status": "None"
         }
@@ -71,6 +73,8 @@
           "target_attribute": "HP",
           "amount": 10,
           "damage_power": 10,
+          "hits" : [ 1 ],
+          "hit_times" : [ 0.2 ],
           "cures_status": "None",
           "inflict_status": "None"
         }
@@ -90,6 +94,8 @@
           "target_attribute": "HP",
           "amount": 0,
           "damage_power": 10,
+          "hits" : [ 1 ],
+          "hit_times" : [ 0.4 ],
           "cures_status": "None",
           "inflict_status": "None"
         }

@@ -63,6 +63,8 @@ ItemEffect parseEffect(const json& effectJson) {
     effect.inflictStatus = parseStatusEffect(effectJson.value("inflict_status", "None"));
     effect.amount = effectJson.value("amount", 0);
     effect.damagePower = effectJson.value("damage_power", 0);
+    effect.hits = effectJson.value("hits", std::vector<int>{});
+    effect.hitTimes = effectJson.value("hit_times", std::vector<float>{});
     return effect;
 }
 
