@@ -633,6 +633,20 @@ int Combat::applySkillHit(Skill* skill, Character* actor, Character* target) {
 	return finalDamage;
 }
 
+int Combat::applyItemHit(const ItemData& item, Character* actor, Character* target) {
+	int total = 0;
+	for (const auto& e : item.effects) {
+		if (e.damagePower <= 0) continue;
+		float damage = e.damagePower * item.hits[hitIndex].multiplier;
+		damage = randomRange(int(damage * 0.95f), int(damage * 1.05f));
+		damage = damage * chain.getDamagePercent() / 100.0f;
+		int final = static_cast<int>(std::round(damage));
+		target->takeDamage(final);
+		total += final;
+	}
+	return total;
+}
+
 void Combat::handleSteal(Skill* skill, Character* actor, Character* target) {
 	if (skill->getType() != SkillType::Steal) {
 		return;
@@ -1068,8 +1082,7 @@ void Combat::updatePendingSkills(float dt)
 			{
 				chain.registerHit(pending.action.actionId);
 				int damage = (pending.action.type == ActionType::Item)
-    ? applyItemHit(*pending.action.item, pending.appliedHits,
-                   pending.action.actor, target)
+    ? applyItemHit(*pending.action.item, pending.action.actor, target)
     : applySkillHit(pending.action.skill, pending.action.actor, target);
 				pending.totalDamage += damage;
 			}

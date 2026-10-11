@@ -70,7 +70,7 @@ struct ActiveAnimation {
 struct ActionTimeline {
 	std::string animationName;
 	std::vector<float> hitTimes;
-}
+};
 
 // A one-off visual effect (e.g. a spell dropping onto its target) played over the target's sprite.
 struct CombatVisualEffect {
@@ -182,7 +182,7 @@ private:
 	void performItem(QueuedAction& action);
 	void calculateSkillDamage(Skill* skill, Character* actor, Character* target);
 	int applySkillHit(Skill* skill, Character* actor, Character* target);
-	int applyItemHit(ItemData* item, Character* actor, Character* target);
+	int applyItemHit(const ItemData& item, Character* actor, Character* target);
 	void handleSteal (Skill* skill, Character* actor, Character* target);
 	void executeAction(QueuedAction& action);
 	void handleQueuedActionMenu(const InputHandler& input);
