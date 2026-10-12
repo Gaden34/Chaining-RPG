@@ -9,6 +9,8 @@
       "is_consumable": true,
       "steal_chance": 0.8,
       "type": "Heal",
+      "hits" : [ 1 ],
+      "hit_times" : [ 0.2 ],
       "effects": [
         {
           "target_attribute": "HP",
@@ -27,6 +29,8 @@
       "is_consumable": true,
       "steal_chance": 0.75,
       "type": "Heal",
+      "hits" : [ 1 ],
+      "hit_times" : [ 0.2 ],
       "effects": [
         {
           "target_attribute": "MP",
@@ -45,13 +49,13 @@
       "is_consumable": true,
       "steal_chance": 0.6,
       "type": "Damage",
+      "hits" : [ 1 ],
+      "hit_times" : [ 0.2 ],
       "effects": [
         {
           "target_attribute": "HP",
           "amount": 0,
           "power": 15,
-          "hits" : [ 1 ],
-          "hit_times" : [ 0.2 ],
           "cures_status": "None",
           "inflict_status": "None"
         }
@@ -66,15 +70,22 @@
       "is_consumable": true,
       "steal_chance": 0.6,
       "type": "Damage",
+      "hits" : [ 1 ],
+      "hit_times" : [ 0.2 ],
       "effects": [
         {
           "target_attribute": "HP",
           "power": 10,
-          "hits" : [ 1 ],
-          "hit_times" : [ 0.2 ],
+          "cures_status": "None",
+          "inflict_status": "None"
+        },
+        {
+          "target_attribute": "HP",
+          "power": 10,
           "cures_status": "None",
           "inflict_status": "None"
         }
+
       ]
     },
     {
@@ -86,12 +97,12 @@
       "is_consumable": true,
       "steal_chance": 0.2,
       "type": "Damage",
+      "hits" : [ 1 ],
+      "hit_times" : [ 0.4 ],
       "effects": [
         {
           "target_attribute": "HP",
           "power": 10,
-          "hits" : [ 1 ],
-          "hit_times" : [ 0.4 ],
           "cures_status": "None",
           "inflict_status": "None"
         }

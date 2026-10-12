@@ -61,10 +61,7 @@ ItemEffect parseEffect(const json& effectJson) {
     effect.targetAttribute = parseAttribute(effectJson.value("target_attribute", "None"));
     effect.curesStatus = parseStatusEffect(effectJson.value("cures_status", "None"));
     effect.inflictStatus = parseStatusEffect(effectJson.value("inflict_status", "None"));
-    effect.amount = effectJson.value("amount", 0);
-    effect.damagePower = effectJson.value("damage_power", 0);
-    effect.hits = effectJson.value("hits", std::vector<int>{});
-    effect.hitTimes = effectJson.value("hit_times", std::vector<float>{});
+    effect.damagePower = effectJson.value("power", 0);
     return effect;
 }
 
@@ -107,6 +104,8 @@ bool ItemDatabase::loadItems(const std::string& filePath) {
         item.isConsumable = itemJson.value("is_consumable", true);
         item.stealChance = itemJson.value("steal_chance", 0.0f);
         item.type = parseItemType(itemJson.value("type", "Heal"));
+        item.hits = itemJson.value("hits", std::vector<int>{});
+        item.hitTimes = itemJson.value("hit_times", std::vector<float>{});
 
         if (itemJson.contains("effects") && itemJson["effects"].is_array()) {
             for (const auto& effectJson : itemJson["effects"]) {
@@ -239,15 +238,15 @@ void ItemSystem::handleDamageItem(const ItemEffect& effect, Character& user, Cha
     event.attribute = effect.targetAttribute;
 
     if (effect.targetAttribute == Attribute::HP) {
-        event.requestedAmount = effect.damagePower;
-        target.takeDamage(effect.damagePower);
-        event.appliedAmount = effect.damagePower;
-        if (effect.amount != 0)
-            user.setHp(user.getHp() + effect.amount);
+        event.requestedAmount = effect.power;
+        target.takeDamage(effect.power);
+        event.appliedAmount = effect.power;
+        if (effect.power != 0)
+            user.setHp(user.getHp() + effect.power);
     } else if (effect.targetAttribute == Attribute::MP) {
-        event.requestedAmount = effect.damagePower;
-        target.setMp(target.getMp() - effect.damagePower);
-        event.appliedAmount = effect.damagePower;
+        event.requestedAmount = effect.power;
+        target.setMp(target.getMp() - effect.power);
+        event.appliedAmount = effect.power;
         if (effect.amount != 0)
             user.setMp(user.getMp() + effect.amount);
     } else {

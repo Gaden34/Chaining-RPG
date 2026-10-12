@@ -41,10 +41,7 @@ struct ItemEffect {
     Attribute targetAttribute = Attribute::None;
     StatusEffect curesStatus = StatusEffect::None;
     StatusEffect inflictStatus = StatusEffect::None;
-    int amount = 0;
-    int damagePower = 0;
-    std::vector<int> hits;
-    std::vector<float> hitTimes;
+    int power = 0;
 };
 
 struct ItemEffectEvent {
@@ -75,7 +72,9 @@ struct ItemData {
     float stealChance = 0.0f;
 
     ItemType type = ItemType::Heal;
-    //Rarity rarity;
+    
+    std::vector<int> hits;
+    std::vector<float> hitTimes;
 
     std::vector<ItemEffect> effects;
 };
