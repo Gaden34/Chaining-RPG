@@ -25,19 +25,21 @@ enum class Attribute { None = 0, HP, MP };
 
 enum class StatusEffect { None = 0, Poison, Paralysis };
 
-enum class ItemEventKind {
+enum class ItemEffectType {
     Heal,
     StatusHeal,
     Buff,
     Damage
 };
 
-enum class ItemEventTarget {
+enum class ItemEffectTarget {
     User,
     Target
 };
 
 struct ItemEffect {
+	ItemEffectType type = ItemEffectType::Heal;
+	ItemEffectTarget target = ItemEffectTarget::Target;
     Attribute targetAttribute = Attribute::None;
     StatusEffect curesStatus = StatusEffect::None;
     StatusEffect inflictStatus = StatusEffect::None;
@@ -45,8 +47,8 @@ struct ItemEffect {
 };
 
 struct ItemEffectEvent {
-    ItemEventKind kind = ItemEventKind::Heal;
-    ItemEventTarget affected = ItemEventTarget::User;
+    ItemEffectType type = ItemEffectType::Heal;
+    ItemEffectTarget target = ItemEffectTarget::Target;
     Attribute attribute = Attribute::None;
     StatusEffect status = StatusEffect::None;
     int requestedAmount = 0;

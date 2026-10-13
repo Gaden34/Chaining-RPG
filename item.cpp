@@ -34,6 +34,31 @@ ItemType parseItemType(const std::string& typeStr) {
     return ItemType::Heal;
 }
 
+ItemEffectType parseItemEffectType(const std::string& effectTypeStr) {
+	const std::string key = toLowerCopy(effectTypeStr);
+	if (key == "heal") {
+		return ItemEffectType::Heal;
+	}
+	if (key == "statusheal" || key == "status_heal") {
+		return ItemEffectType::StatusHeal;
+	}
+	if (key == "buff") {
+		return ItemEffectType::Buff;
+	}
+	if (key == "damage") {
+		return ItemEffectType::Damage;
+	}
+	return ItemEffectType::Heal;
+}
+
+ItemEffectTarget parseItemEffectTarget(const std::string& targetStr) {
+    const std::string key = toLowerCopy(targetStr);
+    if (key == "user") {
+        return ItemEffectTarget::User;
+    }
+    return ItemEffectTarget::Target;
+}
+
 Attribute parseAttribute(const std::string& attributeStr) {
     const std::string key = toLowerCopy(attributeStr);
     if (key == "hp") {
@@ -58,10 +83,12 @@ StatusEffect parseStatusEffect(const std::string& statusStr) {
 
 ItemEffect parseEffect(const json& effectJson) {
     ItemEffect effect;
+	effect.type = parseItemEffectType(effectJson.value("type", "Heal"));
+    effect.target = parseItemEffectTarget(effectJson.value("target", "Target"));
     effect.targetAttribute = parseAttribute(effectJson.value("target_attribute", "None"));
     effect.curesStatus = parseStatusEffect(effectJson.value("cures_status", "None"));
     effect.inflictStatus = parseStatusEffect(effectJson.value("inflict_status", "None"));
-    effect.damagePower = effectJson.value("power", 0);
+    effect.power = effectJson.value("power", 0);
     return effect;
 }
 
@@ -152,31 +179,24 @@ ItemUseResult ItemSystem::useItem(const ItemData& item, Character& user, Charact
         result.failureReason = "Item has no effect.";
         return result;
     }
-
-    switch (item.type) {
-        case ItemType::Heal:
-            for (const auto& effect : item.effects) {
-                handleHealingItem(effect, user, target, result);
-            }
+    for (const auto& effect : item.effects) {
+        switch (effect.type) {
+        case ItemEffectType::Heal:
+            handleHealingItem(effect, user, target, result);
             break;
-        case ItemType::StatusHeal:
-            for (const auto& effect : item.effects) {
-                handleStatusHealItem(effect, user, target, result);
-            }
+        case ItemEffectType::StatusHeal:
+            handleStatusHealItem(effect, user, target, result);
             break;
-        case ItemType::Buff:
-            for (const auto& effect : item.effects) {
-                handleBuffItem(effect, user, target, result);
-            }
+        case ItemEffectType::Buff:
+            handleBuffItem(effect, user, target, result);
             break;
-        case ItemType::Damage:
-            for (const auto& effect : item.effects) {
-                handleDamageItem(effect, user, target, result);
-            }
+        case ItemEffectType::Damage:
+            handleDamageItem(effect, user, target, result);
             break;
         default:
             result.failureReason = "Unknown item type.";
             break;
+        }
     }
 
     if (result.failureReason.empty() && result.effectEvents.empty()) {
@@ -190,12 +210,24 @@ ItemUseResult ItemSystem::useItem(const ItemData& item, Character& user, Charact
 
 void ItemSystem::handleHealingItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result) {
     ItemEffectEvent event;
-    event.kind = ItemEventKind::Heal;
-    event.affected = ItemEventTarget::Target;
+    event.type = ItemEffectType::Heal;
+    event.target = ItemEffectTarget::Target;
     event.attribute = effect.targetAttribute;
-    event.requestedAmount = effect.amount;
+    event.requestedAmount = effect.power;
 
     if (effect.targetAttribute == Attribute::HP) {
+		if (effect.target == ItemEffectTarget::User) {
+			if (user.getHp() >= user.getMaxHp()) {
+				if (result.failureReason.empty()) {
+					result.failureReason = user.getName() + " HP is already full.";
+				}
+				return;
+			}
+			int before = user.getHp();
+			user.setHp(user.getHp() + effect.power);
+			event.appliedAmount = user.getHp() - before;
+		}
+		else
         if (target.getHp() >= target.getMaxHp()) {
             if (result.failureReason.empty()) {
                 result.failureReason = target.getName() + " HP is already full.";
@@ -203,7 +235,7 @@ void ItemSystem::handleHealingItem(const ItemEffect& effect, Character& user, Ch
             return;
         }
         int before = target.getHp();
-        target.setHp(target.getHp() + effect.amount);
+        target.setHp(target.getHp() + effect.power);
         event.appliedAmount = target.getHp() - before;
     } else if (effect.targetAttribute == Attribute::MP) {
         if (target.getMp() >= target.getMaxMp()) {
@@ -213,7 +245,7 @@ void ItemSystem::handleHealingItem(const ItemEffect& effect, Character& user, Ch
             return;
         }
         int before = target.getMp();
-        target.setMp(target.getMp() + effect.amount);
+        target.setMp(target.getMp() + effect.power);
         event.appliedAmount = target.getMp() - before;
     } else {
         return;
@@ -233,22 +265,18 @@ void ItemSystem::handleBuffItem(const ItemEffect& effect, Character& user, Chara
 
 void ItemSystem::handleDamageItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result) {
     ItemEffectEvent event;
-    event.kind = ItemEventKind::Damage;
-    event.affected = ItemEventTarget::Target;
+    event.type = ItemEffectType::Damage;
+    event.target = ItemEffectTarget::Target;
     event.attribute = effect.targetAttribute;
 
     if (effect.targetAttribute == Attribute::HP) {
         event.requestedAmount = effect.power;
         target.takeDamage(effect.power);
         event.appliedAmount = effect.power;
-        if (effect.power != 0)
-            user.setHp(user.getHp() + effect.power);
     } else if (effect.targetAttribute == Attribute::MP) {
         event.requestedAmount = effect.power;
         target.setMp(target.getMp() - effect.power);
         event.appliedAmount = effect.power;
-        if (effect.amount != 0)
-            user.setMp(user.getMp() + effect.amount);
     } else {
         return;
     }

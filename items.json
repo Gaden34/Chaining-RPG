@@ -13,6 +13,8 @@
       "hit_times" : [ 0.2 ],
       "effects": [
         {
+          "type": "Heal",
+          "target": "Target",
           "target_attribute": "HP",
           "power": 50,
           "cures_status": "None",
@@ -33,6 +35,8 @@
       "hit_times" : [ 0.2 ],
       "effects": [
         {
+          "type": "Heal",
+          "target": "Target",
           "target_attribute": "MP",
           "power": 20,
           "cures_status": "None",
@@ -53,6 +57,8 @@
       "hit_times" : [ 0.2 ],
       "effects": [
         {
+          "type": "Damage",
+          "target": "Target",
           "target_attribute": "HP",
           "amount": 0,
           "power": 15,
@@ -74,12 +80,16 @@
       "hit_times" : [ 0.2 ],
       "effects": [
         {
+          "type": "Damage",
+          "target": "Target",
           "target_attribute": "HP",
           "power": 10,
           "cures_status": "None",
           "inflict_status": "None"
         },
         {
+          "type": "Heal",
+          "target": "User",
           "target_attribute": "HP",
           "power": 10,
           "cures_status": "None",
@@ -101,6 +111,8 @@
       "hit_times" : [ 0.4 ],
       "effects": [
         {
+          "type": "Damage",
+          "target": "Target",
           "target_attribute": "HP",
           "power": 10,
           "cures_status": "None",
