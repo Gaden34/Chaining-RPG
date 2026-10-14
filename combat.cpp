@@ -535,20 +535,20 @@ void Combat::performItem(QueuedAction& action) {
 
 	for (const auto& event : result.effectEvents) {
 		std::string msg = player->getName() + " uses " + item->name;
-		switch (event.kind) {
-		case ItemEventKind::Heal:
+		switch (event.type) {
+		case ItemEffectType::Heal:
 			if (event.attribute == Attribute::HP)
 				msg += " on " + target->getName() + ", restoring " + std::to_string(event.appliedAmount) + " HP!";
 			else if (event.attribute == Attribute::MP)
 				msg += " on " + target->getName() + ", restoring " + std::to_string(event.appliedAmount) + " MP!";
 			break;
-		case ItemEventKind::Damage:
+		case ItemEffectType::Damage:
 			msg += " on " + target->getName() + " for " + std::to_string(event.appliedAmount) + " damage!";
 			break;
-		case ItemEventKind::StatusHeal:
+		case ItemEffectType::StatusHeal:
 			msg += ", curing " + target->getName() + " of a status!";
 			break;
-		case ItemEventKind::Buff:
+		case ItemEffectType::Buff:
 			msg += " on " + target->getName() + ".";
 			break;
 		default:
@@ -635,14 +635,18 @@ int Combat::applySkillHit(Skill* skill, Character* actor, Character* target) {
 
 int Combat::applyItemHit(const ItemData& item, Character* actor, Character* target) {
 	int total = 0;
+
+	ItemUseResult result;
+
 	for (const auto& e : item.effects) {
-		if (e.damagePower <= 0) continue;
-		float damage = e.damagePower * item.hits[hitIndex].multiplier;
-		damage = randomRange(int(damage * 0.95f), int(damage * 1.05f));
+		if (e.type != ItemEffectType::Damage) continue;
+		if (e.power <= 0) continue;
+		float damage = static_cast<float>(e.power);
+		damage = randomRange(static_cast<int>(damage * 0.95f), static_cast<int>(damage * 1.05f));
 		damage = damage * chain.getDamagePercent() / 100.0f;
-		int final = static_cast<int>(std::round(damage));
-		target->takeDamage(final);
-		total += final;
+		int finalDamage = static_cast<int>(std::round(damage));
+		ItemSystem::handleDamageItem(e, *actor, *target, finalDamage, result);
+		total += finalDamage;
 	}
 	return total;
 }

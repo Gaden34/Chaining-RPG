@@ -106,9 +106,9 @@ public:
     static void handleHealingItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result);
     static void handleStatusHealItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result);
     static void handleBuffItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result);
-    static void handleDamageItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result);
-    static std::string getAnimationName(const ItemData& item);
-    static std::vector<float> getHitTimes(const ItemData& item);
+    static void handleDamageItem(const ItemEffect& effect, Character& user, Character& target, int finalDamage, ItemUseResult& result);
+	static std::string getAnimationName(const ItemData& item) { return item.animationName; }
+	static std::vector<float> getHitTimes(const ItemData& item) { return item.hitTimes; }
 };
 
 class Inventory {

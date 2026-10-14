@@ -191,7 +191,7 @@ ItemUseResult ItemSystem::useItem(const ItemData& item, Character& user, Charact
             handleBuffItem(effect, user, target, result);
             break;
         case ItemEffectType::Damage:
-            handleDamageItem(effect, user, target, result);
+            //handleDamageItem(effect, user, target, result);
             break;
         default:
             result.failureReason = "Unknown item type.";
@@ -263,7 +263,7 @@ void ItemSystem::handleBuffItem(const ItemEffect& effect, Character& user, Chara
     // Implement buff logic here when Character exposes buff APIs.
 }
 
-void ItemSystem::handleDamageItem(const ItemEffect& effect, Character& user, Character& target, ItemUseResult& result) {
+void ItemSystem::handleDamageItem(const ItemEffect& effect, Character& user, Character& target, int finalDamage, ItemUseResult& result) {
     ItemEffectEvent event;
     event.type = ItemEffectType::Damage;
     event.target = ItemEffectTarget::Target;
@@ -271,12 +271,14 @@ void ItemSystem::handleDamageItem(const ItemEffect& effect, Character& user, Cha
 
     if (effect.targetAttribute == Attribute::HP) {
         event.requestedAmount = effect.power;
-        target.takeDamage(effect.power);
-        event.appliedAmount = effect.power;
+        target.takeDamage(finalDamage);
+        event.appliedAmount = finalDamage;
     } else if (effect.targetAttribute == Attribute::MP) {
-        event.requestedAmount = effect.power;
-        target.setMp(target.getMp() - effect.power);
-        event.appliedAmount = effect.power;
+        event.requestedAmount = finalDamage;
+        
+		int oldMp = target.getMp();
+		target.setMp(std::max(0, target.getMp() - finalDamage));
+        event.appliedAmount = oldMp - target.getMp();
     } else {
         return;
     }
