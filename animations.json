@@ -62,5 +62,21 @@
 				"displayDuration": 0.25
 			}
 		}
-	}
+	},
+  "null animation": {
+    "texture": "assets/NullAnimation.png",
+    "animations": {
+      "cast": {
+        "totalFrames": 1,
+        "columns": 1,
+        "frameWidth": 32,
+        "frameHeight": 32,
+        "frameDuration": 0.2,
+        "startX": 0,
+        "startY": 0,
+        "loop": false,
+        "instant": true
+      }
+    }
+  }
 }

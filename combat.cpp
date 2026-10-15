@@ -490,6 +490,7 @@ void Combat::resolveSkill(QueuedAction& action) {
 	}
 
 	//calculateSkillDamage(skill, player, target);
+	applySkillHit(skill, player, target);
 	handleSteal(skill, player, target);
 	handleDeath(*target);
 }

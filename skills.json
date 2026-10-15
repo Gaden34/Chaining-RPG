@@ -8,8 +8,10 @@
         "type": "Attack",
         "base_damage": 27,
         "hits": [ 1, 2 ],
+        "hit_times": [ 0.25, 0.35 ],
         "chain_window": 0.2,
-        "chain_damage_pct": 25.0
+        "chain_damage_pct": 25.0,
+        "animation": "null animation"
       }
     ]
   },
@@ -55,8 +57,10 @@
         "type": "Steal",
         "base_damage": 0,
         "hits": [ 1 ],
+        "hit_times": [ 0.25 ],
         "chain_window": 0.2,
-        "chain_damage_pct": 25.0
+        "chain_damage_pct": 25.0,
+        "animation": "null animation"
       }
     ],
     "3": [
@@ -66,9 +70,11 @@
         "mp_cost": 0,
         "type": "Attack",
         "base_damage": 26,
-        "hits": [1, 2],
+        "hits": [ 1, 2 ],
+        "hit_times": [ 0.25, 0.35 ], 
         "chain_window": 0.2,
-        "chain_damage_pct": 25.0
+        "chain_damage_pct": 25.0,
+        "animation": "null animation"
       }
     ]
   }

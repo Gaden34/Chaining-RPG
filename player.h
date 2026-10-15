@@ -70,6 +70,7 @@ public:
 	void levelUp();
 	void setLevel(int newLevel) { level = newLevel; }
 	void setLevelFromTest(int targetLevel);
+	sf::FloatRect getGlobalBounds() const override { return battleSprite.getGlobalBounds(); }
 	bool getIsMoving();
 	Discipline& getDiscipline();
 	void setDiscipline(DisciplineID id);

@@ -39,7 +39,7 @@ public:
 
 	std::string getName() const { return name; }
 	void setPosition(float x, float y) { sprite.setPosition(x, y); }
-	sf::FloatRect getGlobalBounds() const { return sprite.getGlobalBounds(); }
+	virtual sf::FloatRect getGlobalBounds() const { return sprite.getGlobalBounds(); }
 	int getHp() const { return hp; }
 	void setHp(int x);
 	int getMp() const { return mp; }
