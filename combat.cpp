@@ -524,38 +524,21 @@ void Combat::performItem(QueuedAction& action) {
 		releaseConsumableItemReservation(*item);
 	}
 
-	ItemUseResult result = ItemSystem::useItem(*item, *player, *target);
-
-	if (!result.success) {
-		messageLog.addMessage("Failed to use " + item->name + ": " + result.failureReason, sf::Color::Red);
-		return;
-	}
-
 	if (item->isConsumable)
 		player->getInventory().removeItem(item->id, 1);
 
-	for (const auto& event : result.effectEvents) {
-		std::string msg = player->getName() + " uses " + item->name;
-		switch (event.type) {
-		case ItemEffectType::Heal:
-			if (event.attribute == Attribute::HP)
-				msg += " on " + target->getName() + ", restoring " + std::to_string(event.appliedAmount) + " HP!";
-			else if (event.attribute == Attribute::MP)
-				msg += " on " + target->getName() + ", restoring " + std::to_string(event.appliedAmount) + " MP!";
-			break;
-		case ItemEffectType::Damage:
-			msg += " on " + target->getName() + " for " + std::to_string(event.appliedAmount) + " damage!";
-			break;
-		case ItemEffectType::StatusHeal:
-			msg += ", curing " + target->getName() + " of a status!";
-			break;
-		case ItemEffectType::Buff:
-			msg += " on " + target->getName() + ".";
-			break;
-		default:
-			break;
-		}
-		messageLog.addMessage(msg, sf::Color::Green);
+	ItemActionResult result = applyItemEffects(*item, player, target);
+	switch (item->type) {
+	case ItemType::Damage:
+		messageLog.addMessage(player->getName() + " uses " + item->name + " on the " + TextUtils::lowerFirst(target->getName()) + " for " + std::to_string(result.totalDamge) + " damage!", sf::Color::Black);
+		break;
+
+	case ItemType::Heal:
+		if (result.totalHpRestored > 0)
+			messageLog.addMessage(target->getName() + " recovers " + std::to_string(result.totalHpRestored) + " HP!", sf::Color::Black);
+		else if (result.totalMpRestored > 0)
+			messageLog.addMessage(target->getName() + " recovers " + std::to_string(result.totalMpRestored) + " MP!", sf::Color::Black);
+		break;
 	}
 
 	handleDeath(*target);
@@ -632,6 +615,37 @@ int Combat::applySkillHit(Skill* skill, Character* actor, Character* target) {
 	const int finalDamage = static_cast<int>(std::round(damage));
 	target->takeDamage(finalDamage);
 	return finalDamage;
+}
+
+ItemActionResult Combat::applyItemEffects(const ItemData& item, Character* actor, Character* target) {
+	ItemActionResult result;
+	for (const auto& effect : item.effects) {
+		if (effect.type == ItemEffectType::Damage) {
+			float damage = static_cast<float>(effect.power);
+			damage = randomRange(static_cast<int>(damage * 0.95f), static_cast<int>(damage * 1.05f));
+			damage = damage * chain.getDamagePercent() / 100.0f;
+			int finalDamage = static_cast<int>(std::round(damage));
+			target->takeDamage(finalDamage);
+			result.totalDamge += finalDamage;
+		}
+		else if (effect.type == ItemEffectType::Heal) {
+			if (effect.targetAttribute == Attribute::HP) {
+				target->setHp(std::min(target->getHp() + effect.power, target->getMaxHp()));
+				result.totalHpRestored += effect.power;
+			}
+			else if (effect.targetAttribute == Attribute::MP) {
+				target->setMp(std::min(target->getMp() + effect.power, target->getMaxMp()));
+				result.totalMpRestored += effect.power;
+			}
+		}
+		else if (effect.type == ItemEffectType::StatusHeal) {
+			// Implement status healing logic here
+		}
+		else if (effect.type == ItemEffectType::Buff) {
+			// Implement buff logic here
+		}
+		return result;
+	}
 }
 
 int Combat::applyItemHit(const ItemData& item, Character* actor, Character* target) {

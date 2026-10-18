@@ -90,6 +90,12 @@ struct EnemySpawn {
 	int count = 1;
 };
 
+struct ItemActionResult {
+	int totalDamge = 0;
+	int totalHpRestored = 0;
+	int totalMpRestored = 0;
+};
+
 class CombatMenu : public Menu {
 public:
 	enum class MenuOption { Attack, Skill, Item, Defend, Count };
@@ -182,6 +188,7 @@ private:
 	void performItem(QueuedAction& action);
 	void calculateSkillDamage(Skill* skill, Character* actor, Character* target);
 	int applySkillHit(Skill* skill, Character* actor, Character* target);
+	ItemActionResult applyItemEffects(const ItemData& item, Character* actor, Character* target);
 	int applyItemHit(const ItemData& item, Character* actor, Character* target);
 	void handleSteal (Skill* skill, Character* actor, Character* target);
 	void executeAction(QueuedAction& action);
