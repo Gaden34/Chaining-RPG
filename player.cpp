@@ -46,7 +46,7 @@ const AxisInput verticalAxisInput = {
 }
 
 // Custom move constructor/assignment to ensure SFML sprites are rebound after move
-/*Player::Player(Player&& other) noexcept
+Player::Player(Player&& other) noexcept
 	: Character(std::move(other)),
 	  level(other.level),
 	  experience(other.experience),
@@ -99,7 +99,7 @@ Player& Player::operator=(Player&& other) noexcept {
 		sprite.setPosition(other.sprite.getPosition());
 	}
 	return *this;
-}*/
+}
 
 Player::Player(MessageLog& m, std::string n, const SpritePaths& spritePaths, Inventory& inv) : messageLog(m), partyInventory(inv) {
 	name = n;

@@ -45,7 +45,7 @@ bool Exploration::checkForEncounter(float dt, Player& player) {
 
 	if (encounterTimer >= 3.0f && player.getIsMoving()) {
 		if (rollEncounter(rng) == 1) {
-			playerPosition = player.getGlobalBounds().getPosition();
+			playerPosition = player.Character::getGlobalBounds().getPosition();
 			encounterTimer = 0.f;
 			return true;
 		}
@@ -61,8 +61,8 @@ void Exploration::setCamera(Player& player) {
 	sf::Vector2u mapSize = map.getSize();
 	float halfWidth = camera.getSize().x / 2.f;
 	float halfHeight = camera.getSize().y / 2.f;
-	float cameraX = player.getGlobalBounds().getPosition().x + player.getGlobalBounds().width / 2.f;
-	float cameraY = player.getGlobalBounds().getPosition().y + player.getGlobalBounds().height / 2.f;
+	float cameraX = player.Character::getGlobalBounds().getPosition().x + player.getGlobalBounds().width / 2.f;
+	float cameraY = player.Character::getGlobalBounds().getPosition().y + player.getGlobalBounds().height / 2.f;
 	cameraX = std::clamp(cameraX, halfWidth, static_cast<float>(mapSize.x) - halfWidth);
 	cameraY = std::clamp(cameraY, halfHeight, static_cast<float>(mapSize.y) - halfHeight);
 	camera.setCenter(cameraX, cameraY);

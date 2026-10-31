@@ -49,10 +49,10 @@ private:
 
 public:
 	Player(MessageLog& m, std::string n, const SpritePaths& spritePaths, Inventory& inv);
-	//Player(const Player&) = delete;
-	//Player& operator=(const Player&) = delete;
-	//Player(Player&&) noexcept;
-	//Player& operator=(Player&&) noexcept;
+	Player(const Player&) = delete;
+	Player& operator=(const Player&) = delete;
+	Player(Player&&) noexcept;
+	Player& operator=(Player&&) noexcept;
 	void update(float dt) override {}
 	void update(float dt, InputHandler& inputHandler, const Map& map);
 	void draw(sf::RenderTarget& target) override { drawExploring(target); }
