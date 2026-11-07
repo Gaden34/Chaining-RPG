@@ -48,6 +48,21 @@
           "targetMap": "BurumiaMapHouse4",
           "targetCollisionMap": "BurumiaHouseCollisionMap",
           "direction": "Up"
+        },
+        {
+          "trigger": {
+            "x": 940.0,
+            "y": 117.0,
+            "w": 40.0,
+            "h": 53.0
+          },
+          "targetMap": "BurumiaForestMap",
+          "targetCollisionMap": "BurumiaForestMap",
+          "direction": "Up",
+          "spawnPosition": {
+            "x": 16.0,
+            "y": 140.0
+          }
         }
       ]
     },
@@ -120,6 +135,27 @@
           "targetMap": "BurumiaMap",
           "targetCollisionMap": "BurumiaCollisionMap",
           "direction": "Down"
+        }
+      ]
+    },
+    {
+      "id": "BurumiaForestMap",
+      "texture": "BurumiaForestMap",
+      "collisionMap": "BurumiaForestMap",
+      "transitions": [
+        {
+          "trigger": {
+            "x": 0.0,
+            "y": 117.0,
+            "w": 4.0,
+            "h": 53.0
+          },
+          "targetMap": "BurumiaMap",
+          "targetCollisionMap": "BurumiaCollisionMap",
+          "direction": "Left",
+          "spawnPosition":
+          "x": 940.0,
+          "y": 140.0
         }
       ]
     }
