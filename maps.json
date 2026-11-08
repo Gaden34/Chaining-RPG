@@ -51,17 +51,17 @@
         },
         {
           "trigger": {
-            "x": 940.0,
+            "x": 954.0,
             "y": 117.0,
-            "w": 40.0,
+            "w": 4.0,
             "h": 53.0
           },
           "targetMap": "BurumiaForestMap",
           "targetCollisionMap": "BurumiaForestMap",
-          "direction": "Up",
+          "direction": "Right",
           "spawnPosition": {
-            "x": 16.0,
-            "y": 140.0
+            "x": 2.0,
+            "y": 34.0
           }
         }
       ]
@@ -145,17 +145,18 @@
       "transitions": [
         {
           "trigger": {
-            "x": 0.0,
-            "y": 117.0,
+            "x": 2.0,
+            "y": 48.0,
             "w": 4.0,
-            "h": 53.0
+            "h": 31.0
           },
           "targetMap": "BurumiaMap",
           "targetCollisionMap": "BurumiaCollisionMap",
           "direction": "Left",
-          "spawnPosition":
-          "x": 940.0,
-          "y": 140.0
+          "spawnPosition": {
+            "x": 940.0,
+            "y": 117.0
+          }
         }
       ]
     }
