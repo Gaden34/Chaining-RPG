@@ -4,6 +4,7 @@
 #include "messageLog.h"
 
 enum class CombatSetupState {
+	ChoosingFieldTest,
 	ChoosingDiscipline,
 	ChoosingLevel,
 	Finished
@@ -16,8 +17,9 @@ private:
 	int firstDigit = 0;
 	std::vector<Player>& party;
 	MessageLog& messageLog;
+	bool fieldTest = false;
 
-	CombatSetupState currentState = CombatSetupState::ChoosingDiscipline;
+	CombatSetupState currentState = CombatSetupState::ChoosingFieldTest;
 
 	int currentCharacter = 0;
 
@@ -27,9 +29,11 @@ public:
 	void update();
 	void draw(sf::RenderTarget& target);
 	void handleEvent(const sf::Event& event);
+	void handleFieldTestInput(const sf::Event& event);
 	void handleDisciplineSelection(const sf::Event& event);
 	void handleLevelInput(const sf::Event& event);
 	bool isFinished() const { return currentState == CombatSetupState::Finished; }
 	void reset() { currentState = CombatSetupState::ChoosingDiscipline; }
+	bool getFieldTest() const { return fieldTest; }
 };
 

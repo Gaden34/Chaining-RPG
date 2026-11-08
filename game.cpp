@@ -131,10 +131,13 @@ void Game::update(float dt) {
 
 	case GameState::CombatTest:
 		combatTestSetup.update();
-		if (combatTestSetup.isFinished()) {
+		if (combatTestSetup.isFinished() && !combatTestSetup.getFieldTest()) {
 			combat.start();
 			currentState = GameState::Combat;
 			combatTestSetup.reset();
+		}
+		else if (combatTestSetup.isFinished() && combatTestSetup.getFieldTest()) {
+			startExploring();
 		}
 		break;
 
@@ -157,8 +160,11 @@ void Game::updateCharacterCreation(float dt) {
 
 void Game::updateExploration(float dt) {
 	exploration.update(dt, inputHandler);
-	if (exploration.checkForEncounter(dt, party[0])) {
-		startCombat();
+
+	if (!combatTestSetup.getFieldTest()) {
+		if (exploration.checkForEncounter(dt, party[0])) {
+			startCombat();
+		}
 	}
 
 		MapTransition* transition = exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()), party[0].getPreviousCollisionBox(),

@@ -22,6 +22,9 @@ void CombatTestSetup::update()
 void CombatTestSetup::handleEvent(const sf::Event& event)
 {
 	switch (currentState) {
+	case CombatSetupState::ChoosingFieldTest:
+		handleFieldTestInput(event);
+		break;
 	case CombatSetupState::ChoosingDiscipline:
 		handleDisciplineSelection(event);
 		break;
@@ -31,6 +34,24 @@ void CombatTestSetup::handleEvent(const sf::Event& event)
 	case CombatSetupState::Finished:
 		// No further input needed
 		break;
+	}
+}
+
+void CombatTestSetup::handleFieldTestInput(const sf::Event& event)
+{
+	messageLog.setCurrentMessage("Enable field test? 1. Yes - 2. No", sf::Color::Black);
+
+	if (event.type == sf::Event::KeyPressed) {
+		if (event.key.code == sf::Keyboard::Num1) {
+			fieldTest = true;
+			currentState = CombatSetupState::Finished;
+			messageLog.addMessage("Field test enabled.", sf::Color::Black);
+		}
+		else if (event.key.code == sf::Keyboard::Num2) {
+			fieldTest = false;
+			currentState = CombatSetupState::ChoosingDiscipline;
+			messageLog.addMessage("Field test disabled.", sf::Color::Black);
+		}
 	}
 }
 
