@@ -112,6 +112,7 @@ std::vector<MapTransition> Map::loadTransitionsFromJson(const std::string& mapId
 			);
 			transition.targetMap.texturePath = t.value("targetMap", "");
 			transition.targetMap.collisionMapPath = t.value("targetCollisionMap", "");
+
 			transition.direction = stringToDirection(t.value("direction", ""));
 
 			if (t.contains("spawnPosition")) {

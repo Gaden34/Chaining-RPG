@@ -15,6 +15,7 @@ enum class TransitionDirection
 struct MapData {
 	std::string texturePath;
 	std::string collisionMapPath;
+	sf::Vector2f worldPosition;
 };
 
 struct MapTransition {
@@ -37,6 +38,7 @@ private:
 	sf::Texture texture;
 	sf::Sprite sprite;
 	sf::Image collisionMap;
+	sf::Vector2f worldPosition;
 
 	std::vector<MapTransition> transitions;
 	
@@ -47,6 +49,8 @@ public:
 	void setTexture(std::string t);
 	sf::Vector2u getSize() const { return texture.getSize(); }
 	void setCollisionMap(std::string t);
+	void setPosition(const sf::Vector2f& position) { worldPosition = position; sprite.setPosition(position); }
+	sf::Vector2f getPosition() const { return worldPosition; }
 	bool isBlocked(int x, int y) const;
 	sf::Image& getCollisionMap() { return collisionMap; }
 	std::vector<MapTransition>& getTransitions() { return transitions; }

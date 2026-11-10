@@ -42,6 +42,7 @@
     <ClCompile Include="skillDatabase.cpp" />
     <ClCompile Include="submenuScreen.cpp" />
     <ClCompile Include="textUtils.cpp" />
+    <ClCompile Include="world.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h" />
@@ -67,6 +68,7 @@
     <ClInclude Include="skillDatabase.h" />
     <ClInclude Include="submenuScreen.h" />
     <ClInclude Include="textUtils.h" />
+    <ClInclude Include="world.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\copilot-instructions.md" />

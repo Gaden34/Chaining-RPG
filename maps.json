@@ -4,6 +4,10 @@
       "id": "BurumiaMap",
       "texture": "BurumiaMap",
       "collisionMap": "BurumiaCollisionMap",
+      "worldPosition": {
+        "x": 0.0,
+        "y": 0.0
+      },
       "transitions": [
         {
           "trigger": {
@@ -142,6 +146,10 @@
       "id": "BurumiaForestMap",
       "texture": "BurumiaForestMap",
       "collisionMap": "BurumiaForestMap",
+      "worldPosition": {
+        "x": 960.0,
+        "y": 0.0
+      },
       "transitions": [
         {
           "trigger": {
