@@ -20,6 +20,7 @@ struct MapTransition {
 
 
 struct MapData {
+	std::string id;
 	std::string texturePath;
 	std::string collisionMapPath;
 	sf::Vector2f worldPosition;
@@ -41,12 +42,14 @@ private:
 	sf::Sprite sprite;
 	sf::Image collisionMap;
 	sf::Vector2f worldPosition;
+	std::string id;
 
 	std::vector<MapTransition> transitions;
 	
 
 public:
-	Map();
+	Map() = default;
+	Map(MapData& data);
 	void draw(sf::RenderTarget& target);
 	void setTexture(std::string t);
 	sf::Vector2u getSize() const { return texture.getSize(); }
@@ -56,6 +59,7 @@ public:
 	bool isBlocked(int x, int y) const;
 	sf::Image& getCollisionMap() { return collisionMap; }
 	std::vector<MapTransition>& getTransitions() { return transitions; }
+	std::string getID() const { return id; }
 	MapTransition* getTransitionAtPosition(const sf::FloatRect& currentBounds, const sf::FloatRect& previousBounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical);
 	bool canTriggerTransition(const sf::FloatRect& currentFeet, const sf::FloatRect& previousFeet, const MapTransition& transition, TransitionDirection direction) const;
 	static std::vector<MapTransition> loadTransitionsFromJson(const std::string& mapId, const std::string& filePath);

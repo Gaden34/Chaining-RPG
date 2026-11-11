@@ -10,5 +10,5 @@ namespace PlayerSprites {
 	inline const SpritePaths Kari{
 		"assets/bluey.png",
 		"assets/bluey.png",
-		"assets/bluey.png" };
+		"assets/BlueyBattleSprite.png" };
 }

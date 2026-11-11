@@ -6,9 +6,11 @@
 using json = nlohmann::json;
 
 
-Map::Map() {
-	texture.loadFromFile("assets/characterCreation.png");
+Map::Map(MapData& data) : id(data.id), worldPosition(data.worldPosition), transitions(data.transitions) {
+	texture.loadFromFile("assets/" + data.texturePath + ".png");
 	sprite.setTexture(texture, true);
+	collisionMap.loadFromFile("assets/" + data.collisionMapPath + ".png");
+
 }
 
 void Map::draw(sf::RenderTarget& target) {

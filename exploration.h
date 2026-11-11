@@ -1,6 +1,7 @@
 #pragma once
 #include <random>
 #include <SFML/Graphics.hpp>
+#include "world.h"
 #include "map.h"
 #include "player.h"
 #include "messageLog.h"
@@ -64,7 +65,7 @@ public:
 
 class Exploration {
 private:
-	Map map;
+	World world;
 	sf::View camera;
 	float encounterTimer = 0.f;
 	sf::Vector2f playerPosition = { 40.f, 20.f };
@@ -93,5 +94,5 @@ public:
 	MapTransition* getTransitionAtPosition(const sf::FloatRect& currentBounds, const sf::FloatRect& previousBounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical);
 
 	void savePlayerPosition(const sf::Vector2f& pos) { playerPosition = pos; }
-	Map& getMap() { return map; }
+	World& getWorld() { return world; }
 };

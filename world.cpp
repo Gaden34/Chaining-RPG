@@ -6,13 +6,16 @@
 
 using json = nlohmann::json;
 
-MapData World::loadMap(const std::string& mapID) {
+void World::loadMap(const std::string& mapID) {
+
+	if (isMapLoaded(mapID)) return;
+
 	MapData mapData;
 
 	std::ifstream file("maps.json");
 	if (!file.is_open()) {
 		std::cerr << "Failed to open maps JSON: maps.json" << std::endl;
-		return mapData;
+		return;
 	}
 
 	json data;
@@ -23,6 +26,7 @@ MapData World::loadMap(const std::string& mapID) {
 			continue;
 
 		// Load map data from JSON
+		mapData.id = mapID;
 		mapData.texturePath = mapJson.value("texture", "");
 		mapData.collisionMapPath = mapJson.value("collisionMap", "");
 
@@ -31,12 +35,28 @@ MapData World::loadMap(const std::string& mapID) {
 				mapJson["worldPosition"].value("x", 0.f),
 				mapJson["worldPosition"].value("y", 0.f)
 			);
-		
+
 			mapData.transitions = Map::loadTransitionsFromJson(mapID, "maps.json");
 
-			return mapData;
+			loadedMaps.emplace_back(mapData);
+		}
+		return;
 	}
+	std::cerr << "Map not found: " << mapID << std::endl;
+}
 
-		std::cerr << "Map not found: " << mapID << std::endl;
-	return mapData;
+Map& World::getMap() {
+	if (loadedMaps.empty()) {
+		loadedMaps.emplace_back();
+	}
+	return loadedMaps[0];
+}
+
+bool World::isMapLoaded(const std::string& mapID) const {
+	for (const auto& map : loadedMaps) {
+		if (map.getID() == mapID) {
+			return true;
+		}
+	}
+	return false;
 }

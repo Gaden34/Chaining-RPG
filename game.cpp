@@ -167,17 +167,19 @@ void Game::updateExploration(float dt) {
 		}
 	}
 
-		MapTransition* transition = exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()), party[0].getPreviousCollisionBox(),
-			party[0].getHorizontalDirection(), party[0].getVerticalDirection());
-		if (transition) {
-	
-			exploration.getMap().setTexture(transition->targetMap.texturePath);
-			exploration.getMap().setCollisionMap(transition->targetMap.collisionMapPath);
-			if (transition->spawnPosition.has_value()) party[0].setPosition(transition->spawnPosition->x, transition->spawnPosition->y);
+	MapTransition* transition = exploration.getTransitionAtPosition(party[0].getCollisionBox(party[0].getSprite().getPosition()), party[0].getPreviousCollisionBox(),
+		party[0].getHorizontalDirection(), party[0].getVerticalDirection());
+	if (transition) {
+		std::string targetMapID = transition->targetMapID;
+		auto spawnPosition = transition->spawnPosition;
 
-			exploration.getMap().getTransitions() = Map::loadTransitionsFromJson(transition->targetMap.texturePath, "maps.json");
+		exploration.getWorld().loadMap(targetMapID);
+
+		if (spawnPosition.has_value()) {
+			party[0].setPosition(spawnPosition->x, spawnPosition->y);
 		}
 	}
+}
 
 	void Game::startCharacterCreation() {
 		currentState = GameState::CharacterCreation;
