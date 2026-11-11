@@ -11,18 +11,20 @@ enum class TransitionDirection
 	Right
 };
 
+struct MapTransition {
+	sf::FloatRect trigger;
+	std::string targetMapID;
+	TransitionDirection direction;
+	std::optional<sf::Vector2f> spawnPosition;
+};
+
 
 struct MapData {
 	std::string texturePath;
 	std::string collisionMapPath;
 	sf::Vector2f worldPosition;
-};
+	std::vector<MapTransition> transitions;
 
-struct MapTransition {
-	sf::FloatRect trigger;
-	MapData targetMap;
-	TransitionDirection direction;
-	std::optional<sf::Vector2f> spawnPosition;
 };
 
 struct CollisionBoxCorners {

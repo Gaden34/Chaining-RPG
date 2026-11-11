@@ -110,8 +110,7 @@ std::vector<MapTransition> Map::loadTransitionsFromJson(const std::string& mapId
 				trig.value("w", 0.f),
 				trig.value("h", 0.f)
 			);
-			transition.targetMap.texturePath = t.value("targetMap", "");
-			transition.targetMap.collisionMapPath = t.value("targetCollisionMap", "");
+			transition.targetMapID = t.value("targetMapID", "");
 
 			transition.direction = stringToDirection(t.value("direction", ""));
 

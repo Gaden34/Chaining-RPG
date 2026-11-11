@@ -9,5 +9,6 @@ private:
 	std::vector<Map> loadedMaps;
 
 public:
-	void loadMap(const std::string& mapID, sf::Vector2f position);
+	MapData loadMap(const std::string& mapID);
 
+};
