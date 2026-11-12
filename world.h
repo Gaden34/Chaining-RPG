@@ -11,7 +11,8 @@ private:
 	std::vector<Map> loadedMaps;
 
 public:
+	void draw(sf::RenderTarget& target);
 	void loadMap(const std::string& mapID);
-	Map& getMap();
+	std::vector<Map>& getLoadedMaps();
 	bool isMapLoaded(const std::string& mapID) const;
 };

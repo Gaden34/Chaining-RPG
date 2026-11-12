@@ -56,6 +56,7 @@ public:
 	void setCollisionMap(std::string t);
 	void setPosition(const sf::Vector2f& position) { worldPosition = position; sprite.setPosition(position); }
 	sf::Vector2f getPosition() const { return worldPosition; }
+	sf::Vector2f worldToLocal(const sf::Vector2f& position) const { return position - worldPosition; }
 	bool isBlocked(int x, int y) const;
 	sf::Image& getCollisionMap() { return collisionMap; }
 	std::vector<MapTransition>& getTransitions() { return transitions; }

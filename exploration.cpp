@@ -9,16 +9,14 @@ Exploration::Exploration(std::mt19937& rng, std::vector<Player>& party, MessageL
 }
 
 void Exploration::start(Player& player) {
-	world.getMap().setTexture("BurumiaMap");
-	world.getMap().setCollisionMap("BurumiaCollisionMap");
-	world.getMap().getTransitions() = Map::loadTransitionsFromJson("BurumiaMap", "maps.json");
+	world.loadMap("BurumiaMap");
 
 	player.setPosition(playerPosition.x, playerPosition.y);
 	player.getWalkAnimation().setFrame(1);
 }
 
 void Exploration::update(float dt, InputHandler& inputHandler) {
-	party[0].update(dt, inputHandler, world.getMap());
+	party[0].update(dt, inputHandler, world.getLoadedMaps()[0]);
 	setCamera(party[0]);
 
 	openFieldMenu(inputHandler);
@@ -30,7 +28,7 @@ void Exploration::update(float dt, InputHandler& inputHandler) {
 
 void Exploration::draw(sf::RenderTarget& target) {
 	target.setView(camera);
-	world.getMap().draw(target);
+	world.getLoadedMaps()[0].draw(target);
 	party[0].drawExploring(target);
 	target.setView(target.getDefaultView());
 
@@ -54,11 +52,11 @@ bool Exploration::checkForEncounter(float dt, Player& player) {
 }
 
 MapTransition* Exploration::getTransitionAtPosition(const sf::FloatRect& currentBounds, const sf::FloatRect& previousBounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical) {
-	return world.getMap().getTransitionAtPosition(currentBounds, previousBounds, horizontal, vertical);
+	return world.getLoadedMaps()[0].getTransitionAtPosition(currentBounds, previousBounds, horizontal, vertical);
 }
 
 void Exploration::setCamera(Player& player) {
-	sf::Vector2u mapSize = world.getMap().getSize();
+	sf::Vector2u mapSize = world.getLoadedMaps()[0].getSize();
 	float halfWidth = camera.getSize().x / 2.f;
 	float halfHeight = camera.getSize().y / 2.f;
 	float cameraX = player.Character::getGlobalBounds().getPosition().x + player.getGlobalBounds().width / 2.f;

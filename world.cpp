@@ -6,6 +6,12 @@
 
 using json = nlohmann::json;
 
+void World::draw(sf::RenderTarget& target) {
+	for (auto& map : loadedMaps) {
+		map.draw(target);
+	}
+}
+
 void World::loadMap(const std::string& mapID) {
 
 	if (isMapLoaded(mapID)) return;
@@ -35,21 +41,19 @@ void World::loadMap(const std::string& mapID) {
 				mapJson["worldPosition"].value("x", 0.f),
 				mapJson["worldPosition"].value("y", 0.f)
 			);
+		}
 
 			mapData.transitions = Map::loadTransitionsFromJson(mapID, "maps.json");
 
 			loadedMaps.emplace_back(mapData);
-		}
+
 		return;
 	}
 	std::cerr << "Map not found: " << mapID << std::endl;
 }
 
-Map& World::getMap() {
-	if (loadedMaps.empty()) {
-		loadedMaps.emplace_back();
-	}
-	return loadedMaps[0];
+std::vector<Map>& World::getLoadedMaps() {
+	return loadedMaps;
 }
 
 bool World::isMapLoaded(const std::string& mapID) const {
