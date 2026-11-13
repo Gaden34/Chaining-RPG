@@ -8,6 +8,11 @@ using json = nlohmann::json;
 
 void World::draw(sf::RenderTarget& target) {
 	for (auto& map : loadedMaps) {
+		std::cout << "Map: " << map.getID()
+			<< " | Texture size: "
+			<< map.getTexture().getSize().x << "x"
+			<< map.getTexture().getSize().y
+			<< std::endl;
 		map.draw(target);
 	}
 }
@@ -46,6 +51,11 @@ void World::loadMap(const std::string& mapID) {
 			mapData.transitions = Map::loadTransitionsFromJson(mapID, "maps.json");
 
 			loadedMaps.emplace_back(mapData);
+			std::cout << "Loaded map: " << mapID << std::endl;
+			std::cout << "Loaded maps: " << loadedMaps.size() << std::endl;
+			std::cout << "Position: "
+				<< mapData.worldPosition.x << ", "
+				<< mapData.worldPosition.y << std::endl;
 
 		return;
 	}
@@ -63,4 +73,13 @@ bool World::isMapLoaded(const std::string& mapID) const {
 		}
 	}
 	return false;
+}
+
+Map* World::getMapAtPosition(sf::Vector2f position) {
+	for (auto& map : loadedMaps) {
+		if (map.containsWorldPosition(position)) {
+			return &map;
+		}
+	}
+	return nullptr;
 }

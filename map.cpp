@@ -9,6 +9,7 @@ using json = nlohmann::json;
 Map::Map(MapData& data) : id(data.id), worldPosition(data.worldPosition), transitions(data.transitions) {
 	texture.loadFromFile("assets/" + data.texturePath + ".png");
 	sprite.setTexture(texture, true);
+	sprite.setPosition(worldPosition);
 	collisionMap.loadFromFile("assets/" + data.collisionMapPath + ".png");
 
 }
@@ -147,4 +148,11 @@ CollisionBoxCorners getCollisionBoxCorners(const sf::FloatRect& rect) {
 	corners.bottomLeft = sf::FloatRect(rect.left, rect.top + rect.height, 1.f, 1.f);
 	corners.bottomRight = sf::FloatRect(rect.left + rect.width, rect.top + rect.height, 1.f, 1.f);
 	return corners;
+}
+
+bool Map::containsWorldPosition(sf::Vector2f position) const {
+	return position.x >= worldPosition.x && 
+		position.y >= worldPosition.y &&
+		position.x <= worldPosition.x + getSize().x &&
+		position.y <= worldPosition.y + getSize().y;
 }

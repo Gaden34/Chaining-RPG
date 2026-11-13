@@ -51,6 +51,7 @@ public:
 	Map() = default;
 	Map(MapData& data);
 	void draw(sf::RenderTarget& target);
+	const sf::Texture& getTexture() const { return texture; }
 	void setTexture(std::string t);
 	sf::Vector2u getSize() const { return texture.getSize(); }
 	void setCollisionMap(std::string t);
@@ -64,6 +65,7 @@ public:
 	MapTransition* getTransitionAtPosition(const sf::FloatRect& currentBounds, const sf::FloatRect& previousBounds, const std::optional<TransitionDirection>& horizontal, const std::optional<TransitionDirection>& vertical);
 	bool canTriggerTransition(const sf::FloatRect& currentFeet, const sf::FloatRect& previousFeet, const MapTransition& transition, TransitionDirection direction) const;
 	static std::vector<MapTransition> loadTransitionsFromJson(const std::string& mapId, const std::string& filePath);
+	bool containsWorldPosition(sf::Vector2f position) const;
 
 };
 

@@ -15,4 +15,5 @@ public:
 	void loadMap(const std::string& mapID);
 	std::vector<Map>& getLoadedMaps();
 	bool isMapLoaded(const std::string& mapID) const;
+	Map* getMapAtPosition(sf::Vector2f position);
 };
