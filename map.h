@@ -54,6 +54,7 @@ public:
 	const sf::Texture& getTexture() const { return texture; }
 	void setTexture(std::string t);
 	sf::Vector2u getSize() const { return texture.getSize(); }
+	sf::Vector2f getSpritePosition() const { return sprite.getPosition(); }
 	void setCollisionMap(std::string t);
 	void setPosition(const sf::Vector2f& position) { worldPosition = position; sprite.setPosition(position); }
 	sf::Vector2f getPosition() const { return worldPosition; }

@@ -8,12 +8,7 @@ using json = nlohmann::json;
 
 void World::draw(sf::RenderTarget& target) {
 	for (auto& map : loadedMaps) {
-		std::cout << "Map: " << map.getID()
-			<< " | Texture size: "
-			<< map.getTexture().getSize().x << "x"
-			<< map.getTexture().getSize().y
-			<< std::endl;
-		map.draw(target);
+		map->draw(target);
 	}
 }
 
@@ -47,10 +42,11 @@ void World::loadMap(const std::string& mapID) {
 				mapJson["worldPosition"].value("y", 0.f)
 			);
 		}
-
+		if (mapJson.contains("transitions")) {
 			mapData.transitions = Map::loadTransitionsFromJson(mapID, "maps.json");
+		}
 
-			loadedMaps.emplace_back(mapData);
+			loadedMaps.push_back(std::make_unique<Map>(mapData));
 			std::cout << "Loaded map: " << mapID << std::endl;
 			std::cout << "Loaded maps: " << loadedMaps.size() << std::endl;
 			std::cout << "Position: "
@@ -62,13 +58,13 @@ void World::loadMap(const std::string& mapID) {
 	std::cerr << "Map not found: " << mapID << std::endl;
 }
 
-std::vector<Map>& World::getLoadedMaps() {
+std::vector<std::unique_ptr<Map>>& World::getLoadedMaps() {
 	return loadedMaps;
 }
 
 bool World::isMapLoaded(const std::string& mapID) const {
 	for (const auto& map : loadedMaps) {
-		if (map.getID() == mapID) {
+		if (map->getID() == mapID) {
 			return true;
 		}
 	}
@@ -77,8 +73,8 @@ bool World::isMapLoaded(const std::string& mapID) const {
 
 Map* World::getMapAtPosition(sf::Vector2f position) {
 	for (auto& map : loadedMaps) {
-		if (map.containsWorldPosition(position)) {
-			return &map;
+		if (map->containsWorldPosition(position)) {
+			return map.get();
 		}
 	}
 	return nullptr;

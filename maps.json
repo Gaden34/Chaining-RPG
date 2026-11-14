@@ -48,20 +48,7 @@
           },
           "targetMapID": "BurumiaMapHouse4",
           "direction": "Up"
-        },
-        {
-          "trigger": {
-            "x": 954.0,
-            "y": 117.0,
-            "w": 4.0,
-            "h": 53.0
-          },
-          "targetMapID": "BurumiaForestMap",
-          "direction": "Right",
-          "spawnPosition": {
-            "x": 2.0,
-            "y": 34.0
-          }
+
         }
       ]
     },
@@ -69,6 +56,10 @@
       "id": "BurumiaMapHouse1",
       "texture": "BurumiaMapHouse1",
       "collisionMap": "BurumiaHouseCollisionMap",
+      "worldPosition": {
+        "x": 0.0,
+        "y": 0.0
+      },
       "transitions": [
         {
           "trigger": {
@@ -86,6 +77,10 @@
       "id": "BurumiaMapHouse2",
       "texture": "BurumiaMapHouse2",
       "collisionMap": "BurumiaHouseCollisionMap",
+      "worldPosition": {
+        "x": 0.0,
+        "y": 0.0
+      },
       "transitions": [
         {
           "trigger": {
@@ -103,6 +98,10 @@
       "id": "BurumiaMapHouse3",
       "texture": "BurumiaMapHouse3",
       "collisionMap": "BurumiaHouseCollisionMap",
+      "worldPosition": {
+        "x": 0.0,
+        "y": 0.0
+      },
       "transitions": [
         {
           "trigger": {
@@ -120,6 +119,10 @@
       "id": "BurumiaMapHouse4",
       "texture": "BurumiaMapHouse4",
       "collisionMap": "BurumiaHouseCollisionMap",
+      "worldPosition": {
+        "x": 0.0,
+        "y": 0.0
+      },
       "transitions": [
         {
           "trigger": {
@@ -140,25 +143,15 @@
       "worldPosition": {
         "x": 960.0,
         "y": 0.0
-      },
-      "transitions": [
-        {
-          "trigger": {
-            "x": 2.0,
-            "y": 48.0,
-            "w": 4.0,
-            "h": 31.0
-          },
-          "targetMapID": "BurumiaMap",
-          "direction": "Left",
-          "spawnPosition": {
-            "x": 940.0,
-            "y": 117.0
-          }
-        }
-      ]
+      }
     }
   ]
 }
+      
+          
+      
+
+      
+      
 
   
