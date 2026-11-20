@@ -62,6 +62,16 @@ std::vector<std::unique_ptr<Map>>& World::getLoadedMaps() {
 	return loadedMaps;
 }
 
+void World::unloadCurrentMap(sf::Vector2f position) {
+	for (auto it = loadedMaps.begin(); it != loadedMaps.end(); ++it) {
+		if ((*it)->containsWorldPosition(position)) {
+			std::cout << "Unloading map: " << (*it)->getID() << std::endl;
+			loadedMaps.erase(it);
+			return;
+		}
+	}
+}
+
 bool World::isMapLoaded(const std::string& mapID) const {
 	for (const auto& map : loadedMaps) {
 		if (map->getID() == mapID) {

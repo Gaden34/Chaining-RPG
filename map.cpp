@@ -32,7 +32,7 @@ void Map::setCollisionMap(std::string t) {
 
 bool Map::isBlocked(int x, int y) const {
 	if (x < 0 || y < 0 || x >= static_cast<int>(collisionMap.getSize().x) || y >= static_cast<int>(collisionMap.getSize().y)) {
-		return true;
+		return false;
 	}
 	
 	return collisionMap.getPixel(x, y) == sf::Color::Red;

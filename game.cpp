@@ -173,6 +173,7 @@ void Game::updateExploration(float dt) {
 		std::string targetMapID = transition->targetMapID;
 		auto spawnPosition = transition->spawnPosition;
 
+		exploration.getWorld().unloadCurrentMap(party[0].getPosition());
 		exploration.getWorld().loadMap(targetMapID);
 
 		if (spawnPosition.has_value()) {
