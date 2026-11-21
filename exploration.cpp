@@ -16,7 +16,7 @@ void Exploration::start(Player& player) {
 }
 
 void Exploration::update(float dt, InputHandler& inputHandler) {
-	party[0].update(dt, inputHandler, *world.getMapAtPosition(party[0].getPosition()));
+	party[0].update(dt, inputHandler, world);
 	setCamera(party[0]);
 
 	openFieldMenu(inputHandler);

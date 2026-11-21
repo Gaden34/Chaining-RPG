@@ -13,6 +13,7 @@
 #include "item.h"
 #include "inputHandler.h"
 #include "map.h"
+#include "world.h"
 
 struct AxisInput {
 	InputAction negativeAction;
@@ -54,12 +55,12 @@ public:
 	Player(Player&&) noexcept;
 	Player& operator=(Player&&) noexcept;
 	void update(float dt) override {}
-	void update(float dt, InputHandler& inputHandler, const Map& map);
+	void update(float dt, InputHandler& inputHandler, const World& world);
 	void draw(sf::RenderTarget& target) override { drawExploring(target); }
 	void drawExploring(sf::RenderTarget& target);
 	void drawCombat(sf::RenderTarget& target);
 	void move(float dt, const Map& map) override {}
-	void move(float dt, InputHandler& inputHandler, const Map& map);
+	void move(float dt, InputHandler& inputHandler, const World& world);
 	void resolveAxis(std::optional<TransitionDirection>& axis, InputHandler& input, const AxisInput& axisInput);
 	std::optional<TransitionDirection> getHorizontalDirection() const { return horizontalDirection; }
 	std::optional<TransitionDirection> getVerticalDirection() const { return verticalDirection; }

@@ -81,11 +81,22 @@ bool World::isMapLoaded(const std::string& mapID) const {
 	return false;
 }
 
-Map* World::getMapAtPosition(sf::Vector2f position) {
+Map* World::getMapAtPosition(sf::Vector2f position) const {
 	for (auto& map : loadedMaps) {
 		if (map->containsWorldPosition(position)) {
 			return map.get();
 		}
 	}
 	return nullptr;
+}
+
+bool World::isBlocked(sf::Vector2f position) const {
+	for (const auto& map : loadedMaps) {
+		if (map->containsWorldPosition(position)) {
+			sf::Vector2f localPos = map->worldToLocalPosition(position);
+			return map->isBlocked(static_cast<int>(localPos.x), static_cast<int>(localPos.y));
+		}
+
+		return true;
+	}
 }

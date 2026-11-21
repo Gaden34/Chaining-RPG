@@ -67,6 +67,7 @@ public:
 	bool canTriggerTransition(const sf::FloatRect& currentFeet, const sf::FloatRect& previousFeet, const MapTransition& transition, TransitionDirection direction) const;
 	static std::vector<MapTransition> loadTransitionsFromJson(const std::string& mapId, const std::string& filePath);
 	bool containsWorldPosition(sf::Vector2f position) const;
+	sf::Vector2f worldToLocalPosition(sf::Vector2f position) const { return position - worldPosition; }
 
 };
 

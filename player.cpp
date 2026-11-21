@@ -125,8 +125,8 @@ Player::Player(MessageLog& m, std::string n, const SpritePaths& spritePaths, Inv
 }
 
 
-void Player::update(float dt, InputHandler& inputHandler, const Map& map) {
-	move(dt, inputHandler, map);
+void Player::update(float dt, InputHandler& inputHandler, const World& world) {
+	move(dt, inputHandler, world);
 	if (isMoving) {
 		walkAnimation.update(dt);
 	}
@@ -150,7 +150,7 @@ void Player::drawCombat(sf::RenderTarget& target) {
 
 
 
-void Player::move(float dt, InputHandler& inputHandler, const Map& map) {
+void Player::move(float dt, InputHandler& inputHandler, const World& world) {
 
 	previousCollisionBox = getCollisionBox(sprite.getPosition());
 	isMoving = false;
@@ -186,10 +186,10 @@ void Player::move(float dt, InputHandler& inputHandler, const Map& map) {
 
 	sf::FloatRect currentCollisionBox = getCollisionBox(newPosition);
 
-	bool blocked = map.isBlocked(static_cast<int>(currentCollisionBox.left), static_cast<int>(currentCollisionBox.top)) ||
-		map.isBlocked(static_cast<int>(currentCollisionBox.left + currentCollisionBox.width), static_cast<int>(currentCollisionBox.top)) ||
-		map.isBlocked(static_cast<int>(currentCollisionBox.left), static_cast<int>(currentCollisionBox.top + currentCollisionBox.height)) ||
-		map.isBlocked(static_cast<int>(currentCollisionBox.left + currentCollisionBox.width), static_cast<int>(currentCollisionBox.top + currentCollisionBox.height));
+	bool blocked = world.isBlocked(currentCollisionBox.getPosition()) ||
+		world.isBlocked(sf::Vector2f(currentCollisionBox.getPosition().x + currentCollisionBox.getSize().x - 1.f, currentCollisionBox.getPosition().y)) ||
+		world.isBlocked(sf::Vector2f(currentCollisionBox.getPosition().x, currentCollisionBox.getPosition().y + currentCollisionBox.getSize().y - 1.f)) ||
+		world.isBlocked(sf::Vector2f(currentCollisionBox.getPosition().x + currentCollisionBox.getSize().x - 1.f, currentCollisionBox.getPosition().y + currentCollisionBox.getSize().y - 1.f));
 	if (!blocked) {
 		sprite.move(movement);
 	}
