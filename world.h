@@ -10,6 +10,7 @@ class World {
 private:
 	std::unordered_map <std::string, MapData> mapDefinitions;
 	std::vector<std::unique_ptr<Map>> loadedMaps;
+	bool drawExteriorDarkened = false;
 
 public:
 	void draw(sf::RenderTarget& target);

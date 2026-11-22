@@ -23,6 +23,7 @@ struct MapData {
 	std::string id;
 	std::string texturePath;
 	std::string collisionMapPath;
+	bool darkenOutside = false;
 	sf::Vector2f worldPosition;
 	std::vector<MapTransition> transitions;
 
@@ -41,6 +42,7 @@ private:
 	sf::Texture texture;
 	sf::Sprite sprite;
 	sf::Image collisionMap;
+	bool darkenOutside = false;
 	sf::Vector2f worldPosition;
 	std::string id;
 

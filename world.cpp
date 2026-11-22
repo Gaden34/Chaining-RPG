@@ -8,7 +8,15 @@ using json = nlohmann::json;
 
 void World::draw(sf::RenderTarget& target) {
 	for (auto& map : loadedMaps) {
-		map->draw(target);
+		if (drawExteriorDarkened) {
+			sf::RectangleShape darkenRect(sf::Vector2f(target.getSize()));
+			darkenRect.setFillColor(sf::Color(26, 26, 26, 255));
+			target.draw(darkenRect);
+			map->draw(target);
+		}
+		else {
+			map->draw(target);
+		}
 	}
 }
 
@@ -35,6 +43,13 @@ void World::loadMap(const std::string& mapID) {
 		mapData.id = mapID;
 		mapData.texturePath = mapJson.value("texture", "");
 		mapData.collisionMapPath = mapJson.value("collisionMap", "");
+
+		if (mapJson.contains("darkenOutside")) {
+			mapData.darkenOutside = mapJson.value("darkenOutside", false);
+			if (mapData.darkenOutside)
+				drawExteriorDarkened = true;
+			else drawExteriorDarkened = false;
+		}
 
 		if (mapJson.contains("worldPosition")) {
 			mapData.worldPosition = sf::Vector2f(
