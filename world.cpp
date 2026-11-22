@@ -97,6 +97,7 @@ bool World::isBlocked(sf::Vector2f position) const {
 			return map->isBlocked(static_cast<int>(localPos.x), static_cast<int>(localPos.y));
 		}
 
-		return true;
+		
 	}
+	return true;
 }
