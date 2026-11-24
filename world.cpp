@@ -8,17 +8,12 @@ using json = nlohmann::json;
 
 void World::draw(sf::RenderTarget& target) {
 	for (auto& map : loadedMaps) {
-		if (drawExteriorDarkened) {
-			sf::RectangleShape darkenRect(sf::Vector2f(target.getSize()));
-			darkenRect.setFillColor(sf::Color(26, 26, 26, 255));
-			target.draw(darkenRect);
-			map->draw(target);
-		}
-		else {
+		if (drawExteriorDarkened && map.get() != currentMap) {
+			map->getSprite().setColor(sf::Color(26, 26, 26));
+			}
 			map->draw(target);
 		}
 	}
-}
 
 void World::loadMap(const std::string& mapID) {
 
@@ -43,13 +38,9 @@ void World::loadMap(const std::string& mapID) {
 		mapData.id = mapID;
 		mapData.texturePath = mapJson.value("texture", "");
 		mapData.collisionMapPath = mapJson.value("collisionMap", "");
-
-		if (mapJson.contains("darkenOutside")) {
-			mapData.darkenOutside = mapJson.value("darkenOutside", false);
-			if (mapData.darkenOutside)
-				drawExteriorDarkened = true;
-			else drawExteriorDarkened = false;
-		}
+		mapData.darkenOutside = mapJson.value("darkenOutside", false);
+		drawExteriorDarkened = mapData.darkenOutside;
+			
 
 		if (mapJson.contains("worldPosition")) {
 			mapData.worldPosition = sf::Vector2f(
@@ -61,7 +52,10 @@ void World::loadMap(const std::string& mapID) {
 			mapData.transitions = Map::loadTransitionsFromJson(mapID, "maps.json");
 		}
 
-			loadedMaps.push_back(std::make_unique<Map>(mapData));
+		auto newMap = std::make_unique<Map>(mapData);
+		currentMap = newMap.get();
+		loadedMaps.push_back(std::move(newMap));
+
 			std::cout << "Loaded map: " << mapID << std::endl;
 			std::cout << "Loaded maps: " << loadedMaps.size() << std::endl;
 			std::cout << "Position: "

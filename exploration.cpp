@@ -11,6 +11,7 @@ Exploration::Exploration(std::mt19937& rng, std::vector<Player>& party, MessageL
 void Exploration::start(Player& player) {
 	world.loadMap("BurumiaMap");
 	world.loadMap("BurumiaForestMap");
+	world.loadMap("BurumiaForestMap2");
 	player.setPosition(playerPosition.x, playerPosition.y);
 	player.getWalkAnimation().setFrame(1);
 }

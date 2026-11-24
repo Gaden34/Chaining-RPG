@@ -55,6 +55,7 @@ public:
 	void draw(sf::RenderTarget& target);
 	const sf::Texture& getTexture() const { return texture; }
 	void setTexture(std::string t);
+    sf::Sprite& getSprite() { return sprite; }
 	sf::Vector2u getSize() const { return texture.getSize(); }
 	sf::Vector2f getSpritePosition() const { return sprite.getPosition(); }
 	void setCollisionMap(std::string t);

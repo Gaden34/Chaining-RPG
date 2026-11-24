@@ -148,8 +148,17 @@
         "x": 960.0,
         "y": 0.0
       }
-    }
-  ]
+    },
+      {
+        "id": "BurumiaForestMap2",
+        "texture": "BurumiaForestMap2",
+        "collisionMap": "BurumiaForestMap2",
+        "worldPosition": {
+          "x": 1920.0,
+          "y": 0.0
+        }
+      }
+    ]
 }
       
           
