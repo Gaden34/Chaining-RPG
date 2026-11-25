@@ -10,10 +10,40 @@ void World::draw(sf::RenderTarget& target) {
 	for (auto& map : loadedMaps) {
 		if (drawExteriorDarkened && map.get() != currentMap) {
 			map->getSprite().setColor(sf::Color(26, 26, 26));
-			}
-			map->draw(target);
 		}
+		else {
+			map->getSprite().setColor(sf::Color(255, 255, 255));
+		}
+		map->draw(target);
 	}
+}
+
+void World::loadMapData() {
+	std::ifstream file("maps.json");
+	if (!file.is_open()) {
+		std::cerr << "Failed to open maps JSON: maps.json" << std::endl;
+		return;
+	}
+	json data;
+	file >> data;
+	for (const auto& mapJson : data["maps"]) {
+		MapData mapData;
+		mapData.id = mapJson.value("id", "");
+		mapData.texturePath = mapJson.value("texture", "");
+		mapData.collisionMapPath = mapJson.value("collisionMap", "");
+		mapData.darkenOutside = mapJson.value("darkenOutside", false);
+		if (mapJson.contains("worldPosition")) {
+			mapData.worldPosition = sf::Vector2f(
+				mapJson["worldPosition"].value("x", 0.f),
+				mapJson["worldPosition"].value("y", 0.f)
+			);
+		}
+		if (mapJson.contains("transitions")) {
+			mapData.transitions = Map::loadTransitionsFromJson(mapData.id, "maps.json");
+		}
+		mapDefinitions[mapData.id] = mapData;
+	}
+}
 
 void World::loadMap(const std::string& mapID) {
 

@@ -12,6 +12,7 @@ void Exploration::start(Player& player) {
 	world.loadMap("BurumiaMap");
 	world.loadMap("BurumiaForestMap");
 	world.loadMap("BurumiaForestMap2");
+	world.loadMap("BurumiaForestMap3");
 	player.setPosition(playerPosition.x, playerPosition.y);
 	player.getWalkAnimation().setFrame(1);
 }

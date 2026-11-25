@@ -15,6 +15,7 @@ private:
 
 public:
 	void draw(sf::RenderTarget& target);
+	void loadMapData();
 	void loadMap(const std::string& mapID);
 	void unloadCurrentMap(sf::Vector2f position);
 	std::vector<std::unique_ptr<Map>>& getLoadedMaps();
