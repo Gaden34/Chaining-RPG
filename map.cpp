@@ -8,19 +8,31 @@ using json = nlohmann::json;
 
 Map::Map(MapData& data) : id(data.id), darkenOutside(data.darkenOutside), worldPosition(data.worldPosition), transitions(data.transitions) {
 	texture.loadFromFile("assets/" + data.texturePath + ".png");
-	sprite.setTexture(texture, true);
-	sprite.setPosition(worldPosition);
+	backgroundSprite.setTexture(texture, true);
+	foregroundSprite.setTexture(texture, true);
+
+	backgroundSprite.setTextureRect(sf::IntRect({ 0, 0 }, { 960, 640 }));
+	foregroundSprite.setTextureRect(sf::IntRect({ 960, 0 }, { 960, 640 }));
+
+	backgroundSprite.setPosition(worldPosition);
+	foregroundSprite.setPosition(worldPosition);
+
 	collisionMap.loadFromFile("assets/" + data.collisionMapPath + ".png");
 
 }
 
-void Map::draw(sf::RenderTarget& target) {
-	target.draw(sprite);
+void Map::drawBackground(sf::RenderTarget& target) {
+	target.draw(backgroundSprite);
+}
+
+void Map::drawForeground(sf::RenderTarget& target) {
+	target.draw(foregroundSprite);
 }
 
 void Map::setTexture(std::string t) {
 	texture.loadFromFile("assets/" + t + ".png");
-	sprite.setTexture(texture, true);
+	backgroundSprite.setTexture(texture, true);
+	foregroundSprite.setTexture(texture, true);
 }
 
 void Map::setCollisionMap(std::string t) {

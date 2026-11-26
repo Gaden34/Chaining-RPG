@@ -40,7 +40,8 @@ struct CollisionBoxCorners {
 class Map {
 private:
 	sf::Texture texture;
-	sf::Sprite sprite;
+	sf::Sprite backgroundSprite;
+	sf::Sprite foregroundSprite;
 	sf::Image collisionMap;
 	bool darkenOutside = false;
 	sf::Vector2f worldPosition;
@@ -52,14 +53,16 @@ private:
 public:
 	Map() = default;
 	Map(MapData& data);
-	void draw(sf::RenderTarget& target);
+	void drawBackground(sf::RenderTarget& target);
+	void drawForeground(sf::RenderTarget& target);
 	const sf::Texture& getTexture() const { return texture; }
 	void setTexture(std::string t);
-    sf::Sprite& getSprite() { return sprite; }
+    sf::Sprite& getBackgroundSprite() { return backgroundSprite; }
+	sf::Sprite& getForegroundSprite() { return foregroundSprite; }
 	sf::Vector2u getSize() const { return texture.getSize(); }
-	sf::Vector2f getSpritePosition() const { return sprite.getPosition(); }
+	sf::Vector2f getSpritePosition() const { return backgroundSprite.getPosition(); }
 	void setCollisionMap(std::string t);
-	void setPosition(const sf::Vector2f& position) { worldPosition = position; sprite.setPosition(position); }
+	void setPosition(const sf::Vector2f& position) { worldPosition = position; backgroundSprite.setPosition(position); }
 	sf::Vector2f getPosition() const { return worldPosition; }
 	sf::Vector2f worldToLocal(const sf::Vector2f& position) const { return position - worldPosition; }
 	bool isBlocked(int x, int y) const;

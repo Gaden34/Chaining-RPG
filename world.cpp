@@ -6,15 +6,27 @@
 
 using json = nlohmann::json;
 
-void World::draw(sf::RenderTarget& target) {
+void World::drawBackground(sf::RenderTarget& target) {
 	for (auto& map : loadedMaps) {
 		if (drawExteriorDarkened && map.get() != currentMap) {
-			map->getSprite().setColor(sf::Color(26, 26, 26));
+			map->getBackgroundSprite().setColor(sf::Color(26, 26, 26));
 		}
 		else {
-			map->getSprite().setColor(sf::Color(255, 255, 255));
+			map->getBackgroundSprite().setColor(sf::Color(255, 255, 255));
 		}
-		map->draw(target);
+		map->drawBackground(target);
+	}
+}
+
+void World::drawForeground(sf::RenderTarget& target) {
+	for (auto& map : loadedMaps) {
+		if (drawExteriorDarkened && map.get() != currentMap) {
+			map->getForegroundSprite().setColor(sf::Color(26, 26, 26));
+		}
+		else {
+			map->getForegroundSprite().setColor(sf::Color(255, 255, 255));
+		}
+		map->drawForeground(target);
 	}
 }
 

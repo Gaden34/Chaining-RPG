@@ -30,8 +30,9 @@ void Exploration::update(float dt, InputHandler& inputHandler) {
 
 void Exploration::draw(sf::RenderTarget& target) {
 	target.setView(camera);
-	world.draw(target);
+	world.drawBackground(target);
 	party[0].drawExploring(target);
+	world.drawForeground(target);
 	target.setView(target.getDefaultView());
 
 	if (currentState == ExplorationState::FieldMenu) {

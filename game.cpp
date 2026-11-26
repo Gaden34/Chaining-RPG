@@ -97,7 +97,7 @@ void StartMenu::draw(sf::RenderTarget& target) {
 
 void Game::drawCharacterCreation() {
 	characterCreationMap.setTexture("characterCreation");
-	characterCreationMap.draw(gameTexture);
+	characterCreationMap.drawBackground(gameTexture);
 	party[0].drawCombat(gameTexture);
 	messageLog.draw(gameTexture);
 

@@ -14,7 +14,8 @@ private:
 	Map* currentMap = nullptr;
 
 public:
-	void draw(sf::RenderTarget& target);
+	void drawBackground(sf::RenderTarget& target);
+	void drawForeground(sf::RenderTarget& target);
 	void loadMapData();
 	void loadMap(const std::string& mapID);
 	void unloadCurrentMap(sf::Vector2f position);
